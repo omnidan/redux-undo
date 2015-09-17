@@ -2,8 +2,6 @@
 
 _simple undo/redo functionality for redux state containers_
 
-**Note: This is experimental and until [#1](https://github.com/omnidan/redux-undo/issues/1) and [#2](https://github.com/omnidan/redux-undo/issues/2) are fixed, will not work with `redux-devtools`**
-
 **Protip:** You can use the [redux-undo-boilerplate](https://github.com/omnidan/redux-undo-boilerplate) to quickly get started with `redux-undo`.
 
 
@@ -13,7 +11,14 @@ _simple undo/redo functionality for redux state containers_
 npm install --save redux-undo
 ```
 
-`redux-undo` is a [store enhancer](http://rackt.github.io/redux/docs/Glossary.html#store-enhancer), which should be added to your middleware stack *after* [`applyMiddleware`](http://rackt.github.io/redux/docs/api/applyMiddleware.html) as `applyMiddleware` is potentially asynchronous. Otherwise, `redux-undo` won’t see the raw actions emitted by asynchronous middleware such as [redux-promise](https://github.com/acdlite/redux-promise) or [redux-thunk](https://github.com/gaearon/redux-thunk).
+## Making your reducers undoable
+
+`redux-undo` is a reducer enhancer, it provides the `undoable` function, which
+takes an existing reducer and a configuration object and enhances your existing
+reducer with undo functionality.
+
+**Note:** If you were accessing `state.counter` before, you have to access
+`state.counter.currentState` after wrapping your reducer with `undoable`.
 
 To install, firstly import `redux-undo`:
 
@@ -21,22 +26,25 @@ To install, firstly import `redux-undo`:
 // Redux utility functions
 import { compose, createStore, applyMiddleware } from 'redux';
 // Redux Undo store enhancer
-import reduxUndo from 'redux-undo';
+import undoable from 'redux-undo';
 ```
 
-Then, add `reduxUndo` to your store enhancers, and create your store:
+Then, add `undoable` to your reducer(s) like this:
 
 ```js
-const finalCreateStore = compose(
-  // Enables your middleware:
-  applyMiddleware(m1, m2, m3), // any Redux middleware, e.g. redux-thunk
-  // Provides support for redux-undo:
-  reduxUndo(),
-  // Lets you write ?debug_session=<name> in address bar to persist debug sessions
-  persistState(window.location.href.match(/[?&]debug_session=([^&]+)\b/))
-)(createStore);
+combineReducers({
+  counter: undoable(counter)
+})
+```
 
-const store = finalCreateStore(reducer);
+A [configuration](#configuration) can be passed like this:
+
+```js
+combineReducers({
+  counter: undoable(counter, {
+    limit: 10 // set a limit for the history
+  })
+})
 ```
 
 
