@@ -4,6 +4,8 @@ _simple undo/redo functionality for redux state containers_
 
 **Note: Until https://github.com/gaearon/redux-devtools/pull/116 gets merged, this won't work correctly with `redux-devtools`**
 
+**Protip:** You can use the [redux-undo-boilerplate](https://github.com/omnidan/redux-undo-boilerplate) to quickly get started with `redux-undo`.
+
 
 ## Installation
 
