@@ -39,8 +39,6 @@ function seek(state, rawIndex) {
     index = maxIndex;
   }
 
-  console.log(index, history[index], history);
-
   return {
     ...state,
     currentState: history[index],
@@ -98,18 +96,10 @@ export default function undoable(reducer, rawConfig = {}) {
         }
       }
 
-      console.log(state);
-
       const currentIndex = (state && state.index !== undefined) ? state.index : config.index;
       const history = (state && state.history !== undefined) ? state.history : config.history;
-
-      console.log(currentIndex, history, [
-        ...history.slice(0, currentIndex + 1),
-        res, // insert after current index
-        ...history.slice(currentIndex + 1),
-      ]);
-
       const historyOverflow = config.limit && history.length >= config.limit;
+
       return {
         ...state,
         currentState: res,
@@ -120,11 +110,6 @@ export default function undoable(reducer, rawConfig = {}) {
           ...history.slice(currentIndex + 1),
         ],
       };
-      // if (config.limit && store._history.length > config.limit) {
-      //   debug('store full, slicing');
-      //   store._history = store._history.slice(1, config.limit + 1);
-      //   store._index--;
-      // }
     }
   };
 }
