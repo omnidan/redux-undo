@@ -23,24 +23,10 @@ export const ActionCreators = {
 };
 // /action creators
 
-// addState: add a new state to the history
-function addState(store, state) {
-  debug('before', store);
-  store._history.splice(store._index + 1, 0, state); // insert after current index
-  store._index++; // update index
-  if (store._limit && store._history.length > store._limit) {
-    debug('store full, slicing');
-    store._history = store._history.slice(1, store._limit + 1);
-    store._index--;
-  }
-  debug('after', store);
-}
-// /addState
-
 // seek: jump to a certain point in history (restores state)
-function seek(store, rawIndex) {
-  debug('seek', store, rawIndex);
-  const history = store._history;
+function seek(state, rawIndex) {
+  debug('seek', state, rawIndex);
+  const history = state.history;
   if (history.length < 2) return false;
 
   let index = rawIndex;
@@ -53,74 +39,93 @@ function seek(store, rawIndex) {
     index = maxIndex;
   }
 
-  store._index = index;
-  return history[index];
+  console.log(index, history[index], history);
+
+  return {
+    ...state,
+    currentState: history[index],
+    index,
+    history,
+  };
 }
 // /seek
 
 // undo: go back to the previous point in history
-function undo(store, steps) {
-  return seek(store, store._index - (steps || 1));
+function undo(state, steps) {
+  return seek(state, state.index - (steps || 1));
 }
 // /undo
 
 // redo: go to the next point in history
-function redo(store, steps) {
-  return seek(store, store._index + (steps || 1));
+function redo(state, steps) {
+  return seek(state, state.index + (steps || 1));
 }
 // /redo
 
-// liftReducer: lift app state reducer into reduxUndo state reducer
-function liftReducer(store, reducer, initialState) {
-  // liftedReducer: manages how the reduxUndo actions modify the reduxUndo state
-  return function liftedReducer(liftedState = initialState, liftedAction) {
-    if (liftedAction._recomputed) {
-      debug('action recomputed (probably by devtools), not storing it');
-      return reducer(liftedState, liftedAction);
-    }
+// redux-undo higher order reducer
+export default function undoable(reducer, rawConfig = {}) {
+  __DEBUG__ = rawConfig.debug;
 
-    debug('lift', liftedState, liftedAction);
+  const config = {
+    history: rawConfig.initialHistory || [],
+    index: rawConfig.initialIndex || -1,
+    limit: rawConfig.limit,
+    filter: rawConfig.filter || () => true,
+  };
+
+  return (state, action) => {
+    debug('enhanced reducer called:', state, action);
     let res;
-    switch (liftedAction.type) {
+    switch (action.type) {
     case ActionTypes.UNDO:
-      res = undo(store, liftedAction.steps);
-      return res ? res : liftedState;
+      res = undo(state, action.steps);
+      return res ? res : state;
 
     case ActionTypes.REDO:
-      res = redo(store, liftedAction.steps);
-      return res ? res : liftedState;
+      res = redo(state, action.steps);
+      return res ? res : state;
 
     default:
-      res = reducer(liftedState, liftedAction);
-      if (store._filter && typeof store._filter === 'function') {
-        if (!store._filter(liftedAction)) {
+      res = reducer(state && state.currentState, action);
+
+      if (config.filter && typeof config.filter === 'function') {
+        if (!config.filter(action)) {
           debug('filter prevented action, not storing it');
-          return res;
+          return {
+            ...state,
+            currentState: res,
+          };
         }
       }
-      addState(store, res); // add previous state to history
-      return res;
+
+      console.log(state);
+
+      const currentIndex = (state && state.index !== undefined) ? state.index : config.index;
+      const history = (state && state.history !== undefined) ? state.history : config.history;
+
+      console.log(currentIndex, history, [
+        ...history.slice(0, currentIndex + 1),
+        res, // insert after current index
+        ...history.slice(currentIndex + 1),
+      ]);
+
+      const historyOverflow = config.limit && history.length >= config.limit;
+      return {
+        ...state,
+        currentState: res,
+        index: currentIndex + 1, // update index
+        history: [
+          ...history.slice(historyOverflow ? 1 : 0, currentIndex + 1),
+          res, // insert after current index
+          ...history.slice(currentIndex + 1),
+        ],
+      };
+      // if (config.limit && store._history.length > config.limit) {
+      //   debug('store full, slicing');
+      //   store._history = store._history.slice(1, config.limit + 1);
+      //   store._index--;
+      // }
     }
-  };
-  // /liftedReducer
-}
-// /liftReducer
-
-// redux-undo store enhancer
-export default function reduxUndo(config = {}, store) {
-  __DEBUG__ = config.debug;
-
-  const liftedStore = {
-    _history: config.initialHistory || [],
-    _index: config.initialIndex || -1,
-    _limit: config.limit,
-    _filter: config.filter || () => true,
-    ...store,
-  };
-
-  return next => (reducer, initialState) => {
-    const liftedReducer = liftReducer(liftedStore, reducer, initialState);
-    return next(liftedReducer);
   };
 }
 // /redux-undo
@@ -134,13 +139,15 @@ export function parseActions(rawActions = []) {
 // ifAction helper
 export function ifAction(rawActions) {
   const actions = parseActions(rawActions);
-  return (action) => action.type === '@@redux/INIT' || actions.indexOf(action.type) > -1;
+  return (action) => action.type === '@@redux/INIT' || action.type === '@@INIT'
+    || actions.indexOf(action.type) > -1;
 }
 // /ifAction
 
 // excludeAction helper
 export function excludeAction(rawActions = []) {
   const actions = parseActions(rawActions);
-  return (action) => action.type === '@@redux/INIT' || !(actions.indexOf(action.type) > -1);
+  return (action) => action.type === '@@redux/INIT' || action.type === '@@INIT'
+    || !(actions.indexOf(action.type) > -1);
 }
 // /excludeAction
