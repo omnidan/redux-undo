@@ -2,7 +2,7 @@
 
 [![NPM version (>=0.2)](https://img.shields.io/npm/v/redux-undo.svg?style=flat-square)](https://www.npmjs.com/package/redux-undo) [![Dependencies](https://img.shields.io/david/omnidan/redux-undo.svg?style=flat-square)](https://david-dm.org/omnidan/redux-undo)
 
-_simple undo/redo functionality for redux state containers_
+_simple undo/redo functionality for [redux](https://github.com/rackt/redux) state containers_
 
 **Protip:** You can use the [redux-undo-boilerplate](https://github.com/omnidan/redux-undo-boilerplate) to quickly get started with `redux-undo`.
 
