@@ -80,7 +80,7 @@ are default values):
 ```js
 reduxUndo({
   initialHistory: [], // initial history (e.g. for loading history)
-  initialIndex: [], // initial index (e.g. for loading history)
+  initialIndex: -1, // initial index (e.g. for loading history)
   limit: false, // set to a number to turn on a limit for the history
   debug: false, // set to `true` to turn on debugging
   filter: () => true, // see `Filtering Actions` section
