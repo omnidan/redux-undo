@@ -1,6 +1,6 @@
 {
   "name": "redux-undo",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "simple undo/redo functionality for redux state containers",
   "main": "lib/index.js",
   "scripts": {
@@ -41,9 +41,6 @@
     "isparta": "^3.0.4",
     "mocha": "^2.3.2",
     "rimraf": "^2.4.3"
-  },
-  "peerDependencies": {
-    "redux": "^1.0.0 || 1.0.0-rc"
   },
   "dependencies": {
     "redux": "^3.0.0"
