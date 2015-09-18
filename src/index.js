@@ -69,17 +69,19 @@ export default function undoable(reducer, rawConfig = {}) {
     index: rawConfig.initialIndex || -1,
     limit: rawConfig.limit,
     filter: rawConfig.filter || () => true,
+    undoType: rawConfig.undoType || ActionTypes.UNDO,
+    redoType: rawConfig.redoType || ActionTypes.REDO,
   };
 
   return (state, action) => {
     debug('enhanced reducer called:', state, action);
     let res;
     switch (action.type) {
-    case ActionTypes.UNDO:
+    case config.undoType:
       res = undo(state, action.steps);
       return res ? res : state;
 
-    case ActionTypes.REDO:
+    case config.redoType:
       res = redo(state, action.steps);
       return res ? res : state;
 

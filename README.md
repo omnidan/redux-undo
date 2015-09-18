@@ -86,6 +86,8 @@ undoable({
   limit: false, // set to a number to turn on a limit for the history
   debug: false, // set to `true` to turn on debugging
   filter: () => true, // see `Filtering Actions` section
+  undoType: ActionTypes.UNDO, // define a custom action type for this undo action
+  redoType: ActionTypes.REDO, // define a custom action type for this redo action
 })
 ```
 
