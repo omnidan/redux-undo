@@ -20,7 +20,8 @@ takes an existing reducer and a configuration object and enhances your existing
 reducer with undo functionality.
 
 **Note:** If you were accessing `state.counter` before, you have to access
-`state.counter.currentState` after wrapping your reducer with `undoable`.
+`state.counter.currentState` after wrapping your reducer with `undoable`. 
+To access the history, simply use `state.counter.history`.
 
 To install, firstly import `redux-undo`:
 
