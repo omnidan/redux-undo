@@ -124,8 +124,9 @@ undoable({ filter: ifAction([SOME_ACTION, SOME_OTHER_ACTION]) })
 undoable({ filter: excludeAction([SOME_ACTION, SOME_OTHER_ACTION]) })
 ```
 
-Note that the helpers always accept `@@redux/INIT` too in order to store your
-initial state. If you don't want this, define your own filter function.
+Note that the helpers always accept `@@INIT` and `@@redux/INIT` too in 
+order to store your initial state. If you don't want this, define your 
+own filter function.
 
 
 ## License
