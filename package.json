@@ -40,7 +40,8 @@
     "expect": "^1.10.0",
     "isparta": "^3.0.4",
     "mocha": "^2.3.2",
-    "rimraf": "^2.4.3"
+    "rimraf": "^2.4.3",
+    "speckjs": "^1.1.0"
   },
   "dependencies": {
     "redux": "^3.0.0"
