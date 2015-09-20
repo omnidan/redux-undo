@@ -6,7 +6,7 @@ _simple undo/redo functionality for [redux](https://github.com/rackt/redux) stat
 
 **Protip:** You can use the [redux-undo-boilerplate](https://github.com/omnidan/redux-undo-boilerplate) to quickly get started with `redux-undo`.
 
-[![https://i.imgur.com/9w8FHHI.gif](https://i.imgur.com/9w8FHHI.gif)](https://github.com/omnidan/redux-undo-boilerplate)
+[![https://i.imgur.com/M2KR4uo.gif](https://i.imgur.com/M2KR4uo.gif)](https://github.com/omnidan/redux-undo-boilerplate)
 
 
 ## Installation
