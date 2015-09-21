@@ -23,54 +23,119 @@ export const ActionCreators = {
 };
 // /action creators
 
-// seek: jump to a certain point in history (restores state)
-function seek(state, rawIndex) {
-  debug('seek', state, rawIndex);
-  const history = state.history;
-  if (history.length < 2) return false;
+// length: get length of history
+function length(history) {
+  const { past, future } = history;
+  return past.length + 1 + future.length;
+}
+// /length
 
-  let index = rawIndex;
-  if (index < 0) {
-    index = 0;
-  }
+// insert: insert `state` into history, which means adding the current state
+//         into `past`, setting the new `state` as `present` and erasing
+//         the `future`.
+function insert(history, state, limit) {
+  debug('insert(', history, state, limit, ')');
 
-  const maxIndex = history.length - 1;
-  if (index > maxIndex) {
-    index = maxIndex;
+  const { past, present } = history;
+  const historyOverflow = limit && length(history) >= limit;
+
+  if (present === undefined) {
+    // init history
+    return {
+      past: [],
+      present: state,
+      future: [],
+    };
   }
 
   return {
-    ...state,
-    currentState: history[index],
-    index,
-    history,
+    past: [
+      ...past.slice(historyOverflow ? 1 : 0),
+      present,
+    ],
+    present: state,
+    future: [],
   };
 }
-// /seek
+// /insert
 
 // undo: go back to the previous point in history
-function undo(state, steps) {
-  return seek(state, state.index - (steps || 1));
+function undo(history) {
+  debug('undo(', history, ')');
+
+  const { past, present, future } = history;
+
+  if (past.length <= 0) return history;
+
+  return {
+    past: past.slice(0, past.length - 1), // remove last element from past
+    present: past[past.length - 1], // set element as new present
+    future: [
+      present, // old present state is in the future now
+      ...future,
+    ],
+  };
 }
 // /undo
 
 // redo: go to the next point in history
-function redo(state, steps) {
-  return seek(state, state.index + (steps || 1));
+function redo(history) {
+  debug('redo(', history, ')');
+
+  const { past, present, future } = history;
+
+  if (future.length <= 0) return history;
+
+  return {
+    future: future.slice(1, future.length), // remove element from future
+    present: future[0], // set element as new present
+    past: [
+      ...past,
+      present, // old present state is in the past now
+    ],
+  };
 }
 // /redo
+
+// updateState
+function updateState(state, history) {
+  return {
+    ...state,
+    history,
+    currentState: history.present,
+  };
+}
+// /updateState
+
+// arrayToString
+function arrayToString(array) {
+  if (!array || array.length <= 0) return '_';
+  return array.join(',');
+}
+
+// historyToString
+function historyToString(history) {
+  return arrayToString(history.past) +
+    ' | ' + history.present +
+    ' | ' + arrayToString(history.future);
+}
+// /historyToString
 
 // redux-undo higher order reducer
 export default function undoable(reducer, rawConfig = {}) {
   __DEBUG__ = rawConfig.debug;
 
   const config = {
-    history: rawConfig.initialHistory || [],
-    index: rawConfig.initialIndex || -1,
+    initialState: rawConfig.initialState,
     limit: rawConfig.limit,
     filter: rawConfig.filter || () => true,
     undoType: rawConfig.undoType || ActionTypes.UNDO,
     redoType: rawConfig.redoType || ActionTypes.REDO,
+  };
+  config.history = rawConfig.initialHistory || {
+    past: [],
+    present: config.initialState,
+    future: [],
   };
 
   return (state, action) => {
@@ -78,12 +143,14 @@ export default function undoable(reducer, rawConfig = {}) {
     let res;
     switch (action.type) {
     case config.undoType:
-      res = undo(state, action.steps);
-      return res ? res : state;
+      res = undo(state.history, action.steps);
+      debug('history (undo):', historyToString(state.history), '->', historyToString(res));
+      return res ? updateState(state, res) : state;
 
     case config.redoType:
-      res = redo(state, action.steps);
-      return res ? res : state;
+      res = redo(state.history, action.steps);
+      debug('history (redo):', historyToString(state.history), '->', historyToString(res));
+      return res ? updateState(state, res) : state;
 
     default:
       res = reducer(state && state.currentState, action);
@@ -98,19 +165,14 @@ export default function undoable(reducer, rawConfig = {}) {
         }
       }
 
-      const currentIndex = (state && state.index !== undefined) ? state.index : config.index;
       const history = (state && state.history !== undefined) ? state.history : config.history;
-      const historyOverflow = config.limit && history.length >= config.limit;
+      const updatedHistory = insert(history, res, config.limit);
+      debug('history (insert):', historyToString(history), '->', historyToString(updatedHistory));
 
       return {
         ...state,
         currentState: res,
-        index: currentIndex + 1, // update index
-        history: [
-          ...history.slice(historyOverflow ? 1 : 0, currentIndex + 1),
-          res, // insert after current index
-          ...history.slice(currentIndex + 1),
-        ],
+        history: updatedHistory,
       };
     }
   };

@@ -1,12 +1,10 @@
 # redux undo/redo
 
-[![NPM version (>=0.2)](https://img.shields.io/npm/v/redux-undo.svg?style=flat-square)](https://www.npmjs.com/package/redux-undo) [![Dependencies](https://img.shields.io/david/omnidan/redux-undo.svg?style=flat-square)](https://david-dm.org/omnidan/redux-undo)
+[![NPM version (>=0.3)](https://img.shields.io/npm/v/redux-undo.svg?style=flat-square)](https://www.npmjs.com/package/redux-undo) [![Dependencies](https://img.shields.io/david/omnidan/redux-undo.svg?style=flat-square)](https://david-dm.org/omnidan/redux-undo)
 
-_simple undo/redo functionality for [redux](https://github.com/rackt/redux) state containers_
+_simple undo/redo functionality for redux state containers_
 
 **Protip:** You can use the [redux-undo-boilerplate](https://github.com/omnidan/redux-undo-boilerplate) to quickly get started with `redux-undo`.
-
-[![https://i.imgur.com/M2KR4uo.gif](https://i.imgur.com/M2KR4uo.gif)](https://github.com/omnidan/redux-undo-boilerplate)
 
 
 ## Installation
@@ -22,8 +20,7 @@ takes an existing reducer and a configuration object and enhances your existing
 reducer with undo functionality.
 
 **Note:** If you were accessing `state.counter` before, you have to access
-`state.counter.currentState` after wrapping your reducer with `undoable`. 
-To access the history, simply use `state.counter.history`.
+`state.counter.currentState` after wrapping your reducer with `undoable`.
 
 To install, firstly import `redux-undo`:
 
@@ -84,13 +81,21 @@ are default values):
 
 ```js
 undoable({
-  initialHistory: [], // initial history (e.g. for loading history)
-  initialIndex: [], // initial index (e.g. for loading history)
   limit: false, // set to a number to turn on a limit for the history
-  debug: false, // set to `true` to turn on debugging
+
   filter: () => true, // see `Filtering Actions` section
+
   undoType: ActionTypes.UNDO, // define a custom action type for this undo action
   redoType: ActionTypes.REDO, // define a custom action type for this redo action
+
+  initialState: undefined, // initial state (e.g. for loading)
+  initialHistory: { // initial history (e.g. for loading)
+    past: [],
+    present: config.initialState,
+    future: [],
+  },
+
+  debug: false, // set to `true` to turn on debugging
 })
 ```
 
@@ -126,9 +131,8 @@ undoable({ filter: ifAction([SOME_ACTION, SOME_OTHER_ACTION]) })
 undoable({ filter: excludeAction([SOME_ACTION, SOME_OTHER_ACTION]) })
 ```
 
-Note that the helpers always accept `@@INIT` and `@@redux/INIT` too in 
-order to store your initial state. If you don't want this, define your 
-own filter function.
+Note that the helpers always accept `@@redux/INIT` too in order to store your
+initial state. If you don't want this, define your own filter function.
 
 
 ## License
