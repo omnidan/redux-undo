@@ -68,13 +68,6 @@ store.dispatch(ActionCreators.undo()) // undo the last action
 store.dispatch(ActionCreators.redo()) // redo the last action
 ```
 
-You can also specify a number of steps to go back/forth:
-
-```js
-store.dispatch(ActionCreators.undo(3)) // undo 3 actions
-store.dispatch(ActionCreators.redo(2)) // redo 2 actions
-```
-
 
 ## Configuration
 
