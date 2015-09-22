@@ -28,7 +28,7 @@ To install, firstly import `redux-undo`:
 
 ```js
 // Redux utility functions
-import { compose, createStore, applyMiddleware } from 'redux';
+import { combineReducers } from 'redux';
 // Redux Undo store enhancer
 import undoable from 'redux-undo';
 ```
