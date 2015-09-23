@@ -75,7 +75,7 @@ A configuration object can be passed to `undoable()` like this (values shown
 are default values):
 
 ```js
-undoable({
+undoable(reducer, {
   limit: false, // set to a number to turn on a limit for the history
 
   filter: () => true, // see `Filtering Actions` section
@@ -100,7 +100,7 @@ If you don't want to include every action in the undo/redo history, you can
 pass a function to `undoable` like this:
 
 ```js
-undoable(function filterActions(action) {
+undoable(reducer, function filterActions(action) {
   return action.type !== SOME_ACTION; // only undo/redo on SOME_ACTION
 })
 ```
@@ -115,15 +115,15 @@ import undoable, { ifAction, excludeAction } from 'redux-undo';
 Now you can use the helper, which is pretty simple:
 
 ```js
-undoable({ filter: ifAction(SOME_ACTION) })
-undoable({ filter: excludeAction(SOME_ACTION) })
+undoable(reducer, { filter: ifAction(SOME_ACTION) })
+undoable(reducer, { filter: excludeAction(SOME_ACTION) })
 ```
 
 ... they even support Arrays:
 
 ```js
-undoable({ filter: ifAction([SOME_ACTION, SOME_OTHER_ACTION]) })
-undoable({ filter: excludeAction([SOME_ACTION, SOME_OTHER_ACTION]) })
+undoable(reducer, { filter: ifAction([SOME_ACTION, SOME_OTHER_ACTION]) })
+undoable(reducer, { filter: excludeAction([SOME_ACTION, SOME_OTHER_ACTION]) })
 ```
 
 Note that the helpers always accept `@@redux/INIT` too in order to store your
