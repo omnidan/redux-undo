@@ -103,13 +103,13 @@ pass a function to `undoable` like this:
 
 ```js
 undoable(reducer, function filterActions(action, currentState, previousState) {
-  return action.type !== SOME_ACTION; // don't add to history if action isn't SOME_ACTION
+  return action.type === SOME_ACTION; // only add to history if action is SOME_ACTION
 })
 
 // or you could do...
 
 undoable(reducer, function filterState(action, currentState, previousState) {
-  return currentState === previousState; // don't add to history if state stayed the same
+  return currentState !== previousState; // only add to history if state changed
 })
 ```
 

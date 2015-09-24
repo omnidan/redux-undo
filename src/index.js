@@ -187,7 +187,7 @@ export function parseActions(rawActions = []) {
 
 // distinctState helper
 export function distinctState() {
-  return (action, currentState, previousState) => currentState === previousState;
+  return (action, currentState, previousState) => currentState !== previousState;
 }
 // /distinctState
 
