@@ -1,15 +1,22 @@
 // debug output
 let __DEBUG__;
 function debug(...args) {
-  if (__DEBUG__) console.log('%credux-undo', 'font-style: italic', ...args);
+  if (__DEBUG__) {
+    if (!console.group) {
+      args.unshift('%credux-undo', 'font-style: italic');
+    }
+    console.log(...args);
+  }
 }
 function debugStart(action, state) {
   if (__DEBUG__) {
-    const args = ['enhanced reducer called:', action, {state}];
+    const args = ['action', action.type];
     if (console.group) {
+      args.unshift('%credux-undo', 'font-style: italic');
       console.groupCollapsed(...args);
+      console.log('received', {state, action});
     } else {
-      console.log(...args);
+      debug(...args);
     }
   }
 }
@@ -49,7 +56,7 @@ function length(history) {
 //         into `past`, setting the new `state` as `present` and erasing
 //         the `future`.
 function insert(history, state, limit) {
-  debug('insert(', {history, state, free: limit - length(history)}, ')');
+  debug('insert', {state, history, free: limit - length(history)});
 
   const { past, present } = history;
   const historyOverflow = limit && length(history) >= limit;
@@ -76,7 +83,7 @@ function insert(history, state, limit) {
 
 // undo: go back to the previous point in history
 function undo(history) {
-  debug('undo(', {history}, ')');
+  debug('undo', {history});
 
   const { past, present, future } = history;
 
@@ -95,7 +102,7 @@ function undo(history) {
 
 // redo: go to the next point in history
 function redo(history) {
-  debug('redo(', {history}, ')');
+  debug('redo', {history});
 
   const { past, present, future } = history;
 
@@ -145,13 +152,13 @@ export default function undoable(reducer, rawConfig = {}) {
     switch (action.type) {
     case config.undoType:
       res = undo(state.history, action.steps);
-      debug('history (undo):', res);
+      debug('after undo', res);
       debugEnd();
       return res ? updateState(state, res) : state;
 
     case config.redoType:
       res = redo(state.history, action.steps);
-      debug('history (redo):', res);
+      debug('after redo', res);
       debugEnd();
       return res ? updateState(state, res) : state;
 
@@ -171,7 +178,7 @@ export default function undoable(reducer, rawConfig = {}) {
 
       const history = (state && state.history !== undefined) ? state.history : config.history;
       const updatedHistory = insert(history, res, config.limit);
-      debug('history (insert):', updatedHistory);
+      debug('after insert', {history: updatedHistory, free: config.limit - length(history)});
       debugEnd();
 
       return {
