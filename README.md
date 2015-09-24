@@ -128,7 +128,7 @@ undoable(reducer, { filter: excludeAction(SOME_ACTION) })
 
 // or you could do...
 
-undoable(reducer, { filter: distinctState })
+undoable(reducer, { filter: distinctState() })
 ```
 
 ... they even support Arrays:
