@@ -1,12 +1,14 @@
 # redux undo/redo
 
-[![NPM version (>=0.3)](https://img.shields.io/npm/v/redux-undo.svg?style=flat-square)](https://www.npmjs.com/package/redux-undo) [![Dependencies](https://img.shields.io/david/omnidan/redux-undo.svg?style=flat-square)](https://david-dm.org/omnidan/redux-undo)
+[![NPM version (>=0.4)](https://img.shields.io/npm/v/redux-undo.svg?style=flat-square)](https://www.npmjs.com/package/redux-undo) [![Dependencies](https://img.shields.io/david/omnidan/redux-undo.svg?style=flat-square)](https://david-dm.org/omnidan/redux-undo)
 
 _simple undo/redo functionality for redux state containers_
 
 **Protip:** You can use the [redux-undo-boilerplate](https://github.com/omnidan/redux-undo-boilerplate) to quickly get started with `redux-undo`.
 
 [![https://i.imgur.com/M2KR4uo.gif](https://i.imgur.com/M2KR4uo.gif)](https://github.com/omnidan/redux-undo-boilerplate)
+
+**Note:** When upgrading from *0.3* to *0.4*, use `.present` instead of `.currentState`.
 
 
 ## Installation
@@ -22,7 +24,7 @@ takes an existing reducer and a configuration object and enhances your existing
 reducer with undo functionality.
 
 **Note:** If you were accessing `state.counter` before, you have to access
-`state.counter.currentState` after wrapping your reducer with `undoable`.
+`state.counter.present` after wrapping your reducer with `undoable`.
 
 To install, firstly import `redux-undo`:
 
@@ -100,16 +102,22 @@ If you don't want to include every action in the undo/redo history, you can
 pass a function to `undoable` like this:
 
 ```js
-undoable(reducer, function filterActions(action) {
-  return action.type !== SOME_ACTION; // only undo/redo on SOME_ACTION
+undoable(reducer, function filterActions(action, currentState, previousState) {
+  return action.type !== SOME_ACTION; // don't add to history if action isn't SOME_ACTION
+})
+
+// or you could do...
+
+undoable(reducer, function filterState(action, currentState, previousState) {
+  return currentState === previousState; // don't add to history if state stayed the same
 })
 ```
 
-Or you can use the `ifAction` and `excludeAction` helpers, which should be
-imported like this:
+Or you can use the `distinctState`, `ifAction` and `excludeAction` helpers,
+which should be imported like this:
 
 ```js
-import undoable, { ifAction, excludeAction } from 'redux-undo';
+import undoable, { distinctState, ifAction, excludeAction } from 'redux-undo';
 ```
 
 Now you can use the helper, which is pretty simple:
@@ -117,6 +125,10 @@ Now you can use the helper, which is pretty simple:
 ```js
 undoable(reducer, { filter: ifAction(SOME_ACTION) })
 undoable(reducer, { filter: excludeAction(SOME_ACTION) })
+
+// or you could do...
+
+undoable(reducer, { filter: distinctState })
 ```
 
 ... they even support Arrays:

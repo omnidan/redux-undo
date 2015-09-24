@@ -102,7 +102,7 @@ function updateState(state, history) {
   return {
     ...state,
     history,
-    currentState: history.present,
+    present: history.present,
   };
 }
 // /updateState
@@ -153,14 +153,14 @@ export default function undoable(reducer, rawConfig = {}) {
       return res ? updateState(state, res) : state;
 
     default:
-      res = reducer(state && state.currentState, action);
+      res = reducer(state && state.present, action);
 
       if (config.filter && typeof config.filter === 'function') {
-        if (!config.filter(action)) {
+        if (!config.filter(action, res, state && state.present)) {
           debug('filter prevented action, not storing it');
           return {
             ...state,
-            currentState: res,
+            present: res,
           };
         }
       }
@@ -171,7 +171,7 @@ export default function undoable(reducer, rawConfig = {}) {
 
       return {
         ...state,
-        currentState: res,
+        present: res,
         history: updatedHistory,
       };
     }
@@ -184,6 +184,12 @@ export function parseActions(rawActions = []) {
   return typeof rawActions === 'string' ? [rawActions] : rawActions;
 }
 // /parseActions
+
+// distinctState helper
+export function distinctState() {
+  return (action, currentState, previousState) => currentState === previousState;
+}
+// /distinctState
 
 // ifAction helper
 export function ifAction(rawActions) {
