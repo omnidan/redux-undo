@@ -14,11 +14,11 @@ export const ActionTypes = {
 
 // action creators to change the state
 export const ActionCreators = {
-  undo(steps) {
-    return { type: ActionTypes.UNDO, steps };
+  undo() {
+    return { type: ActionTypes.UNDO };
   },
-  redo(steps) {
-    return { type: ActionTypes.REDO, steps };
+  redo() {
+    return { type: ActionTypes.REDO };
   },
 };
 // /action creators
@@ -143,12 +143,12 @@ export default function undoable(reducer, rawConfig = {}) {
     let res;
     switch (action.type) {
     case config.undoType:
-      res = undo(state.history, action.steps);
+      res = undo(state.history);
       debug('history (undo):', historyToString(state.history), '->', historyToString(res));
       return res ? updateState(state, res) : state;
 
     case config.redoType:
-      res = redo(state.history, action.steps);
+      res = redo(state.history);
       debug('history (redo):', historyToString(state.history), '->', historyToString(res));
       return res ? updateState(state, res) : state;
 
