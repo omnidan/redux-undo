@@ -36,11 +36,11 @@ export const ActionTypes = {
 
 // action creators to change the state
 export const ActionCreators = {
-  undo(steps) {
-    return { type: ActionTypes.UNDO, steps };
+  undo() {
+    return { type: ActionTypes.UNDO };
   },
-  redo(steps) {
-    return { type: ActionTypes.REDO, steps };
+  redo() {
+    return { type: ActionTypes.REDO };
   },
 };
 // /action creators
@@ -124,7 +124,7 @@ function updateState(state, history) {
   return {
     ...state,
     history,
-    currentState: history.present,
+    present: history.present,
   };
 }
 // /updateState
@@ -151,27 +151,27 @@ export default function undoable(reducer, rawConfig = {}) {
     let res;
     switch (action.type) {
     case config.undoType:
-      res = undo(state.history, action.steps);
+      res = undo(state.history);
       debug('after undo', res);
       debugEnd();
       return res ? updateState(state, res) : state;
 
     case config.redoType:
-      res = redo(state.history, action.steps);
+      res = redo(state.history);
       debug('after redo', res);
       debugEnd();
       return res ? updateState(state, res) : state;
 
     default:
-      res = reducer(state && state.currentState, action);
+      res = reducer(state && state.present, action);
 
       if (config.filter && typeof config.filter === 'function') {
-        if (!config.filter(action)) {
+        if (!config.filter(action, res, state && state.present)) {
           debug('filter prevented action, not storing it');
           debugEnd();
           return {
             ...state,
-            currentState: res,
+            present: res,
           };
         }
       }
@@ -183,7 +183,7 @@ export default function undoable(reducer, rawConfig = {}) {
 
       return {
         ...state,
-        currentState: res,
+        present: res,
         history: updatedHistory,
       };
     }
@@ -196,6 +196,12 @@ export function parseActions(rawActions = []) {
   return typeof rawActions === 'string' ? [rawActions] : rawActions;
 }
 // /parseActions
+
+// distinctState helper
+export function distinctState() {
+  return (action, currentState, previousState) => currentState !== previousState;
+}
+// /distinctState
 
 // ifAction helper
 export function ifAction(rawActions) {
