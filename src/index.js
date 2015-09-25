@@ -178,7 +178,7 @@ export default function undoable(reducer, rawConfig = {}) {
 
       const history = (state && state.history !== undefined) ? state.history : config.history;
       const updatedHistory = insert(history, res, config.limit);
-      debug('after insert', {history: updatedHistory, free: config.limit - length(history)});
+      debug('after insert', {history: updatedHistory, free: config.limit - length(updatedHistory)});
       debugEnd();
 
       return {
