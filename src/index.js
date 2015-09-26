@@ -139,6 +139,17 @@ function createHistory(state) {
 }
 // /createHistory
 
+// parseActions
+export function parseActions(rawActions, defaultValue = []) {
+  if (Array.isArray(rawActions)) {
+    return rawActions;
+  } else if (typeof rawActions === 'string') {
+    return [rawActions];
+  }
+  return defaultValue;
+}
+// /parseActions
+
 // redux-undo higher order reducer
 export default function undoable(reducer, rawConfig = {}) {
   __DEBUG__ = rawConfig.debug;
@@ -182,7 +193,7 @@ export default function undoable(reducer, rawConfig = {}) {
         return {
           ...state,
           present: res,
-          history: createHistory(res)
+          history: createHistory(res),
         };
       }
 
@@ -211,17 +222,6 @@ export default function undoable(reducer, rawConfig = {}) {
   };
 }
 // /redux-undo
-
-// parseActions
-export function parseActions(rawActions, defaultValue = []) {
-  if (Array.isArray(rawActions)) {
-    return rawActions;
-  } else if (typeof rawActions === 'string') {
-    return [rawActions];
-  }
-  return defaultValue;
-}
-// /parseActions
 
 // distinctState helper
 export function distinctState() {
