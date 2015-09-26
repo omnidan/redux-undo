@@ -86,6 +86,7 @@ undoable(reducer, {
   redoType: ActionTypes.REDO, // define a custom action type for this redo action
 
   initialState: undefined, // initial state (e.g. for loading)
+  initTypes: ['@@redux/INIT', '@@INIT'] // history will be (re)set upon init action type
   initialHistory: { // initial history (e.g. for loading)
     past: [],
     present: config.initialState,
@@ -137,9 +138,6 @@ undoable(reducer, { filter: distinctState() })
 undoable(reducer, { filter: ifAction([SOME_ACTION, SOME_OTHER_ACTION]) })
 undoable(reducer, { filter: excludeAction([SOME_ACTION, SOME_OTHER_ACTION]) })
 ```
-
-Note that the helpers always accept `@@redux/INIT` too in order to store your
-initial state. If you don't want this, define your own filter function.
 
 
 ## License

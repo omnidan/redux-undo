@@ -129,22 +129,33 @@ function updateState(state, history) {
 }
 // /updateState
 
+// createHistory
+function createHistory(state) {
+  return {
+    past: [],
+    present: state,
+    future: [],
+  };
+}
+// /createHistory
+
 // redux-undo higher order reducer
 export default function undoable(reducer, rawConfig = {}) {
   __DEBUG__ = rawConfig.debug;
 
   const config = {
     initialState: rawConfig.initialState,
+    initTypes: parseActions(rawConfig.initTypes, ['@@redux/INIT', '@@INIT']),
     limit: rawConfig.limit,
     filter: rawConfig.filter || () => true,
     undoType: rawConfig.undoType || ActionTypes.UNDO,
     redoType: rawConfig.redoType || ActionTypes.REDO,
   };
-  config.history = rawConfig.initialHistory || {
-    past: [],
-    present: config.initialState,
-    future: [],
-  };
+  config.history = rawConfig.initialHistory || createHistory(config.initialState);
+
+  if (config.initTypes.length === 0) {
+    console.warn('redux-undo: supply at least one action type in initTypes to ensure initial state');
+  }
 
   return (state, action) => {
     debugStart(action, state);
@@ -164,6 +175,16 @@ export default function undoable(reducer, rawConfig = {}) {
 
     default:
       res = reducer(state && state.present, action);
+
+      if (config.initTypes.some((actionType) => actionType === action.type)) {
+        debug('reset history due to init action');
+        debugEnd();
+        return {
+          ...state,
+          present: res,
+          history: createHistory(res)
+        };
+      }
 
       if (config.filter && typeof config.filter === 'function') {
         if (!config.filter(action, res, state && state.present)) {
@@ -192,8 +213,13 @@ export default function undoable(reducer, rawConfig = {}) {
 // /redux-undo
 
 // parseActions
-export function parseActions(rawActions = []) {
-  return typeof rawActions === 'string' ? [rawActions] : rawActions;
+export function parseActions(rawActions, defaultValue = []) {
+  if (Array.isArray(rawActions)) {
+    return rawActions;
+  } else if (typeof rawActions === 'string') {
+    return [rawActions];
+  }
+  return defaultValue;
 }
 // /parseActions
 
@@ -206,15 +232,13 @@ export function distinctState() {
 // ifAction helper
 export function ifAction(rawActions) {
   const actions = parseActions(rawActions);
-  return (action) => action.type === '@@redux/INIT' || action.type === '@@INIT'
-    || actions.indexOf(action.type) > -1;
+  return (action) => actions.indexOf(action.type) >= 0;
 }
 // /ifAction
 
 // excludeAction helper
 export function excludeAction(rawActions = []) {
   const actions = parseActions(rawActions);
-  return (action) => action.type === '@@redux/INIT' || action.type === '@@INIT'
-    || !(actions.indexOf(action.type) > -1);
+  return (action) => actions.indexOf(action.type) < 0;
 }
 // /excludeAction
