@@ -1,3 +1,6 @@
 language: node_js
 node_js:
-  - "iojs"
+  - "4.0.0"
+script:
+  - npm run lint
+  - npm test
