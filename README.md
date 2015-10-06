@@ -140,6 +140,30 @@ undoable(reducer, { filter: excludeAction([SOME_ACTION, SOME_OTHER_ACTION]) })
 ```
 
 
+## History API
+
+Wrapping your reducer with `undoable` makes the state look like this:
+
+```js
+{
+  present: {...currentStateHere...},
+  history: {
+    past: [...pastStatesHere...],
+    present: {...currentStateHere...},
+    future: [...futureStatesHere...]
+  }
+}
+```
+
+Which means you can access all past states (e.g. to show a history) like this: `state.history.past`
+    
+
+
+## What is this magic? How does it work?
+
+Have a read of the [Implementing Undo History recipe](https://rackt.github.io/redux/docs/recipes/ImplementingUndoHistory.html) in the Redux documents, which explains in detail how redux-undo works.
+
+
 ## License
 
 MIT, see `LICENSE.md` for more information.
