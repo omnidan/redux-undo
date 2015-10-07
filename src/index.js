@@ -22,7 +22,7 @@ function debugStart(action, state) {
 }
 function debugEnd() {
   if (__DEBUG__) {
-    console.groupEnd && console.groupEnd();
+    return console.groupEnd && console.groupEnd();
   }
 }
 // /debug output
