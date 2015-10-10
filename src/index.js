@@ -229,10 +229,17 @@ export function distinctState() {
 }
 // /distinctState
 
-// ifAction helper
-export function ifAction(rawActions) {
+// includeAction helper
+export function includeAction(rawActions) {
   const actions = parseActions(rawActions);
   return (action) => actions.indexOf(action.type) >= 0;
+}
+// /includeAction
+
+// deprecated ifAction helper
+export function ifAction(rawActions) {
+  console.error('Deprecation Warning: Please change `ifAction` to `includeAction`');
+  return includeAction(rawActions);
 }
 // /ifAction
 

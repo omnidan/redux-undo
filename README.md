@@ -114,17 +114,17 @@ undoable(reducer, function filterState(action, currentState, previousState) {
 })
 ```
 
-Or you can use the `distinctState`, `ifAction` and `excludeAction` helpers,
+Or you can use the `distinctState`, `includeAction` and `excludeAction` helpers,
 which should be imported like this:
 
 ```js
-import undoable, { distinctState, ifAction, excludeAction } from 'redux-undo';
+import undoable, { distinctState, includeAction, excludeAction } from 'redux-undo';
 ```
 
 Now you can use the helper, which is pretty simple:
 
 ```js
-undoable(reducer, { filter: ifAction(SOME_ACTION) })
+undoable(reducer, { filter: includeAction(SOME_ACTION) })
 undoable(reducer, { filter: excludeAction(SOME_ACTION) })
 
 // or you could do...
@@ -135,7 +135,7 @@ undoable(reducer, { filter: distinctState() })
 ... they even support Arrays:
 
 ```js
-undoable(reducer, { filter: ifAction([SOME_ACTION, SOME_OTHER_ACTION]) })
+undoable(reducer, { filter: includeAction([SOME_ACTION, SOME_OTHER_ACTION]) })
 undoable(reducer, { filter: excludeAction([SOME_ACTION, SOME_OTHER_ACTION]) })
 ```
 
@@ -156,7 +156,7 @@ Wrapping your reducer with `undoable` makes the state look like this:
 ```
 
 Which means you can access all past states (e.g. to show a history) like this: `state.history.past`
-    
+
 
 
 ## What is this magic? How does it work?
