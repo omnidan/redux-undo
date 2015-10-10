@@ -8,7 +8,7 @@ _simple undo/redo functionality for redux state containers_
 
 [![https://i.imgur.com/M2KR4uo.gif](https://i.imgur.com/M2KR4uo.gif)](https://github.com/omnidan/redux-undo-boilerplate)
 
-**Note:** When upgrading from *0.3* to *0.4*, use `.present` instead of `.currentState`.
+**Note:** Make sure to update your programs to the [latest History API](#history-api).
 
 
 ## Installation
@@ -54,7 +54,24 @@ combineReducers({
 ```
 
 
-## Usage
+## History API
+
+Wrapping your reducer with `undoable` makes the state look like this:
+
+```js
+{
+  past: [...pastStatesHere...],
+  present: {...currentStateHere...},
+  future: [...futureStatesHere...]
+}
+```
+
+Now you can get your current state like this: `state.present`
+
+And you can access all past states (e.g. to show a history) like this: `state.past`
+
+
+## Undo/Redo Actions
 
 Firstly, import the undo/redo action creators:
 
@@ -138,25 +155,6 @@ undoable(reducer, { filter: distinctState() })
 undoable(reducer, { filter: includeAction([SOME_ACTION, SOME_OTHER_ACTION]) })
 undoable(reducer, { filter: excludeAction([SOME_ACTION, SOME_OTHER_ACTION]) })
 ```
-
-
-## History API
-
-Wrapping your reducer with `undoable` makes the state look like this:
-
-```js
-{
-  present: {...currentStateHere...},
-  history: {
-    past: [...pastStatesHere...],
-    present: {...currentStateHere...},
-    future: [...futureStatesHere...]
-  }
-}
-```
-
-Which means you can access all past states (e.g. to show a history) like this: `state.history.past`
-
 
 
 ## What is this magic? How does it work?

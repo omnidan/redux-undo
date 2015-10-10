@@ -119,13 +119,21 @@ function redo(history) {
 }
 // /redo
 
-// updateState
-function updateState(state, history) {
+// wrapState: for backwards compatibility to 0.4
+function wrapState(state) {
   return {
     ...state,
-    history,
-    present: history.present,
+    history: state,
   };
+}
+// /wrapState
+
+// updateState
+function updateState(state, history) {
+  return wrapState({
+    ...state,
+    ...history,
+  });
 }
 // /updateState
 
@@ -173,13 +181,13 @@ export default function undoable(reducer, rawConfig = {}) {
     let res;
     switch (action.type) {
     case config.undoType:
-      res = undo(state.history);
+      res = undo(state);
       debug('after undo', res);
       debugEnd();
       return res ? updateState(state, res) : state;
 
     case config.redoType:
-      res = redo(state.history);
+      res = redo(state);
       debug('after redo', res);
       debugEnd();
       return res ? updateState(state, res) : state;
@@ -190,34 +198,32 @@ export default function undoable(reducer, rawConfig = {}) {
       if (config.initTypes.some((actionType) => actionType === action.type)) {
         debug('reset history due to init action');
         debugEnd();
-        return {
+        return wrapState({
           ...state,
-          present: res,
-          history: createHistory(res),
-        };
+          ...createHistory(res),
+        });
       }
 
       if (config.filter && typeof config.filter === 'function') {
         if (!config.filter(action, res, state && state.present)) {
           debug('filter prevented action, not storing it');
           debugEnd();
-          return {
+          return wrapState({
             ...state,
             present: res,
-          };
+          });
         }
       }
 
-      const history = (state && state.history !== undefined) ? state.history : config.history;
+      const history = (state && state.present !== undefined) ? state : config.history;
       const updatedHistory = insert(history, res, config.limit);
       debug('after insert', {history: updatedHistory, free: config.limit - length(updatedHistory)});
       debugEnd();
 
-      return {
+      return wrapState({
         ...state,
-        present: res,
-        history: updatedHistory,
-      };
+        ...updatedHistory,
+      });
     }
   };
 }
