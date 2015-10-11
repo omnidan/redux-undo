@@ -26,9 +26,9 @@ export const ActionCreators = {
 // seek: jump to a certain point in history (restores state)
 /*
 test > seek in history
-# seek({ history: [2, 3, 1] }, 1).currentState === 3 (updates currentState)
-# seek({ history: [2, 3, 1] }, 1).index === 1 (updates index)
-# seek({ history: [2, 3, 1] }, 1).history === [2, 3, 1] (does not change history)
+# seek({history:[2,3,1]},1).currentState === 3 (updates currentState)
+# seek({history:[2,3,1]},1).index === 1 (updates index)
+# seek({history:[2,3,1]},1).history === [2,3,1] (does not change history)
 */
 function seek(state, rawIndex) {
   debug('seek', state, rawIndex);
