@@ -17,6 +17,16 @@ _simple undo/redo functionality for redux state containers_
 npm install --save redux-undo
 ```
 
+
+## API
+
+```js
+import undoable from 'redux-undo';
+undoable(reducer)
+undoable(reducer, config)
+```
+
+
 ## Making your reducers undoable
 
 `redux-undo` is a reducer enhancer, it provides the `undoable` function, which
