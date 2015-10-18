@@ -31,7 +31,7 @@ To install, firstly import `redux-undo`:
 ```js
 // Redux utility functions
 import { combineReducers } from 'redux';
-// Redux Undo store enhancer
+// redux-undo higher-order reducer
 import undoable from 'redux-undo';
 ```
 
