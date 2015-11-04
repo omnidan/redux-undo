@@ -117,7 +117,7 @@ undoable(reducer, {
   initialHistory: { // initial history (e.g. for loading)
     past: [],
     present: config.initialState,
-    future: [],
+    future: []
   },
 
   debug: false, // set to `true` to turn on debugging
