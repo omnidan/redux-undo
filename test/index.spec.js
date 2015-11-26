@@ -9,14 +9,14 @@ describe('Undoable', () => {
   before('setup mock reducers and states', () => {
     let countInitialState = 0
     let countReducer = (state = countInitialState, action = {}) => {
-          switch (action.type) {
-            case 'INCREMENT':
-              return state + 1
-            case 'DECREMENT':
-              return state - 1
-            default:
-              return state
-          }
+      switch (action.type) {
+        case 'INCREMENT':
+          return state + 1
+        case 'DECREMENT':
+          return state - 1
+        default:
+          return state
+      }
     }
     let undoConfig = {
       limit: 100,
