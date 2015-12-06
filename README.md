@@ -4,9 +4,9 @@
 
 _simple undo/redo functionality for redux state containers_
 
-**Protip:** You can use the [redux-undo-boilerplate](https://github.com/omnidan/redux-undo-boilerplate) to quickly get started with `redux-undo`.
-
 [![https://i.imgur.com/M2KR4uo.gif](https://i.imgur.com/M2KR4uo.gif)](https://github.com/omnidan/redux-undo-boilerplate)
+
+**Protip:** You can use the [redux-undo-boilerplate](https://github.com/omnidan/redux-undo-boilerplate) to quickly get started with `redux-undo`.
 
 **Note:** Make sure to update your programs to the [latest History API](#history-api).
 
