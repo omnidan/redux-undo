@@ -30,7 +30,9 @@ function debugEnd () {
 // action types
 export const ActionTypes = {
   UNDO: '@@redux-undo/UNDO',
-  REDO: '@@redux-undo/REDO'
+  REDO: '@@redux-undo/REDO',
+  JUMP_TO_FUTURE: '@@redux-undo/JUMP_TO_FUTURE',
+  JUMP_TO_PAST: '@@redux-undo/JUMP_TO_PAST'
 }
 // /action types
 
@@ -41,6 +43,12 @@ export const ActionCreators = {
   },
   redo () {
     return { type: ActionTypes.REDO }
+  },
+  jumpToFuture (index) {
+    return { type: ActionTypes.JUMP_TO_FUTURE, index: index }
+  },
+  jumpToPast (index) {
+    return { type: ActionTypes.JUMP_TO_PAST, index }
   }
 }
 // /action creators
@@ -119,6 +127,37 @@ function redo (history) {
 }
 // /redo
 
+// jumpToFuture: jump to requested index in future history
+function jumpToFuture (history, index) {
+  if (index === 0) return redo(history)
+
+  const { past, present, future } = history
+
+  return {
+    future: future.slice(index + 1),
+    present: future[index],
+    past: past.concat([present])
+              .concat(future.slice(0, index))
+  }
+}
+// /jumpToFuture
+
+// jumpToPast: jump to requested index in past history
+function jumpToPast (history, index) {
+  if (index === history.past.length - 1) return undo(history)
+
+  const { past, present, future } = history
+
+  return {
+    future: past.slice(index + 1)
+                .concat([present])
+                .concat(future),
+    present: past[index],
+    past: past.slice(0, index)
+  }
+}
+// /jumpToPast
+
 // wrapState: for backwards compatibility to 0.4
 function wrapState (state) {
   return {
@@ -168,7 +207,9 @@ export default function undoable (reducer, rawConfig = {}) {
     limit: rawConfig.limit,
     filter: rawConfig.filter || () => true,
     undoType: rawConfig.undoType || ActionTypes.UNDO,
-    redoType: rawConfig.redoType || ActionTypes.REDO
+    redoType: rawConfig.redoType || ActionTypes.REDO,
+    jumpToPastType: rawConfig.jumpToPastType || ActionTypes.JUMP_TO_PAST,
+    jumpToFutureType: rawConfig.jumpToFutureType || ActionTypes.JUMP_TO_FUTURE
   }
   config.history = rawConfig.initialHistory || createHistory(config.initialState)
 
@@ -189,6 +230,18 @@ export default function undoable (reducer, rawConfig = {}) {
       case config.redoType:
         res = redo(state)
         debug('after redo', res)
+        debugEnd()
+        return res ? updateState(state, res) : state
+
+      case config.jumpToPastType:
+        res = jumpToPast(state, action.index)
+        debug('after jumpToPast', res)
+        debugEnd()
+        return res ? updateState(state, res) : state
+
+      case config.jumpToFutureType:
+        res = jumpToFuture(state, action.index)
+        debug('after jumpToFuture', res)
         debugEnd()
         return res ? updateState(state, res) : state
 
