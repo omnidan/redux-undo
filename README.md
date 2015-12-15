@@ -95,6 +95,9 @@ perform undo/redo operations on your state:
 ```js
 store.dispatch(ActionCreators.undo()) // undo the last action
 store.dispatch(ActionCreators.redo()) // redo the last action
+
+store.dispatch(ActionCreators.jumpToPast(index)) // jump to requested index in the past[] array
+store.dispatch(ActionCreators.jumpToFuture(index)) // jump to requested index in the future[] array
 ```
 
 
@@ -111,7 +114,10 @@ undoable(reducer, {
 
   undoType: ActionTypes.UNDO, // define a custom action type for this undo action
   redoType: ActionTypes.REDO, // define a custom action type for this redo action
-
+  
+  jumpToPastType: ActionTypes.JUMP_TO_PAST, // define custom action type for this jumpToPast action
+  jumpToFutureType: ActionTypes.JUMP_TO_FUTURE, // define custom action type for this jumpToFuture action
+  
   initialState: undefined, // initial state (e.g. for loading)
   initTypes: ['@@redux/INIT', '@@INIT'] // history will be (re)set upon init action type
   initialHistory: { // initial history (e.g. for loading)
