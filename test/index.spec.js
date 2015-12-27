@@ -5,10 +5,11 @@ describe('Undoable', () => {
   let mockUndoableReducer
   let mockInitialState
   let incrementedState
+  let countReducer
 
   before('setup mock reducers and states', () => {
     let countInitialState = 0
-    let countReducer = (state = countInitialState, action = {}) => {
+    countReducer = (state = countInitialState, action = {}) => {
       switch (action.type) {
         case 'INCREMENT':
           return state + 1
@@ -54,6 +55,17 @@ describe('Undoable', () => {
 
     expect(reInitializedState.past.length).to.equal(0)
     expect(reInitializedState.future.length).to.equal(0)
+  })
+
+  it('should apply initialState', () => {
+    let reducer = undoable(countReducer, {
+      initialState: 4,
+      initTypes: 'RE-INITIALIZE'
+    })
+    let state = { past: [], present: 4, future: [] }
+    state = reducer(state, { type: 'INCREMENT' })
+    state = reducer(state, { type: 'RE-INITIALIZE' })
+    expect(state.present).to.equal(4)
   })
 
   describe('Undo', () => {

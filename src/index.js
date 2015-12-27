@@ -246,9 +246,8 @@ export default function undoable (reducer, rawConfig = {}) {
         return res ? updateState(state, res) : state
 
       default:
-        res = reducer(state && state.present, action)
-
         if (config.initTypes.some((actionType) => actionType === action.type)) {
+          res = reducer(config.history.present, action)
           debug('reset history due to init action')
           debugEnd()
           return wrapState({
@@ -256,6 +255,8 @@ export default function undoable (reducer, rawConfig = {}) {
             ...createHistory(res)
           })
         }
+
+        res = reducer(state && state.present, action)
 
         if (config.filter && typeof config.filter === 'function') {
           if (!config.filter(action, res, state && state.present)) {
