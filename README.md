@@ -136,14 +136,18 @@ If you don't want to include every action in the undo/redo history, you can
 pass a function to `undoable` like this:
 
 ```js
-undoable(reducer, function filterActions(action, currentState, previousState) {
-  return action.type === SOME_ACTION; // only add to history if action is SOME_ACTION
+undoable(reducer, {
+  filter: function filterActions(action, currentState, previousState) {
+    return action.type === SOME_ACTION; // only add to history if action is SOME_ACTION
+  }
 })
 
 // or you could do...
 
-undoable(reducer, function filterState(action, currentState, previousState) {
-  return currentState !== previousState; // only add to history if state changed
+undoable(reducer, {
+  filter: function filterState(action, currentState, previousState) {
+    return currentState !== previousState; // only add to history if state changed
+  }
 })
 ```
 
