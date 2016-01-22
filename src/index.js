@@ -158,21 +158,9 @@ function jumpToPast (history, index) {
 }
 // /jumpToPast
 
-// wrapState: for backwards compatibility to 0.4
-function wrapState (state) {
-  return {
-    ...state,
-    history: state
-  }
-}
-// /wrapState
-
 // updateState
 function updateState (state, history) {
-  return wrapState({
-    ...state,
-    ...history
-  })
+  return {...state, ...history};
 }
 // /updateState
 
@@ -251,20 +239,20 @@ export default function undoable (reducer, rawConfig = {}) {
         if (config.initTypes.some((actionType) => actionType === action.type)) {
           debug('reset history due to init action')
           debugEnd()
-          return wrapState({
+          return {
             ...state,
             ...createHistory(res)
-          })
+          }
         }
 
         if (config.filter && typeof config.filter === 'function') {
           if (!config.filter(action, res, state && state.present)) {
             debug('filter prevented action, not storing it')
             debugEnd()
-            return wrapState({
+            return {
               ...state,
               present: res
-            })
+            }
           }
         }
 
@@ -273,10 +261,10 @@ export default function undoable (reducer, rawConfig = {}) {
         debug('after insert', {history: updatedHistory, free: config.limit - length(updatedHistory)})
         debugEnd()
 
-        return wrapState({
+        return {
           ...state,
           ...updatedHistory
-        })
+        }
     }
   }
 }
@@ -294,13 +282,6 @@ export function includeAction (rawActions) {
   return (action) => actions.indexOf(action.type) >= 0
 }
 // /includeAction
-
-// deprecated ifAction helper
-export function ifAction (rawActions) {
-  console.error('Deprecation Warning: Please change `ifAction` to `includeAction`')
-  return includeAction(rawActions)
-}
-// /ifAction
 
 // excludeAction helper
 export function excludeAction (rawActions = []) {
