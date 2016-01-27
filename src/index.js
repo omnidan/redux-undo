@@ -158,12 +158,6 @@ function jumpToPast (history, index) {
 }
 // /jumpToPast
 
-// updateState
-function updateState (state, history) {
-  return {...state, ...history}
-}
-// /updateState
-
 // createHistory
 function createHistory (state) {
   return {
@@ -213,25 +207,25 @@ export default function undoable (reducer, rawConfig = {}) {
         res = undo(state)
         debug('after undo', res)
         debugEnd()
-        return res ? updateState(state, res) : state
+        return res
 
       case config.redoType:
         res = redo(state)
         debug('after redo', res)
         debugEnd()
-        return res ? updateState(state, res) : state
+        return res
 
       case config.jumpToPastType:
         res = jumpToPast(state, action.index)
         debug('after jumpToPast', res)
         debugEnd()
-        return res ? updateState(state, res) : state
+        return res
 
       case config.jumpToFutureType:
         res = jumpToFuture(state, action.index)
         debug('after jumpToFuture', res)
         debugEnd()
-        return res ? updateState(state, res) : state
+        return res
 
       default:
         res = reducer(state && state.present, action)
@@ -239,10 +233,7 @@ export default function undoable (reducer, rawConfig = {}) {
         if (config.initTypes.some((actionType) => actionType === action.type)) {
           debug('reset history due to init action')
           debugEnd()
-          return {
-            ...state,
-            ...createHistory(res)
-          }
+          return createHistory(res)
         }
 
         if (config.filter && typeof config.filter === 'function') {
@@ -260,11 +251,7 @@ export default function undoable (reducer, rawConfig = {}) {
         const updatedHistory = insert(history, res, config.limit)
         debug('after insert', {history: updatedHistory, free: config.limit - length(updatedHistory)})
         debugEnd()
-
-        return {
-          ...state,
-          ...updatedHistory
-        }
+        return updatedHistory;
     }
   }
 }
