@@ -158,24 +158,6 @@ function jumpToPast (history, index) {
 }
 // /jumpToPast
 
-// wrapState: for backwards compatibility to 0.4
-function wrapState (state) {
-  return {
-    ...state,
-    history: state
-  }
-}
-// /wrapState
-
-// updateState
-function updateState (state, history) {
-  return wrapState({
-    ...state,
-    ...history
-  })
-}
-// /updateState
-
 // createHistory
 function createHistory (state) {
   return {
@@ -205,7 +187,7 @@ export default function undoable (reducer, rawConfig = {}) {
     initialState: rawConfig.initialState,
     initTypes: parseActions(rawConfig.initTypes, ['@@redux/INIT', '@@INIT']),
     limit: rawConfig.limit,
-    filter: rawConfig.filter || () => true,
+    filter: rawConfig.filter || (() => true),
     undoType: rawConfig.undoType || ActionTypes.UNDO,
     redoType: rawConfig.redoType || ActionTypes.REDO,
     jumpToPastType: rawConfig.jumpToPastType || ActionTypes.JUMP_TO_PAST,
@@ -225,25 +207,25 @@ export default function undoable (reducer, rawConfig = {}) {
         res = undo(state)
         debug('after undo', res)
         debugEnd()
-        return res ? updateState(state, res) : state
+        return res
 
       case config.redoType:
         res = redo(state)
         debug('after redo', res)
         debugEnd()
-        return res ? updateState(state, res) : state
+        return res
 
       case config.jumpToPastType:
         res = jumpToPast(state, action.index)
         debug('after jumpToPast', res)
         debugEnd()
-        return res ? updateState(state, res) : state
+        return res
 
       case config.jumpToFutureType:
         res = jumpToFuture(state, action.index)
         debug('after jumpToFuture', res)
         debugEnd()
-        return res ? updateState(state, res) : state
+        return res
 
       default:
         res = reducer(state && state.present, action)
@@ -251,20 +233,17 @@ export default function undoable (reducer, rawConfig = {}) {
         if (config.initTypes.some((actionType) => actionType === action.type)) {
           debug('reset history due to init action')
           debugEnd()
-          return wrapState({
-            ...state,
-            ...createHistory(res)
-          })
+          return createHistory(res)
         }
 
         if (config.filter && typeof config.filter === 'function') {
           if (!config.filter(action, res, state && state.present)) {
             debug('filter prevented action, not storing it')
             debugEnd()
-            return wrapState({
+            return {
               ...state,
               present: res
-            })
+            }
           }
         }
 
@@ -272,11 +251,7 @@ export default function undoable (reducer, rawConfig = {}) {
         const updatedHistory = insert(history, res, config.limit)
         debug('after insert', {history: updatedHistory, free: config.limit - length(updatedHistory)})
         debugEnd()
-
-        return wrapState({
-          ...state,
-          ...updatedHistory
-        })
+        return updatedHistory
     }
   }
 }
@@ -294,13 +269,6 @@ export function includeAction (rawActions) {
   return (action) => actions.indexOf(action.type) >= 0
 }
 // /includeAction
-
-// deprecated ifAction helper
-export function ifAction (rawActions) {
-  console.error('Deprecation Warning: Please change `ifAction` to `includeAction`')
-  return includeAction(rawActions)
-}
-// /ifAction
 
 // excludeAction helper
 export function excludeAction (rawActions = []) {

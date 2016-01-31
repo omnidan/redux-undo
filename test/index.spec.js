@@ -31,22 +31,17 @@ describe('Undoable', () => {
       }
     }
     mockUndoableReducer = undoable(countReducer, undoConfig)
+    // { past: [], present: 0, future: [] }
     mockInitialState = mockUndoableReducer(void 0, {})
+    // { past: [ 0 ], present: 1, future: [] }
     incrementedState = mockUndoableReducer(mockInitialState, { type: 'INCREMENT' })
-  })
-
-  it('should wrap its old history', () => {
-    let doubleIncrementedState = mockUndoableReducer(incrementedState, { type: 'INCREMENT' })
-
-    expect(incrementedState.history.history).to.deep.equal(mockInitialState.history)
-    expect(doubleIncrementedState.history.history).to.deep.equal(incrementedState.history)
   })
 
   it('should not record unwanted actions', () => {
     let decrementedState = mockUndoableReducer(mockInitialState, { type: 'DECREMENT' })
 
-    expect(decrementedState.history.past).to.deep.equal(mockInitialState.history.past)
-    expect(decrementedState.history.future).to.deep.equal(mockInitialState.history.future)
+    expect(decrementedState.past).to.deep.equal([])
+    expect(decrementedState.future).to.deep.equal([])
   })
   it('should reset upon init actions', () => {
     let doubleIncrementedState = mockUndoableReducer(incrementedState, { type: 'INCREMENT' })
@@ -79,7 +74,6 @@ describe('Undoable', () => {
     it('should do nothing if \'past\' is empty', () => {
       let undoInitialState = mockUndoableReducer(mockInitialState, ActionCreators.undo())
       expect(mockInitialState.past.length).to.equal(0)
-      expect(undoInitialState.history).to.deep.equal(mockInitialState)
       expect(undoInitialState.present).to.deep.equal(mockInitialState.present)
     })
   })
@@ -107,9 +101,7 @@ describe('Undoable', () => {
     })
     it('should do nothing if \'future\' is empty', () => {
       let secondRedoState = mockUndoableReducer(redoState, ActionCreators.redo())
-
       expect(redoState.future.length).to.equal(0)
-      expect(secondRedoState.history).to.deep.equal(redoState)
       expect(secondRedoState.present).to.deep.equal(redoState.present)
     })
   })
