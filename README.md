@@ -8,13 +8,19 @@ _simple undo/redo functionality for redux state containers_
 
 **Protip:** You can use the [redux-undo-boilerplate](https://github.com/omnidan/redux-undo-boilerplate) to quickly get started with `redux-undo`.
 
-**Note:** Make sure to update your programs to the [latest History API](#history-api).
+**Switching from 0.x to 1.0 (beta):** Make sure to update your programs to the [latest History API](#history-api).
 
 
 ## Installation
 
 ```
 npm install --save redux-undo
+```
+
+Or you can install the beta:
+
+```
+npm install --save redux-undo@beta
 ```
 
 
