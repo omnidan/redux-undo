@@ -1,4 +1,4 @@
 {
-  "stage": 0,
-  "loose": "all"
+  "presets": ["es2015"],
+  "plugins": ["transform-object-rest-spread"]
 }

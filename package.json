@@ -1,6 +1,6 @@
 {
   "name": "redux-undo",
-  "version": "1.0.0-beta1",
+  "version": "1.0.0-beta2",
   "description": "simple undo/redo functionality for redux state containers",
   "main": "lib/index.js",
   "scripts": {
@@ -31,9 +31,11 @@
   "homepage": "https://github.com/omnidan/redux-undo",
   "devDependencies": {
     "babel": "^6.3.26",
+    "babel-cli": "^6.4.5",
     "babel-core": "^6.4.5",
-    "babel-eslint": "^5.0.0-beta8",
-    "babel-loader": "^6.2.1",
+    "babel-eslint": "^4.1.6",
+    "babel-plugin-transform-object-rest-spread": "^6.3.13",
+    "babel-preset-es2015": "^6.3.13",
     "chai": "^3.5.0",
     "eslint": "^1.10",
     "eslint-config-standard": "^4.4.0",
