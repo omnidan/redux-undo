@@ -21,6 +21,11 @@ describe('Undoable', () => {
     let undoConfig = {
       limit: 100,
       initTypes: 'RE-INITIALIZE',
+      initialHistory: {
+        past: [0, 1, 2, 3],
+        present: 4,
+        future: [5, 6, 7]
+      },
       filter: function (action) {
         switch (action.type) {
           case 'DECREMENT':
@@ -31,17 +36,15 @@ describe('Undoable', () => {
       }
     }
     mockUndoableReducer = undoable(countReducer, undoConfig)
-    // { past: [], present: 0, future: [] }
     mockInitialState = mockUndoableReducer(void 0, {})
-    // { past: [ 0 ], present: 1, future: [] }
     incrementedState = mockUndoableReducer(mockInitialState, { type: 'INCREMENT' })
   })
 
   it('should not record unwanted actions', () => {
     let decrementedState = mockUndoableReducer(mockInitialState, { type: 'DECREMENT' })
 
-    expect(decrementedState.past).to.deep.equal([])
-    expect(decrementedState.future).to.deep.equal([])
+    expect(decrementedState.past).to.deep.equal(mockInitialState.past)
+    expect(decrementedState.future).to.deep.equal(mockInitialState.future)
   })
   it('should reset upon init actions', () => {
     let doubleIncrementedState = mockUndoableReducer(incrementedState, { type: 'INCREMENT' })
@@ -59,8 +62,8 @@ describe('Undoable', () => {
     it('should change present state back by one action', () => {
       expect(undoState.present).to.equal(mockInitialState.present)
     })
-    it('should change present state to first element of \'past\'', () => {
-      expect(undoState.present).to.equal(incrementedState.past[0])
+    it('should change present state to last element of \'past\'', () => {
+      expect(undoState.present).to.equal(incrementedState.past[incrementedState.past.length - 1])
     })
     it('should add a new element to \'future\' from last state', () => {
       expect(undoState.future[0]).to.equal(incrementedState.present)
@@ -73,8 +76,9 @@ describe('Undoable', () => {
     })
     it('should do nothing if \'past\' is empty', () => {
       let undoInitialState = mockUndoableReducer(mockInitialState, ActionCreators.undo())
-      expect(mockInitialState.past.length).to.equal(0)
-      expect(undoInitialState.present).to.deep.equal(mockInitialState.present)
+      if (!mockInitialState.past.length) {
+        expect(undoInitialState.present).to.deep.equal(mockInitialState.present)
+      }
     })
   })
   describe('Redo', () => {
@@ -91,7 +95,7 @@ describe('Undoable', () => {
       expect(redoState.present).to.equal(undoState.future[0])
     })
     it('should add a new element to \'past\' from last state', () => {
-      expect(redoState.past[0]).to.equal(undoState.present)
+      expect(redoState.past[redoState.past.length - 1]).to.equal(undoState.present)
     })
     it('should decrease length of \'future\' by one', () => {
       expect(redoState.future.length).to.equal(undoState.future.length - 1)
@@ -101,8 +105,9 @@ describe('Undoable', () => {
     })
     it('should do nothing if \'future\' is empty', () => {
       let secondRedoState = mockUndoableReducer(redoState, ActionCreators.redo())
-      expect(redoState.future.length).to.equal(0)
-      expect(secondRedoState.present).to.deep.equal(redoState.present)
+      if (!redoState.future.length) {
+        expect(secondRedoState.present).to.deep.equal(redoState.present)
+      }
     })
   })
 })
