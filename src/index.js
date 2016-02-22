@@ -205,7 +205,7 @@ export default function undoable (reducer, rawConfig = {}) {
     initialState: rawConfig.initialState,
     initTypes: parseActions(rawConfig.initTypes, ['@@redux/INIT', '@@INIT']),
     limit: rawConfig.limit,
-    filter: rawConfig.filter || () => true,
+    filter: rawConfig.filter || (() => true),
     undoType: rawConfig.undoType || ActionTypes.UNDO,
     redoType: rawConfig.redoType || ActionTypes.REDO,
     jumpToPastType: rawConfig.jumpToPastType || ActionTypes.JUMP_TO_PAST,
