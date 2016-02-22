@@ -120,10 +120,10 @@ undoable(reducer, {
 
   undoType: ActionTypes.UNDO, // define a custom action type for this undo action
   redoType: ActionTypes.REDO, // define a custom action type for this redo action
-  
+
   jumpToPastType: ActionTypes.JUMP_TO_PAST, // define custom action type for this jumpToPast action
   jumpToFutureType: ActionTypes.JUMP_TO_FUTURE, // define custom action type for this jumpToFuture action
-  
+
   initialState: undefined, // initial state (e.g. for loading)
   initTypes: ['@@redux/INIT', '@@INIT'] // history will be (re)set upon init action type
   initialHistory: { // initial history (e.g. for loading)
@@ -135,6 +135,9 @@ undoable(reducer, {
   debug: false, // set to `true` to turn on debugging
 })
 ```
+
+**Note:** If you want to use just the `initTypes` functionality, but not import
+the whole redux-undo library, use [redux-recycle](https://github.com/omnidan/redux-recycle)!
 
 ### Filtering Actions
 
@@ -180,6 +183,33 @@ undoable(reducer, { filter: distinctState() })
 ```js
 undoable(reducer, { filter: includeAction([SOME_ACTION, SOME_OTHER_ACTION]) })
 undoable(reducer, { filter: excludeAction([SOME_ACTION, SOME_OTHER_ACTION]) })
+```
+
+### Ignoring Actions
+
+When implementing a filter function, it only prevents the old state from being
+stored in the history. **`filter` does not prevent the present state from being
+updated.**
+
+If you want to ignore an action completely, as in, not even update the present
+state, you can make use of [redux-ignore](https://github.com/omnidan/redux-ignore).
+
+It can be used like this:
+
+```js
+import { ignoreActions } from 'redux-ignore'
+
+ignoreActions(
+  undoable(reducer),
+  [IGNORED_ACTION, ANOTHER_IGNORED_ACTION]
+)
+
+// or define your own function:
+
+ignoreActions(
+  undoable(reducer),
+  (action) => action.type === SOME_ACTION // only add to history if action is SOME_ACTION
+)
 ```
 
 
