@@ -32,7 +32,8 @@ export const ActionTypes = {
   UNDO: '@@redux-undo/UNDO',
   REDO: '@@redux-undo/REDO',
   JUMP_TO_FUTURE: '@@redux-undo/JUMP_TO_FUTURE',
-  JUMP_TO_PAST: '@@redux-undo/JUMP_TO_PAST'
+  JUMP_TO_PAST: '@@redux-undo/JUMP_TO_PAST',
+  INITIALIZE_STATE: '@@redux-undo/INITIALIZE_STATE'
 }
 // /action types
 
@@ -49,6 +50,9 @@ export const ActionCreators = {
   },
   jumpToPast (index) {
     return { type: ActionTypes.JUMP_TO_PAST, index }
+  },
+  initializeState () {
+    return { type: ActionTypes.INITIALIZE_STATE }
   }
 }
 // /action creators
@@ -158,6 +162,16 @@ function jumpToPast (history, index) {
 }
 // /jumpToPast
 
+// initializeState: initialize state
+function initializeState (state) {
+  return {
+    future: state.future,
+    present: state.present,
+    past: state.past
+  }
+}
+// /initializeState
+
 // createHistory
 function createHistory (state) {
   return {
@@ -191,7 +205,8 @@ export default function undoable (reducer, rawConfig = {}) {
     undoType: rawConfig.undoType || ActionTypes.UNDO,
     redoType: rawConfig.redoType || ActionTypes.REDO,
     jumpToPastType: rawConfig.jumpToPastType || ActionTypes.JUMP_TO_PAST,
-    jumpToFutureType: rawConfig.jumpToFutureType || ActionTypes.JUMP_TO_FUTURE
+    jumpToFutureType: rawConfig.jumpToFutureType || ActionTypes.JUMP_TO_FUTURE,
+    initializeState: rawConfig.initializeState || ActionTypes.INITIALIZE_STATE
   }
   config.history = rawConfig.initialHistory || createHistory(config.initialState)
 
@@ -224,6 +239,12 @@ export default function undoable (reducer, rawConfig = {}) {
       case config.jumpToFutureType:
         res = jumpToFuture(state, action.index)
         debug('after jumpToFuture', res)
+        debugEnd()
+        return res
+
+      case config.initializeState:
+        res = initializeState(config.history)
+        debug('after initializeState', res)
         debugEnd()
         return res
 
