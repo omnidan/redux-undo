@@ -104,6 +104,8 @@ store.dispatch(ActionCreators.redo()) // redo the last action
 
 store.dispatch(ActionCreators.jumpToPast(index)) // jump to requested index in the past[] array
 store.dispatch(ActionCreators.jumpToFuture(index)) // jump to requested index in the future[] array
+
+store.dispatch(ActionCreators.clearHistory()) // Remove all items from past[] and future[] arrays
 ```
 
 
@@ -123,6 +125,8 @@ undoable(reducer, {
 
   jumpToPastType: ActionTypes.JUMP_TO_PAST, // define custom action type for this jumpToPast action
   jumpToFutureType: ActionTypes.JUMP_TO_FUTURE, // define custom action type for this jumpToFuture action
+
+  clearHistoryType: ActionTypes.CLEAR_HISTORY, // define custom action type for this clearHistory action
 
   initialState: undefined, // initial state (e.g. for loading)
   initTypes: ['@@redux/INIT', '@@INIT'] // history will be (re)set upon init action type
