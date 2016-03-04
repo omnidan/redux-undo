@@ -1,5 +1,7 @@
 # redux undo/redo
 
+[![Join the chat at https://gitter.im/omnidan/redux-undo](https://badges.gitter.im/omnidan/redux-undo.svg)](https://gitter.im/omnidan/redux-undo?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![NPM version (>=0.4)](https://img.shields.io/npm/v/redux-undo.svg?style=flat-square)](https://www.npmjs.com/package/redux-undo) [![NPM Downloads](https://img.shields.io/npm/dm/redux-undo.svg?style=flat-square)](https://www.npmjs.com/package/redux-undo) [![Build Status](https://img.shields.io/travis/omnidan/redux-undo/master.svg?style=flat-square)](https://travis-ci.org/omnidan/redux-undo) [![Dependencies](https://img.shields.io/david/omnidan/redux-undo.svg?style=flat-square)](https://david-dm.org/omnidan/redux-undo) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](http://standardjs.com/) [![https://paypal.me/DanielBugl/10](https://img.shields.io/badge/donate-paypal-yellow.svg?style=flat-square)](https://paypal.me/DanielBugl/10) [![https://gratipay.com/~omnidan/](https://img.shields.io/badge/donate-gratipay/bitcoin-yellow.svg?style=flat-square)](https://gratipay.com/~omnidan/)
 
 _simple undo/redo functionality for redux state containers_
