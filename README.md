@@ -1,6 +1,6 @@
 # redux undo/redo
 
-[![NPM version (>=0.4)](https://img.shields.io/npm/v/redux-undo.svg?style=flat-square)](https://www.npmjs.com/package/redux-undo) [![NPM Downloads](https://img.shields.io/npm/dm/redux-undo.svg?style=flat-square)](https://www.npmjs.com/package/redux-undo) [![Build Status](https://img.shields.io/travis/omnidan/redux-undo/master.svg?style=flat-square)](https://travis-ci.org/omnidan/redux-undo) [![Dependencies](https://img.shields.io/david/omnidan/redux-undo.svg?style=flat-square)](https://david-dm.org/omnidan/redux-undo) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](http://standardjs.com/) [![https://paypal.me/DanielBugl/10](https://img.shields.io/badge/donate-paypal-yellow.svg?style=flat-square)](https://paypal.me/DanielBugl/10) [![https://gratipay.com/~omnidan/](https://img.shields.io/badge/donate-gratipay/bitcoin-yellow.svg?style=flat-square)](https://gratipay.com/~omnidan/)
+[![NPM version (>=0.4)](https://img.shields.io/npm/v/redux-undo.svg?style=flat-square)](https://www.npmjs.com/package/redux-undo) [![NPM Downloads](https://img.shields.io/npm/dm/redux-undo.svg?style=flat-square)](https://www.npmjs.com/package/redux-undo) [![Build Status](https://img.shields.io/travis/omnidan/redux-undo/master.svg?style=flat-square)](https://travis-ci.org/omnidan/redux-undo) [![Dependencies](https://img.shields.io/david/omnidan/redux-undo.svg?style=flat-square)](https://david-dm.org/omnidan/redux-undo) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](http://standardjs.com/) [![https://paypal.me/DanielBugl/10](https://img.shields.io/badge/donate-paypal-yellow.svg?style=flat-square)](https://paypal.me/DanielBugl/10) [![https://gratipay.com/~omnidan/](https://img.shields.io/badge/donate-gratipay/bitcoin-yellow.svg?style=flat-square)](https://gratipay.com/~omnidan/) [![https://gitter.im/omnidan/redux-undo](https://img.shields.io/gitter/room/omnidan/redux-undo.svg?style=flat-square)](https://gitter.im/omnidan/redux-undo)
 
 _simple undo/redo functionality for redux state containers_
 
@@ -220,6 +220,11 @@ ignoreActions(
 ## What is this magic? How does it work?
 
 Have a read of the [Implementing Undo History recipe](http://redux.js.org/docs/recipes/ImplementingUndoHistory.html) in the Redux documents, which explains in detail how redux-undo works.
+
+
+## Gitter Chat / Support
+
+If you have a question or just want to discuss something with other redux-undo users/maintainers, [chat with the community on gitter.im/omnidan/redux-undo](https://gitter.im/omnidan/redux-undo)
 
 
 ## License
