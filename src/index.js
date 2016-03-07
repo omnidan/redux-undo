@@ -191,7 +191,7 @@ export default function undoable (reducer, rawConfig = {}) {
 
   const config = {
     initialState: rawConfig.initialState,
-    initTypes: parseActions(rawConfig.initTypes, ['@@redux/INIT', '@@INIT']),
+    initTypes: parseActions(rawConfig.initTypes, ['@@redux-undo/INIT']),
     limit: rawConfig.limit,
     filter: rawConfig.filter || (() => true),
     undoType: rawConfig.undoType || ActionTypes.UNDO,
@@ -211,6 +211,7 @@ export default function undoable (reducer, rawConfig = {}) {
     let res
     switch (action.type) {
       case undefined:
+      case '@@redux/INIT':
         return state
 
       case config.undoType:
