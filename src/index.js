@@ -73,15 +73,6 @@ function insert (history, state, limit) {
   const { past, present } = history
   const historyOverflow = limit && length(history) >= limit
 
-  if (present === undefined) {
-    // init history
-    return {
-      past: [],
-      present: state,
-      future: []
-    }
-  }
-
   return {
     past: [
       ...past.slice(historyOverflow ? 1 : 0),
@@ -134,6 +125,7 @@ function redo (history) {
 // jumpToFuture: jump to requested index in future history
 function jumpToFuture (history, index) {
   if (index === 0) return redo(history)
+  if (index < 0 || index >= history.future.length) return history
 
   const { past, present, future } = history
 
@@ -149,6 +141,7 @@ function jumpToFuture (history, index) {
 // jumpToPast: jump to requested index in past history
 function jumpToPast (history, index) {
   if (index === history.past.length - 1) return undo(history)
+  if (index < 0 || index >= history.past.length) return history
 
   const { past, present, future } = history
 
@@ -189,7 +182,7 @@ export default function undoable (reducer, rawConfig = {}) {
 
   const config = {
     initialState: rawConfig.initialState,
-    initTypes: parseActions(rawConfig.initTypes, ['@@redux/INIT', '@@INIT']),
+    initTypes: parseActions(rawConfig.initTypes, ['@@redux-undo/INIT']),
     limit: rawConfig.limit,
     filter: rawConfig.filter || (() => true),
     undoType: rawConfig.undoType || ActionTypes.UNDO,
@@ -198,16 +191,15 @@ export default function undoable (reducer, rawConfig = {}) {
     jumpToFutureType: rawConfig.jumpToFutureType || ActionTypes.JUMP_TO_FUTURE,
     clearHistoryType: rawConfig.clearHistoryType || ActionTypes.CLEAR_HISTORY
   }
-  config.history = rawConfig.initialHistory || createHistory(config.initialState)
+  config.history = rawConfig.initialHistory || createHistory(config.initialState || reducer(undefined, {}))
 
-  if (config.initTypes.length === 0) {
-    console.warn('redux-undo: supply at least one action type in initTypes to ensure initial state')
-  }
-
-  return (state, action) => {
+  return (state = config.history, action = {}) => {
     debugStart(action, state)
     let res
     switch (action.type) {
+      case undefined:
+        return state
+
       case config.undoType:
         res = undo(state)
         debug('after undo', res)
@@ -244,7 +236,7 @@ export default function undoable (reducer, rawConfig = {}) {
         if (config.initTypes.some((actionType) => actionType === action.type)) {
           debug('reset history due to init action')
           debugEnd()
-          return createHistory(res)
+          return config.history
         }
 
         if (config.filter && typeof config.filter === 'function') {
@@ -258,8 +250,10 @@ export default function undoable (reducer, rawConfig = {}) {
           }
         }
 
-        const history = (state && state.present !== undefined) ? state : config.history
-        const updatedHistory = insert(history, res, config.limit)
+        const updatedHistory = (state.present === res)
+          ? state
+          : insert(state, res, config.limit)
+
         debug('after insert', {history: updatedHistory, free: config.limit - length(updatedHistory)})
         debugEnd()
         return updatedHistory
