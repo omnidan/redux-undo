@@ -285,6 +285,15 @@ function runTestWithConfig (testConfig, label) {
         const store = Redux.createStore(mockUndoableReducer, rehydratingState)
         expect(store.getState()).to.deep.equal(rehydratingState)
       })
+      it('should accept the initialState from `createStore` without a history', () => {
+        const reHydratingState = {'a': 'b', 'c': [1, 2, 3], 'e': {'foo': 'bbb'}}
+        const store = Redux.createStore(mockUndoableReducer, reHydratingState)
+        expect(store.getState()).to.deep.equal({
+          past: [],
+          present: {'a': 'b', 'c': [1, 2, 3], 'e': {'foo': 'bbb'}},
+          future: []
+        })
+      })
     })
   })
 }

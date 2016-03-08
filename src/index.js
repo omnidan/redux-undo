@@ -250,11 +250,19 @@ export default function undoable (reducer, rawConfig = {}) {
           }
         }
 
-        const updatedHistory = (state.present === res)
-          ? state
-          : insert(state, res, config.limit)
+        let updatedHistory
+        if (typeof state.present === 'undefined') {
+          updatedHistory = createHistory(state)
+          debug('create history on init')
+        } else if (state.present === res) {
+          updatedHistory = state
+          debug('not inserted, state is unchanged')
+        } else {
+          updatedHistory = insert(state, res, config.limit)
+          debug('inserted new state into history')
+        }
 
-        debug('after insert', {history: updatedHistory, free: config.limit - length(updatedHistory)})
+        debug('history: ', updatedHistory, ' free: ', config.limit - length(updatedHistory))
         debugEnd()
         return updatedHistory
     }
