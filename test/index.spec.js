@@ -36,7 +36,7 @@ const testConfigFour = {
   initialState: null,
   initialHistory: {
     past: [5, {}, 3, null, 1],
-    present: undefined,
+    present: Math.pow(2, 32),
     future: []
   }
 }

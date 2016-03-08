@@ -198,7 +198,6 @@ export default function undoable (reducer, rawConfig = {}) {
     let res
     switch (action.type) {
       case undefined:
-      case '@@redux/INIT':
         return state
 
       case config.undoType:
@@ -251,7 +250,10 @@ export default function undoable (reducer, rawConfig = {}) {
           }
         }
 
-        const updatedHistory = insert(state, res, config.limit)
+        const updatedHistory = (state.present === res)
+          ? state
+          : insert(state, res, config.limit)
+
         debug('after insert', {history: updatedHistory, free: config.limit - length(updatedHistory)})
         debugEnd()
         return updatedHistory
