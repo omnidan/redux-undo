@@ -73,15 +73,6 @@ function insert (history, state, limit) {
   const { past, present } = history
   const historyOverflow = limit && length(history) >= limit
 
-  if (present === undefined) {
-    // init history
-    return {
-      past: [],
-      present: state,
-      future: []
-    }
-  }
-
   return {
     past: [
       ...past.slice(historyOverflow ? 1 : 0),
@@ -201,10 +192,6 @@ export default function undoable (reducer, rawConfig = {}) {
     clearHistoryType: rawConfig.clearHistoryType || ActionTypes.CLEAR_HISTORY
   }
   config.history = rawConfig.initialHistory || createHistory(config.initialState || reducer(undefined, {}))
-
-  if (config.initTypes.length === 0) {
-    console.warn('redux-undo: supply at least one action type in initTypes to ensure initial state')
-  }
 
   return (state = config.history, action = {}) => {
     debugStart(action, state)
