@@ -54,6 +54,7 @@ function runTestWithConfig (testConfig, label) {
     let mockUndoableReducer
     let mockInitialState
     let incrementedState
+    let doubleIncrementedState
     let countReducer
 
     before('setup mock reducers and states', () => {
@@ -71,9 +72,11 @@ function runTestWithConfig (testConfig, label) {
       mockUndoableReducer = undoable(countReducer, testConfig)
       mockInitialState = mockUndoableReducer(undefined, {})
       incrementedState = mockUndoableReducer(mockInitialState, { type: 'INCREMENT' })
+      doubleIncrementedState = mockUndoableReducer(incrementedState, { type: 'INCREMENT' })
       console.info('  Beginning Test! Good luck!')
       console.info('    mockInitialState:', mockInitialState)
       console.info('    incrementedState:', incrementedState)
+      console.info('    doubleIncrementedState:', doubleIncrementedState)
       console.info('')
     })
 
@@ -248,6 +251,38 @@ function runTestWithConfig (testConfig, label) {
         if (mockInitialState.future.length > jumpToFutureIndex) {
           expect(jumpToFutureState.future.length).to.be.below(mockInitialState.future.length)
         }
+      })
+    })
+    describe('Jump', () => {
+      const jumpStepsToPast = -2
+      const jumpStepsToFuture = 2
+      let jumpToPastState
+      let jumpToFutureState
+      let doubleUndoState
+      let doubleRedoState
+      before('perform a jump action', () => {
+        jumpToPastState = mockUndoableReducer(doubleIncrementedState, ActionCreators.jump(jumpStepsToPast))
+        jumpToFutureState = mockUndoableReducer(mockInitialState, ActionCreators.jump(jumpStepsToFuture))
+        doubleUndoState = mockUndoableReducer(doubleIncrementedState, ActionCreators.undo())
+        doubleUndoState = mockUndoableReducer(doubleUndoState, ActionCreators.undo())
+        doubleRedoState = mockUndoableReducer(mockInitialState, ActionCreators.redo())
+        doubleRedoState = mockUndoableReducer(doubleRedoState, ActionCreators.redo())
+      })
+      it('-2 steps should result in same state as two times undo', () => {
+        expect(doubleUndoState).to.deep.equal(jumpToPastState)
+      })
+      it('+2 steps should result in same state as two times redo', () => {
+        expect(doubleRedoState).to.deep.equal(jumpToFutureState)
+      })
+      it('should do nothing if steps is 0', () => {
+        let jumpToCurrentState = mockUndoableReducer(mockInitialState, ActionCreators.jump(0))
+        expect(jumpToCurrentState).to.deep.equal(mockInitialState)
+      })
+      it('should do nothing if steps is out of bounds', () => {
+        let jumpToOutOfBounds = mockUndoableReducer(mockInitialState, ActionCreators.jump(10))
+        expect(jumpToOutOfBounds).to.deep.equal(mockInitialState)
+        jumpToOutOfBounds = mockUndoableReducer(mockInitialState, ActionCreators.jump(-10))
+        expect(jumpToOutOfBounds).to.deep.equal(mockInitialState)
       })
     })
     describe('Clear History', () => {
