@@ -102,6 +102,9 @@ perform undo/redo operations on your state:
 store.dispatch(ActionCreators.undo()) // undo the last action
 store.dispatch(ActionCreators.redo()) // redo the last action
 
+store.dispatch(ActionCreators.jump(-2)) // undo 2 steps
+store.dispatch(ActionCreators.jump(5)) // redo 5 steps
+
 store.dispatch(ActionCreators.jumpToPast(index)) // jump to requested index in the past[] array
 store.dispatch(ActionCreators.jumpToFuture(index)) // jump to requested index in the future[] array
 
@@ -122,6 +125,8 @@ undoable(reducer, {
 
   undoType: ActionTypes.UNDO, // define a custom action type for this undo action
   redoType: ActionTypes.REDO, // define a custom action type for this redo action
+
+  jumpType: ActionTypes.JUMP, // define custom action type for this jump action
 
   jumpToPastType: ActionTypes.JUMP_TO_PAST, // define custom action type for this jumpToPast action
   jumpToFutureType: ActionTypes.JUMP_TO_FUTURE, // define custom action type for this jumpToFuture action
