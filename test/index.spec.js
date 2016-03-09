@@ -1,5 +1,6 @@
-let { expect } = require('chai')
-let { default: undoable, ActionCreators, excludeAction } = require('../src/index')
+const { expect } = require('chai')
+const { default: undoable, ActionCreators, excludeAction } = require('../src/index')
+const Redux = require('redux')
 
 const excludedActionsOne = ['DECREMENT']
 const testConfigOne = {
@@ -35,7 +36,7 @@ const testConfigFour = {
   initialState: null,
   initialHistory: {
     past: [5, {}, 3, null, 1],
-    present: undefined,
+    present: Math.pow(2, 32),
     future: []
   }
 }
@@ -110,7 +111,7 @@ function runTestWithConfig (testConfig, label) {
           return
         }
       } else {
-        reInitializedState = mockUndoableReducer(incrementedState, { type: '@@INIT' })
+        reInitializedState = mockUndoableReducer(incrementedState, { type: '@@redux-undo/INIT' })
       }
 
       if (testConfig.initialHistory) {
@@ -262,6 +263,27 @@ function runTestWithConfig (testConfig, label) {
       })
       it('should preserve the present value', () => {
         expect(clearedState.present).to.equal(incrementedState.present)
+      })
+    })
+    describe('Relation to Redux', () => {
+      it('should be able to create a store', () => {
+        const store = Redux.createStore(mockUndoableReducer)
+        if (testConfig.initialHistory) {
+          expect(store.getState()).to.deep.equal(testConfig.initialHistory)
+        } else if (testConfig.initialState !== undefined) {
+          expect(store.getState().present).to.deep.equal(testConfig.initialState)
+        } else {
+          expect(store.getState()).to.deep.equal(mockUndoableReducer(undefined, {}))
+        }
+      })
+      it('should accept the initialState from `createStore`', () => {
+        const rehydratingState = {
+          past: ['a', 'b', 'c'],
+          present: 'd',
+          future: ['e', 'f']
+        }
+        const store = Redux.createStore(mockUndoableReducer, rehydratingState)
+        expect(store.getState()).to.deep.equal(rehydratingState)
       })
     })
   })
