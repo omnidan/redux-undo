@@ -134,7 +134,7 @@ undoable(reducer, {
   clearHistoryType: ActionTypes.CLEAR_HISTORY, // define custom action type for this clearHistory action
 
   initialState: undefined, // initial state (e.g. for loading)
-  initTypes: ['@@redux/INIT', '@@INIT'] // history will be (re)set upon init action type
+  initTypes: ['@@redux-undo/INIT'] // history will be (re)set upon init action type
   initialHistory: { // initial history (e.g. for loading)
     past: [],
     present: config.initialState,
