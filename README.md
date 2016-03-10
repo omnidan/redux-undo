@@ -148,6 +148,24 @@ undoable(reducer, {
 **Note:** If you want to use just the `initTypes` functionality, but not import
 the whole redux-undo library, use [redux-recycle](https://github.com/omnidan/redux-recycle)!
 
+#### Initial State and History
+
+It's possible to provide an `initialState` or `initialHistory` but redux-undo also works with an initial state on our existing redux store. This way you don't have to pass an initialHistory in your undable config if you're already setting some initial state on your store:
+
+```js
+
+import { createStore } from 'redux';
+
+const initialStoreState = {
+  past: [0, 1, 2, 3],
+  present: 4,
+  future: [5, 6, 7]
+}
+
+const store = createStore(undoable(counter), initialStoreState);
+
+```
+
 ### Filtering Actions
 
 If you don't want to include every action in the undo/redo history, you can
