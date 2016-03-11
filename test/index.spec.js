@@ -1,13 +1,19 @@
-const { expect } = require('chai')
-const { default: undoable, ActionCreators, excludeAction, isHistory } = require('../src/index')
-const Redux = require('redux')
+import { expect } from 'chai'
+import { createStore } from 'redux'
+import undoable, { ActionCreators, excludeAction, includeAction, isHistory } from '../src/index'
 
-const excludedActionsOne = ['DECREMENT']
+const decrementActions = ['DECREMENT']
+
+const testConfigZero = {
+  FOR_TEST_ONLY_includeAction: decrementActions,
+  filter: includeAction(decrementActions)
+}
+
 const testConfigOne = {
   limit: 100,
   initTypes: 'RE-INITIALIZE',
-  FOR_TEST_ONLY_excludedActions: excludedActionsOne,
-  filter: excludeAction(excludedActionsOne)
+  FOR_TEST_ONLY_excludedActions: decrementActions,
+  filter: excludeAction(decrementActions)
 }
 const initialStateOne = {
   past: [0, 1, 2, 3],
@@ -39,6 +45,7 @@ runTestWithConfig({}, undefined, 'Default config')
 runTestWithConfig({ initTypes: [] }, undefined, 'No Init types')
 runTestWithConfig({ limit: 200 }, 100, 'Initial State equals 100')
 runTestWithConfig({}, {'present': 0}, 'Initial State that looks like a history')
+runTestWithConfig(testConfigZero, undefined, 'Filter (Include Actions)')
 runTestWithConfig(testConfigOne, initialStateOne, 'Initial History and Filter (Exclude Actions)')
 runTestWithConfig(testConfigTwo, initialStateTwo, 'Initial State and Init types')
 runTestWithConfig(testConfigThree, initialStateThree, 'Erroneous configuration')
@@ -69,7 +76,7 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
 
       // testConfig.debug = true;
       mockUndoableReducer = undoable(countReducer, testConfig)
-      store = Redux.createStore(mockUndoableReducer, initialStoreState)
+      store = createStore(mockUndoableReducer, initialStoreState)
 
       mockInitialState = mockUndoableReducer(undefined, {})
       incrementedState = mockUndoableReducer(mockInitialState, { type: 'INCREMENT' })
@@ -111,10 +118,20 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
 
     describe('Check non redux-undo actions', () => {
       it('should not record unwanted actions', () => {
-        if (testConfig.FOR_TEST_ONLY_excludedActions && testConfig.FOR_TEST_ONLY_excludedActions[0]) {
+        if (testConfig.FOR_TEST_ONLY_excludedActions) {
+          // don't record this action in history
           let decrementedState = mockUndoableReducer(mockInitialState, { type: testConfig.FOR_TEST_ONLY_excludedActions[0] })
           expect(decrementedState.past).to.deep.equal(mockInitialState.past)
           expect(decrementedState.future).to.deep.equal(mockInitialState.future)
+        }
+
+        if (testConfig.FOR_TEST_ONLY_includeAction) {
+          // only record this action in history
+          let tmpState = mockUndoableReducer(mockInitialState, { type: testConfig.FOR_TEST_ONLY_includeAction[0] })
+          let expected = { ...tmpState, present: tmpState.present + 1 }
+          // and not this one...
+          tmpState = mockUndoableReducer(tmpState, { type: 'INCREMENT' })
+          expect(tmpState).to.deep.equal(expected)
         }
       })
 
@@ -290,6 +307,14 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
       it('should decrease the length of future if successful', () => {
         if (mockInitialState.future.length > jumpToFutureIndex) {
           expect(jumpToFutureState.future.length).to.be.below(mockInitialState.future.length)
+        }
+      })
+
+      it('should do a redo if index = 0', () => {
+        if (mockInitialState.future.length > 0) {
+          jumpToFutureState = mockUndoableReducer(mockInitialState, ActionCreators.jumpToFuture(0))
+          const redoState = mockUndoableReducer(mockInitialState, ActionCreators.redo())
+          expect(redoState).to.deep.equal(jumpToFutureState)
         }
       })
     })
