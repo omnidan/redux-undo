@@ -8,7 +8,8 @@
     "compile": "./node_modules/.bin/babel src --out-dir lib",
     "lint": "./node_modules/.bin/eslint src test",
     "test": "NODE_ENV=test ./node_modules/.bin/mocha --compilers js:babel-core/register --recursive",
-    "test:watch": "NODE_ENV=test ./node_modules/.bin/mocha --compilers js:babel-core/register --recursive --watch",
+    "test:watch": "npm run test -- --watch",
+    "test:bail": "npm run test:watch -- --bail",
     "test:cov": "./node_modules/.bin/babel-node ./node_modules/.bin/isparta cover ./node_modules/.bin/_mocha -- --recursive",
     "prepublish": "npm run lint && npm run test && npm run clean && npm run compile"
   },
