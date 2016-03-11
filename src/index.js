@@ -207,9 +207,11 @@ export default function undoable (reducer, rawConfig = {}) {
   return (state, action = {}) => {
     debugStart(action, state)
 
+    let justCreatedHistory = false
     let history
     if (!config.history) {
       debug('create history on init')
+      justCreatedHistory = true
 
       if (state === undefined) {
         config.history = createHistory(reducer(state, {}))
@@ -289,11 +291,12 @@ export default function undoable (reducer, rawConfig = {}) {
           }
         }
 
-        if (history.present !== res) {
+        // Don't add entry to history if it was just created
+        if ((justCreatedHistory && history.present === res) || action.type === '@@redux-undo/INIT') {
+          debug('not inserted, history was just created or action === redux-undo/INIT')
+        } else {
           history = insert(history, res, config.limit)
           debug('inserted new state into history')
-        } else {
-          debug('not inserted, history is unchanged')
         }
 
         debug('history: ', history, ' free: ', config.limit - length(history))

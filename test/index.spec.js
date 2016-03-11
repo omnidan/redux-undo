@@ -1,5 +1,5 @@
 const { expect } = require('chai')
-const { default: undoable, ActionCreators, excludeAction, isHistory } = require('../src/index')
+const { default: undoable, ActionCreators, excludeAction, distinctState, isHistory } = require('../src/index')
 const Redux = require('redux')
 
 const excludedActionsOne = ['DECREMENT']
@@ -27,6 +27,8 @@ const initialStateTwo = {
 
 const testConfigThree = {
   limit: -1,
+  filter: distinctState(),
+  FOR_TEST_ONLY_distinctState: true,
   initTypes: []
 }
 const initialStateThree = {
@@ -50,7 +52,6 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
     let mockUndoableReducer
     let mockInitialState
     let incrementedState
-    let doubleIncrementedState
     let countReducer
     let store
 
@@ -62,6 +63,8 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
             return state + 1
           case 'DECREMENT':
             return state - 1
+          case 'DUMMY':
+            return state
           default:
             return state
         }
@@ -73,13 +76,11 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
 
       mockInitialState = mockUndoableReducer(undefined, {})
       incrementedState = mockUndoableReducer(mockInitialState, { type: 'INCREMENT' })
-      doubleIncrementedState = mockUndoableReducer(incrementedState, { type: 'INCREMENT' })
       console.info('  Beginning Test! Good luck!')
       console.info('    initialStoreState:     ', initialStoreState)
       console.info('    store.getState():      ', store.getState())
       console.info('    mockInitialState:      ', mockInitialState)
       console.info('    incrementedState:      ', incrementedState)
-      console.info('    doubleIncrementedState:', doubleIncrementedState)
       console.info('')
 
       expect(store.getState()).to.deep.equal(mockInitialState, 'mockInitialState should be the same as our store\'s state')
@@ -115,6 +116,17 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
           let decrementedState = mockUndoableReducer(mockInitialState, { type: testConfig.FOR_TEST_ONLY_excludedActions[0] })
           expect(decrementedState.past).to.deep.equal(mockInitialState.past)
           expect(decrementedState.future).to.deep.equal(mockInitialState.future)
+        }
+      })
+
+      it('should record non state changing actions when filter is not set', () => {
+        let dummyState = mockUndoableReducer(incrementedState, { type: 'DUMMY' })
+        if (testConfig.FOR_TEST_ONLY_distinctState) {
+          expect(dummyState).to.deep.equal(incrementedState)
+        } else {
+          expect(dummyState.present).to.deep.equal(incrementedState.present)
+          expect(dummyState.past).to.deep.equal([...incrementedState.past, incrementedState.present])
+          expect(dummyState.future).to.deep.equal(incrementedState.future)
         }
       })
 
@@ -302,6 +314,7 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
       let doubleUndoState
       let doubleRedoState
       before('perform a jump action', () => {
+        let doubleIncrementedState = mockUndoableReducer(incrementedState, { type: 'INCREMENT' })
         jumpToPastState = mockUndoableReducer(doubleIncrementedState, ActionCreators.jump(jumpStepsToPast))
         jumpToFutureState = mockUndoableReducer(mockInitialState, ActionCreators.jump(jumpStepsToFuture))
         doubleUndoState = mockUndoableReducer(doubleIncrementedState, ActionCreators.undo())
