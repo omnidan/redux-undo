@@ -133,13 +133,7 @@ undoable(reducer, {
 
   clearHistoryType: ActionTypes.CLEAR_HISTORY, // define custom action type for this clearHistory action
 
-  initialState: undefined, // initial state (e.g. for loading)
   initTypes: ['@@redux-undo/INIT'] // history will be (re)set upon init action type
-  initialHistory: { // initial history (e.g. for loading)
-    past: [],
-    present: config.initialState,
-    future: []
-  },
 
   debug: false, // set to `true` to turn on debugging
 })
@@ -150,19 +144,36 @@ the whole redux-undo library, use [redux-recycle](https://github.com/omnidan/red
 
 #### Initial State and History
 
-It's possible to provide an `initialState` or `initialHistory` but redux-undo also works with an initial state on our existing redux store. This way you don't have to pass an initialHistory in your undable config if you're already setting some initial state on your store:
+You can use your redux store to set an initial history for your undoable reducers: 
 
 ```js
 
 import { createStore } from 'redux';
 
-const initialStoreState = {
+const initialHistory = {
   past: [0, 1, 2, 3],
   present: 4,
   future: [5, 6, 7]
 }
 
-const store = createStore(undoable(counter), initialStoreState);
+const store = createStore(undoable(counter), initialHistory);
+
+```
+
+Or just set the current state like you're used to with Redux. Redux-undo will create the history for you: 
+
+```js
+
+import { createStore } from 'redux';
+
+const store = createStore(undoable(counter), {foo: 'bar'});
+
+// will make the state look like this:
+{
+  past: [],
+  present: {foo: 'bar'},
+  future: []
+}
 
 ```
 
