@@ -279,7 +279,7 @@ export default function undoable (reducer, rawConfig = {}) {
         }
 
         if (config.filter && typeof config.filter === 'function') {
-          if (!config.filter(action, res, history && history.present)) {
+          if (!config.filter(action, res, history.present)) {
             debug('filter prevented action, not storing it')
             debugEnd()
             return {
