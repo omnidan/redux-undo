@@ -312,13 +312,32 @@ function runTestWithConfig (testConfig, label) {
         }
       })
       it('should accept the initialState from `createStore`', () => {
-        const rehydratingState = {
+        const reHydratingState = {
           past: ['a', 'b', 'c'],
           present: 'd',
           future: ['e', 'f']
         }
-        const store = Redux.createStore(mockUndoableReducer, rehydratingState)
-        expect(store.getState()).to.deep.equal(rehydratingState)
+        const store = Redux.createStore(mockUndoableReducer, reHydratingState)
+        expect(store.getState()).to.deep.equal(reHydratingState)
+      })
+      it('should accept the initialState from `createStore` without a history', () => {
+        const reHydratingState = {'a': 'b', 'c': [1, 2, 3], 'e': {'foo': 'bbb'}}
+        const store = Redux.createStore(mockUndoableReducer, reHydratingState)
+        expect(store.getState()).to.deep.equal({
+          past: [],
+          present: {'a': 'b', 'c': [1, 2, 3], 'e': {'foo': 'bbb'}},
+          future: []
+        })
+      })
+      it('should accept the initialState from `createStore` and should not fain on an initialState that looks like our history object', () => {
+        // previously failing case
+        const reHydratingState = {'present': 0}
+        const store = Redux.createStore(mockUndoableReducer, reHydratingState)
+        expect(store.getState()).to.deep.equal({
+          past: [],
+          present: {'present': 0},
+          future: []
+        })
       })
     })
   })

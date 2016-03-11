@@ -68,6 +68,16 @@ function length (history) {
 }
 // /length
 
+// isHistory: check for a valid history object
+function isHistory (history) {
+  return typeof history.present !== 'undefined' &&
+    typeof history.future !== 'undefined' &&
+    typeof history.past !== 'undefined' &&
+    Array.isArray(history.future) &&
+    Array.isArray(history.past)
+}
+// /isHistory
+
 // insert: insert `state` into history, which means adding the current state
 //         into `past`, setting the new `state` as `present` and erasing
 //         the `future`.
@@ -269,11 +279,19 @@ export default function undoable (reducer, rawConfig = {}) {
           }
         }
 
-        const updatedHistory = (state.present === res)
-          ? state
-          : insert(state, res, config.limit)
+        let updatedHistory
+        if (!isHistory(state)) {
+          updatedHistory = createHistory(state)
+          debug('create history on init')
+        } else if (state.present === res) {
+          updatedHistory = state
+          debug('not inserted, state is unchanged')
+        } else {
+          updatedHistory = insert(state, res, config.limit)
+          debug('inserted new state into history')
+        }
 
-        debug('after insert', {history: updatedHistory, free: config.limit - length(updatedHistory)})
+        debug('history: ', updatedHistory, ' free: ', config.limit - length(updatedHistory))
         debugEnd()
         return updatedHistory
     }
