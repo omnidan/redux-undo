@@ -320,6 +320,56 @@ function runTestWithConfig (testConfig, label) {
         const store = Redux.createStore(mockUndoableReducer, reHydratingState)
         expect(store.getState()).to.deep.equal(reHydratingState)
       })
+
+      it('should accept the initialState from `createStore` and should increment', () => {
+        const reHydratingState = {
+          past: [0, 1, 2],
+          present: 3,
+          future: [4, 5]
+        }
+        const store = Redux.createStore(mockUndoableReducer, reHydratingState)
+        store.dispatch({ type: 'INCREMENT' })
+        expect(store.getState()).to.deep.equal({
+          past: [0, 1, 2, 3],
+          present: 4,
+          future: []
+        })
+      })
+
+      it('should accept the initialState from `createStore` and reset upon init actions', () => {
+        const reHydratingState = {
+          past: [0, 1, 2],
+          present: 3,
+          future: [4, 5]
+        }
+        const incrementedHistory = {
+          past: [0, 1, 2, 3],
+          present: 4,
+          future: []
+        }
+        const store = Redux.createStore(mockUndoableReducer, reHydratingState)
+        expect(store.getState()).to.deep.equal(reHydratingState)
+
+        store.dispatch({ type: 'INCREMENT' })
+
+        // This will also fail in some cases, see previous test
+         expect(store.getState()).to.deep.equal(incrementedHistory)
+
+        if (testConfig.initTypes) {
+          if (testConfig.initTypes.length) {
+            store.dispatch({ type: testConfig.initTypes[0] })
+            expect(store.getState()).to.deep.equal(reHydratingState)
+          } else {
+            // No init actions exist, init should have no effect
+            store.dispatch({ type: '@@redux-undo/INIT' })
+            expect(store.getState()).to.deep.equal(incrementedHistory)
+          }
+        } else {
+          store.dispatch({ type: '@@redux-undo/INIT' })
+          expect(store.getState()).to.deep.equal(reHydratingState)
+        }
+      })
+
       it('should accept the initialState from `createStore` without a history', () => {
         const reHydratingState = {'a': 'b', 'c': [1, 2, 3], 'e': {'foo': 'bbb'}}
         const store = Redux.createStore(mockUndoableReducer, reHydratingState)
@@ -329,6 +379,49 @@ function runTestWithConfig (testConfig, label) {
           future: []
         })
       })
+
+      // More of the same, re-enable and test if others are fixed
+      //it('should accept the initialState from `createStore` without a history and should increment', () => {
+      //  const reHydratingState = 0
+      //  const store = Redux.createStore(mockUndoableReducer, reHydratingState)
+      //  store.dispatch({ type: 'INCREMENT' })
+      //  expect(store.getState()).to.deep.equal({
+      //    past: [100],
+      //    present: 101,
+      //    future: []
+      //  })
+      //})
+      //
+      //it('should accept the initialState from `createStore` without a history and reset upon init actions', () => {
+      //  const reHydratingState = 100
+      //  const incrementedHistory = {
+      //    past: [100],
+      //    present: 101,
+      //    future: []
+      //  }
+      //  const store = Redux.createStore(mockUndoableReducer, reHydratingState)
+      //  expect(store.getState()).to.deep.equal(reHydratingState)
+      //
+      //  store.dispatch({ type: 'INCREMENT' })
+      //
+      //  // This will also fail in some cases, see previous test
+      //  expect(store.getState()).to.deep.equal(incrementedHistory)
+      //
+      //  if (testConfig.initTypes) {
+      //    if (testConfig.initTypes.length) {
+      //      store.dispatch({ type: testConfig.initTypes[0] })
+      //      expect(store.getState()).to.deep.equal(reHydratingState)
+      //    } else {
+      //      // No init actions exist, init should have no effect
+      //      store.dispatch({ type: '@@redux-undo/INIT' })
+      //      expect(store.getState()).to.deep.equal(incrementedHistory)
+      //    }
+      //  } else {
+      //    store.dispatch({ type: '@@redux-undo/INIT' })
+      //    expect(store.getState()).to.deep.equal(reHydratingState)
+      //  }
+      //})
+
       it('should accept the initialState from `createStore` and should not fain on an initialState that looks like our history object', () => {
         // previously failing case
         const reHydratingState = {'present': 0}
