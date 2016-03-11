@@ -68,16 +68,6 @@ function length (history) {
 }
 // /length
 
-// isHistory: check for a valid history object
-function isHistory (history) {
-  return typeof history.present !== 'undefined' &&
-    typeof history.future !== 'undefined' &&
-    typeof history.past !== 'undefined' &&
-    Array.isArray(history.future) &&
-    Array.isArray(history.past)
-}
-// /isHistory
-
 // insert: insert `state` into history, which means adding the current state
 //         into `past`, setting the new `state` as `present` and erasing
 //         the `future`.
@@ -203,7 +193,6 @@ export default function undoable (reducer, rawConfig = {}) {
   __DEBUG__ = rawConfig.debug
 
   const config = {
-    initialState: rawConfig.initialState,
     initTypes: parseActions(rawConfig.initTypes, ['@@redux-undo/INIT']),
     limit: rawConfig.limit,
     filter: rawConfig.filter || (() => true),
@@ -214,53 +203,74 @@ export default function undoable (reducer, rawConfig = {}) {
     jumpType: rawConfig.jumpType || ActionTypes.JUMP,
     clearHistoryType: rawConfig.clearHistoryType || ActionTypes.CLEAR_HISTORY
   }
-  config.history = rawConfig.initialHistory || createHistory(config.initialState || reducer(undefined, {}))
 
-  return (state = config.history, action = {}) => {
+  return (state, action = {}) => {
     debugStart(action, state)
+
+    let history
+    if (!config.history) {
+      debug('create history on init')
+
+      if (state === undefined) {
+        config.history = createHistory(reducer(state, {}))
+      } else if (isHistory(state)) {
+        config.history = state
+      } else {
+        config.history = createHistory(state)
+      }
+
+      history = config.history
+    } else if (state === undefined) {
+      // If reducer is called with undefined, use our saved history as the state
+      // since that was the result of calling the reducer the initially
+      history = config.history
+    } else {
+      history = state
+    }
+
     let res
     switch (action.type) {
       case undefined:
-        return state
+        return history
 
       case config.undoType:
-        res = undo(state)
+        res = undo(history)
         debug('after undo', res)
         debugEnd()
         return res
 
       case config.redoType:
-        res = redo(state)
+        res = redo(history)
         debug('after redo', res)
         debugEnd()
         return res
 
       case config.jumpToPastType:
-        res = jumpToPast(state, action.index)
+        res = jumpToPast(history, action.index)
         debug('after jumpToPast', res)
         debugEnd()
         return res
 
       case config.jumpToFutureType:
-        res = jumpToFuture(state, action.index)
+        res = jumpToFuture(history, action.index)
         debug('after jumpToFuture', res)
         debugEnd()
         return res
 
       case config.jumpType:
-        res = jump(state, action.index)
+        res = jump(history, action.index)
         debug('after jump', res)
         debugEnd()
         return res
 
       case config.clearHistoryType:
-        res = createHistory(state.present)
+        res = createHistory(history.present)
         debug('cleared history', res)
         debugEnd()
         return res
 
       default:
-        res = reducer(state && state.present, action)
+        res = reducer(history.present, action)
 
         if (config.initTypes.some((actionType) => actionType === action.type)) {
           debug('reset history due to init action')
@@ -269,35 +279,40 @@ export default function undoable (reducer, rawConfig = {}) {
         }
 
         if (config.filter && typeof config.filter === 'function') {
-          if (!config.filter(action, res, state && state.present)) {
+          if (!config.filter(action, res, history.present)) {
             debug('filter prevented action, not storing it')
             debugEnd()
             return {
-              ...state,
+              ...history,
               present: res
             }
           }
         }
 
-        let updatedHistory
-        if (!isHistory(state)) {
-          updatedHistory = createHistory(state)
-          debug('create history on init')
-        } else if (state.present === res) {
-          updatedHistory = state
-          debug('not inserted, state is unchanged')
-        } else {
-          updatedHistory = insert(state, res, config.limit)
+        if (history.present !== res) {
+          history = insert(history, res, config.limit)
           debug('inserted new state into history')
+        } else {
+          debug('not inserted, history is unchanged')
         }
 
-        debug('history: ', updatedHistory, ' free: ', config.limit - length(updatedHistory))
+        debug('history: ', history, ' free: ', config.limit - length(history))
         debugEnd()
-        return updatedHistory
+        return history
     }
   }
 }
 // /redux-undo
+
+// isHistory helper: check for a valid history object
+export function isHistory (history) {
+  return typeof history.present !== 'undefined' &&
+    typeof history.future !== 'undefined' &&
+    typeof history.past !== 'undefined' &&
+    Array.isArray(history.future) &&
+    Array.isArray(history.past)
+}
+// /isHistory
 
 // distinctState helper
 export function distinctState () {
