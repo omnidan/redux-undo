@@ -5,7 +5,7 @@ import undoable, { ActionCreators, excludeAction, includeAction, isHistory } fro
 const decrementActions = ['DECREMENT']
 
 const testConfigZero = {
-  FOR_TEST_ONLY_includeAction: decrementActions,
+  FOR_TEST_ONLY_includeActions: decrementActions,
   filter: includeAction(decrementActions)
 }
 
@@ -125,9 +125,9 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
           expect(decrementedState.future).to.deep.equal(mockInitialState.future)
         }
 
-        if (testConfig.FOR_TEST_ONLY_includeAction) {
+        if (testConfig.FOR_TEST_ONLY_includeActions) {
           // only record this action in history
-          let tmpState = mockUndoableReducer(mockInitialState, { type: testConfig.FOR_TEST_ONLY_includeAction[0] })
+          let tmpState = mockUndoableReducer(mockInitialState, { type: testConfig.FOR_TEST_ONLY_includeActions[0] })
           let expected = { ...tmpState, present: tmpState.present + 1 }
           // and not this one...
           tmpState = mockUndoableReducer(tmpState, { type: 'INCREMENT' })
