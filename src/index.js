@@ -278,14 +278,12 @@ export default function undoable (reducer, rawConfig = {}) {
           return config.history
         }
 
-        if (config.filter && typeof config.filter === 'function') {
-          if (!config.filter(action, res, history.present)) {
-            debug('filter prevented action, not storing it')
-            debugEnd()
-            return {
-              ...history,
-              present: res
-            }
+        if (typeof config.filter === 'function' && !config.filter(action, res, history)) {
+          debug('filter prevented action, not storing it')
+          debugEnd()
+          return {
+            ...history,
+            present: res
           }
         }
 
@@ -316,7 +314,7 @@ export function isHistory (history) {
 
 // distinctState helper
 export function distinctState () {
-  return (action, currentState, previousState) => currentState !== previousState
+  return (action, currentState, { past, present, future }) => currentState !== present
 }
 // /distinctState
 

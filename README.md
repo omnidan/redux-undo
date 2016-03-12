@@ -180,26 +180,9 @@ const store = createStore(undoable(counter), {foo: 'bar'});
 ### Filtering Actions
 
 If you don't want to include every action in the undo/redo history, you can
-pass a function to `undoable` like this:
-
-```js
-undoable(reducer, {
-  filter: function filterActions(action, currentState, previousState) {
-    return action.type === SOME_ACTION; // only add to history if action is SOME_ACTION
-  }
-})
-
-// or you could do...
-
-undoable(reducer, {
-  filter: function filterState(action, currentState, previousState) {
-    return currentState !== previousState; // only add to history if state changed
-  }
-})
-```
-
-Or you can use the `distinctState`, `includeAction` and `excludeAction` helpers,
-which should be imported like this:
+add a `filter` function to `undoable`. `redux-undo` provides you with the
+`distinctState`, `includeAction` and `excludeAction` helpers for basic filtering.
+They should be imported like this:
 
 ```js
 import undoable, { distinctState, includeAction, excludeAction } from 'redux-undo';
@@ -214,13 +197,32 @@ undoable(reducer, { filter: excludeAction(SOME_ACTION) })
 // or you could do...
 
 undoable(reducer, { filter: distinctState() })
-```
 
-... they even support Arrays:
+// they even support Arrays:
 
-```js
 undoable(reducer, { filter: includeAction([SOME_ACTION, SOME_OTHER_ACTION]) })
 undoable(reducer, { filter: excludeAction([SOME_ACTION, SOME_OTHER_ACTION]) })
+```
+
+If you want to create your own filter, pass in a function with the signature
+`(action, currentState, previousHistory)`. For example:
+
+```js
+undoable(reducer, {
+  filter: function filterActions(action, currentState, previousHistory) {
+    return action.type === SOME_ACTION; // only add to history if action is SOME_ACTION
+  }
+})
+
+// The entire `history` state is available to your filter, so you can make
+// decisions based on past or future states:
+
+undoable(reducer, {
+  filter: function filterState(action, currentState, previousHistory) {
+    let { past, present, future } = previousHistory;
+    return future.length === 0; // only add to history if future is empty
+  }
+})
 ```
 
 ### Ignoring Actions
