@@ -1,6 +1,7 @@
 // debug output
 let __DEBUG__
 function debug (...args) {
+  /* istanbul ignore if */
   if (__DEBUG__) {
     if (!console.group) {
       args.unshift('%credux-undo', 'font-style: italic')
@@ -9,6 +10,7 @@ function debug (...args) {
   }
 }
 function debugStart (action, state) {
+  /* istanbul ignore if */
   if (__DEBUG__) {
     const args = ['action', action.type]
     if (console.group) {
@@ -21,6 +23,7 @@ function debugStart (action, state) {
   }
 }
 function debugEnd () {
+  /* istanbul ignore if */
   if (__DEBUG__) {
     return console.groupEnd && console.groupEnd()
   }
@@ -161,9 +164,9 @@ function jumpToPast (history, index) {
 
 // jump: jump n steps in the past or forward
 function jump (history, n) {
-  if (n === 0) return history
   if (n > 0) return jumpToFuture(history, n - 1)
   if (n < 0) return jumpToPast(history, history.past.length + n)
+  return history
 }
 // /jump
 
@@ -278,14 +281,12 @@ export default function undoable (reducer, rawConfig = {}) {
           return config.history
         }
 
-        if (config.filter && typeof config.filter === 'function') {
-          if (!config.filter(action, res, history.present)) {
-            debug('filter prevented action, not storing it')
-            debugEnd()
-            return {
-              ...history,
-              present: res
-            }
+        if (typeof config.filter === 'function' && !config.filter(action, res, history.present)) {
+          debug('filter prevented action, not storing it')
+          debugEnd()
+          return {
+            ...history,
+            present: res
           }
         }
 
