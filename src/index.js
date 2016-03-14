@@ -315,12 +315,6 @@ export function isHistory (history) {
 }
 // /isHistory
 
-// distinctState helper
-export function distinctState () {
-  return (action, currentState, previousState) => currentState !== previousState
-}
-// /distinctState
-
 // includeAction helper
 export function includeAction (rawActions) {
   const actions = parseActions(rawActions)

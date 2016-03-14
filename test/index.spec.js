@@ -54,45 +54,51 @@ runTestWithConfig(testConfigThree, initialStateThree, 'Erroneous configuration')
 // `label` describes the nature of the configuration object used to run a test
 function runTestWithConfig (testConfig, initialStoreState, label) {
   describe('Undoable: ' + label, () => {
+    const countReducer = (state = 0, action = {}) => {
+      switch (action.type) {
+        case 'INCREMENT':
+          return state + 1
+        case 'DECREMENT':
+          return state - 1
+        default:
+          return state
+      }
+    }
+
+    const tenfoldReducer = (state = 10, action = {}) => {
+      switch (action.type) {
+        case 'INCREMENT':
+          return state + 10
+        case 'DECREMENT':
+          return state - 10
+        default:
+          return state
+      }
+    }
+
     let mockUndoableReducer
     let mockInitialState
     let incrementedState
-    let doubleIncrementedState
-    let countReducer
     let store
 
     before('setup mock reducers and states', () => {
-      let countInitialState = 0
-      countReducer = (state = countInitialState, action = {}) => {
-        switch (action.type) {
-          case 'INCREMENT':
-            return state + 1
-          case 'DECREMENT':
-            return state - 1
-          default:
-            return state
-        }
-      }
-
-      // testConfig.debug = true;
+      // testConfig.debug = true
       mockUndoableReducer = undoable(countReducer, testConfig)
       store = createStore(mockUndoableReducer, initialStoreState)
 
       mockInitialState = mockUndoableReducer(undefined, {})
       incrementedState = mockUndoableReducer(mockInitialState, { type: 'INCREMENT' })
-      doubleIncrementedState = mockUndoableReducer(incrementedState, { type: 'INCREMENT' })
       console.info('  Beginning Test! Good luck!')
       console.info('    initialStoreState:     ', initialStoreState)
       console.info('    store.getState():      ', store.getState())
       console.info('    mockInitialState:      ', mockInitialState)
       console.info('    incrementedState:      ', incrementedState)
-      console.info('    doubleIncrementedState:', doubleIncrementedState)
       console.info('')
 
       expect(store.getState()).to.deep.equal(mockInitialState, 'mockInitialState should be the same as our store\'s state')
     })
 
-    describe('Check initial state', () => {
+    describe('Initial state', () => {
       it('should be initialized with the value of the default `initialState` of the reducer if there is no `initialState` set on the store', () => {
         if (initialStoreState === undefined) {
           expect(mockInitialState.present).to.equal(countReducer())
@@ -116,7 +122,35 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
       })
     })
 
-    describe('Check non redux-undo actions', () => {
+    describe('Replace reducers on the fly', () => {
+      it('should preserve state when reducers are replaced', () => {
+        store.replaceReducer(undoable(tenfoldReducer, testConfig))
+        expect(store.getState()).to.deep.equal(mockInitialState)
+
+        // swap back for other tests
+        store.replaceReducer(mockUndoableReducer)
+        expect(store.getState()).to.deep.equal(mockInitialState)
+      })
+
+      it('should use replaced reducer for new actions', () => {
+        store.replaceReducer(undoable(tenfoldReducer, testConfig))
+
+        // Increment and check result
+        let expectedResult = tenfoldReducer(store.getState().present, {type: 'INCREMENT'})
+        store.dispatch({type: 'INCREMENT'})
+        expect(store.getState().present).to.equal(expectedResult)
+
+        // swap back for other tests
+        store.replaceReducer(mockUndoableReducer)
+
+        // Increment and check result again
+        expectedResult = countReducer(store.getState().present, {type: 'INCREMENT'})
+        store.dispatch({type: 'INCREMENT'})
+        expect(store.getState().present).to.equal(expectedResult)
+      })
+    })
+
+    describe('Actions', () => {
       it('should not record unwanted actions', () => {
         if (testConfig.FOR_TEST_ONLY_excludedActions) {
           // don't record this action in history
@@ -133,6 +167,11 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
           tmpState = mockUndoableReducer(tmpState, { type: 'INCREMENT' })
           expect(tmpState).to.deep.equal(expected)
         }
+      })
+
+      it('should not record non state changing actions', () => {
+        let dummyState = mockUndoableReducer(incrementedState, { type: 'DUMMY' })
+        expect(dummyState).to.deep.equal(incrementedState)
       })
 
       it('should reset upon init actions', () => {
@@ -154,8 +193,9 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
       })
 
       it('should increment when action is dispatched to store', () => {
+        let expectedResult = store.getState().present + 1
         store.dispatch({type: 'INCREMENT'})
-        expect(store.getState()).to.deep.equal(incrementedState)
+        expect(store.getState().present).to.equal(expectedResult)
       })
     })
 
@@ -327,6 +367,7 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
       let doubleUndoState
       let doubleRedoState
       before('perform a jump action', () => {
+        let doubleIncrementedState = mockUndoableReducer(incrementedState, { type: 'INCREMENT' })
         jumpToPastState = mockUndoableReducer(doubleIncrementedState, ActionCreators.jump(jumpStepsToPast))
         jumpToFutureState = mockUndoableReducer(mockInitialState, ActionCreators.jump(jumpStepsToFuture))
         doubleUndoState = mockUndoableReducer(doubleIncrementedState, ActionCreators.undo())
