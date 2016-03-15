@@ -35,7 +35,7 @@ undoable(reducer, config)
 
 ## Making your reducers undoable
 
-`redux-undo` is a reducer enhancer, it provides the `undoable` function, which
+`redux-undo` is a reducer enhancer (higher-order reducer), it provides the `undoable` function, which
 takes an existing reducer and a configuration object and enhances your existing
 reducer with undo functionality.
 
