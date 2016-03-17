@@ -219,10 +219,10 @@ export default function undoable (reducer, rawConfig = {}) {
         debug('do not initialize on probe actions')
       } else if (isHistory(state)) {
         history = config.history = state
-        debug('initialHistory properly shaped and initialized', config.history)
+        debug('initialHistory initialized: initialState is a history', config.history)
       } else {
         history = config.history = createHistory(state)
-        debug('initialHistory reshaped and initialized', config.history)
+        debug('initialHistory initialized: initialState is not a history', config.history)
       }
     }
 
