@@ -207,28 +207,23 @@ export default function undoable (reducer, rawConfig = {}) {
     clearHistoryType: rawConfig.clearHistoryType || ActionTypes.CLEAR_HISTORY
   }
 
-  return (state, action = {}) => {
+  return (state = config.history, action = {}) => {
     debugStart(action, state)
 
-    let history
+    let history = state
     if (!config.history) {
-      debug('create history on init')
+      debug('history is uninitialized')
 
       if (state === undefined) {
-        config.history = createHistory(reducer(state, {}))
+        history = createHistory(reducer(state, {}))
+        debug('do not initialize on probe actions')
       } else if (isHistory(state)) {
-        config.history = state
+        history = config.history = state
+        debug('initialHistory initialized: initialState is a history', config.history)
       } else {
-        config.history = createHistory(state)
+        history = config.history = createHistory(state)
+        debug('initialHistory initialized: initialState is not a history', config.history)
       }
-
-      history = config.history
-    } else if (state === undefined) {
-      // If reducer is called with undefined, use our saved history as the state
-      // since that was the result of calling the reducer the initially
-      history = config.history
-    } else {
-      history = state
     }
 
     let res
