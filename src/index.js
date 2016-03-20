@@ -283,37 +283,37 @@ export default function undoable (reducer, rawConfig = {}) {
 
       case config.undoType:
         res = undo(history)
-        debug.log('perform undo', res)
+        debug.log('perform undo')
         debug.end(res)
         return res
 
       case config.redoType:
         res = redo(history)
-        debug.log('perform redo', res)
+        debug.log('perform redo')
         debug.end(res)
         return res
 
       case config.jumpToPastType:
         res = jumpToPast(history, action.index)
-        debug.log(`perform jumpToPast to ${action.index}`, res)
+        debug.log(`perform jumpToPast to ${action.index}`)
         debug.end(res)
         return res
 
       case config.jumpToFutureType:
         res = jumpToFuture(history, action.index)
-        debug.log(`perform jumpToFuture to ${action.index}`, res)
+        debug.log(`perform jumpToFuture to ${action.index}`)
         debug.end(res)
         return res
 
       case config.jumpType:
         res = jump(history, action.index)
-        debug.log(`perform jump to ${action.index}`, res)
+        debug.log(`perform jump to ${action.index}`)
         debug.end(res)
         return res
 
       case config.clearHistoryType:
         res = createHistory(history.present)
-        debug.log('perform clearHistory', res)
+        debug.log('perform clearHistory')
         debug.end(res)
         return res
 
