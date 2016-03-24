@@ -10,14 +10,15 @@ _simple undo/redo functionality for redux state containers_
 
 **Switching from 0.x to 1.0 (beta):** Make sure to update your programs to the [latest History API](#history-api).
 
+---
+
+**This README is about the new 1.0-beta branch of redux-undo, if you are using
+or plan on using 0.6, check out [the `0.6` branch](https://github.com/omnidan/redux-undo/tree/0.6)**
+
+---
+
 
 ## Installation
-
-```
-npm install --save redux-undo
-```
-
-Or you can install the beta:
 
 ```
 npm install --save redux-undo@beta
