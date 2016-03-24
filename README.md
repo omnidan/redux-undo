@@ -108,7 +108,7 @@ store.dispatch(ActionCreators.jump(5)) // redo 5 steps
 store.dispatch(ActionCreators.jumpToPast(index)) // jump to requested index in the past[] array
 store.dispatch(ActionCreators.jumpToFuture(index)) // jump to requested index in the future[] array
 
-store.dispatch(ActionCreators.clearHistory()) // Remove all items from past[] and future[] arrays
+store.dispatch(ActionCreators.clearHistory()) // [beta only] Remove all items from past[] and future[] arrays
 ```
 
 
@@ -131,7 +131,7 @@ undoable(reducer, {
   jumpToPastType: ActionTypes.JUMP_TO_PAST, // define custom action type for this jumpToPast action
   jumpToFutureType: ActionTypes.JUMP_TO_FUTURE, // define custom action type for this jumpToFuture action
 
-  clearHistoryType: ActionTypes.CLEAR_HISTORY, // define custom action type for this clearHistory action
+  clearHistoryType: ActionTypes.CLEAR_HISTORY, // [beta only] define custom action type for this clearHistory action
 
   initTypes: ['@@redux-undo/INIT'] // history will be (re)set upon init action type
 
@@ -144,7 +144,7 @@ the whole redux-undo library, use [redux-recycle](https://github.com/omnidan/red
 
 #### Initial State and History
 
-You can use your redux store to set an initial history for your undoable reducers: 
+You can use your redux store to set an initial history for your undoable reducers:
 
 ```js
 
@@ -160,7 +160,7 @@ const store = createStore(undoable(counter), initialHistory);
 
 ```
 
-Or just set the current state like you're used to with Redux. Redux-undo will create the history for you: 
+Or just set the current state like you're used to with Redux. Redux-undo will create the history for you:
 
 ```js
 
@@ -181,28 +181,31 @@ const store = createStore(undoable(counter), {foo: 'bar'});
 
 If you don't want to include every action in the undo/redo history, you can
 add a `filter` function to `undoable`. `redux-undo` provides you with the
-`distinctState`, `includeAction` and `excludeAction` helpers for basic filtering.
+`includeAction` and `excludeAction` helpers for basic filtering.
+
 They should be imported like this:
 
 ```js
-import undoable, { distinctState, includeAction, excludeAction } from 'redux-undo';
+import undoable, { includeAction, excludeAction } from 'redux-undo';
 ```
 
-Now you can use the helper, which is pretty simple:
+Now you can use the helper functions:
 
 ```js
 undoable(reducer, { filter: includeAction(SOME_ACTION) })
 undoable(reducer, { filter: excludeAction(SOME_ACTION) })
-
-// or you could do...
-
-undoable(reducer, { filter: distinctState() })
 
 // they even support Arrays:
 
 undoable(reducer, { filter: includeAction([SOME_ACTION, SOME_OTHER_ACTION]) })
 undoable(reducer, { filter: excludeAction([SOME_ACTION, SOME_OTHER_ACTION]) })
 ```
+
+**Note:** Since [`beta4`](https://github.com/omnidan/redux-undo/releases/tag/beta4),
+          only actions resulting in a new state are recorded. This means the
+          (now deprecated) `distinctState()` filter is auto-applied.
+
+#### Custom filters
 
 If you want to create your own filter, pass in a function with the signature
 `(action, currentState, previousHistory)`. For example:
