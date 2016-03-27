@@ -1,7 +1,7 @@
 {
   "name": "debounced-drag",
   "version": "1.0.0",
-  "description": "Drag example with debounced undo, using redux-undo",
+  "description": "Drag example with throttled undo, using redux-undo",
   "scripts": {
     "start": "node server.js"
   },

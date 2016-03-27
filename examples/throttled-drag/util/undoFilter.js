@@ -3,14 +3,14 @@ const IGNORE_TIME = 250
 let filter = true
 export default function undoFilter (action, currState, prevState) {
   // other filters
-  filter = debounceActionsFilter(action)
+  filter = actionsThrottlingFilter(action)
   return filter
 }
 
-// ignore rapid action types that are the same type
+// Store rapid actions of the same type at most once every x time.
 let ignoreRapid = false
 let prevActionType
-function debounceActionsFilter (action) {
+function actionsThrottlingFilter (action) {
   if (action.type !== prevActionType) {
     ignoreRapid = false
     prevActionType = action.type
