@@ -310,6 +310,13 @@ export function isHistory (history) {
 }
 // /isHistory
 
+// distinctState helper
+export function distinctState () {
+  console.warning('distinctState is deprecated in beta4 and newer. The distinctState behavior is now default, which means only actions resulting in a new state are recorded. See https://github.com/omnidan/redux-undo#filtering-actions for more details.')
+  return () => true
+}
+// /distinctState
+
 // includeAction helper
 export function includeAction (rawActions) {
   const actions = parseActions(rawActions)
