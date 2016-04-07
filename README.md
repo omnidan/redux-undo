@@ -266,6 +266,28 @@ Have a read of the [Implementing Undo History recipe](http://redux.js.org/docs/r
 
 If you have a question or just want to discuss something with other redux-undo users/maintainers, [chat with the community on gitter.im/omnidan/redux-undo](https://gitter.im/omnidan/redux-undo)
 
+## Note
+
+If you use Redux Undo in CommonJS environment, **don’t forget to add `.default` to your import**.
+
+```diff
+- var ReduxUndo = require('redux-undo')
++ var ReduxUndo = require('redux-undo').default
+```
+
+If your environment support es modules just go by:
+
+```js
+import ReduxUndo from 'redux-undo';
+```
+
+We are also supporting UMD build:
+
+```js
+var ReduxThunk = window.ReduxThunk.default;
+```
+
+**once again `.default` is required.**
 
 ## License
 
