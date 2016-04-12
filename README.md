@@ -245,8 +245,8 @@ function areWeRecording(action, state) {
 }
 
 undoable(reducer, {
-    filter: combineFilters(isActionSelfExcluded, areWeRecording)
-  })
+  filter: combineFilters(isActionSelfExcluded, areWeRecording)
+})
 ```
 
 ### Ignoring Actions
