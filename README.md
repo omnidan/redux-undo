@@ -229,6 +229,26 @@ undoable(reducer, {
 })
 ```
 
+### Combining Filters
+
+You can also use our helper to combine filters.
+
+```js
+import undoable, {combineFilters} from 'redux-undo'
+
+function isActionSelfExcluded(action) {
+  return action.wouldLikeToBeInHistory
+}
+
+function areWeRecording(action, state) {
+  return state.recording
+}
+
+undoable(reducer, {
+    filter: combineFilters(isActionSelfExcluded, areWeRecording)
+  })
+```
+
 ### Ignoring Actions
 
 When implementing a filter function, it only prevents the old state from being

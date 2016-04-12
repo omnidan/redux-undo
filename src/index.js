@@ -331,3 +331,13 @@ export function excludeAction (rawActions = []) {
   return (action) => actions.indexOf(action.type) < 0
 }
 // /excludeAction
+
+// combineFilters helper
+export function combineFilters (...filters) {
+  return filters.reduce((prev, curr) =>
+    (action, currentState, previousHistory) =>
+      prev(action, currentState, previousHistory) &&
+      curr(action, currentState, previousHistory)
+  , () => true)
+}
+// combineFilters
