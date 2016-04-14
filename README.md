@@ -35,7 +35,7 @@ import ReduxUndo from 'redux-undo';
 We are also supporting UMD build:
 
 ```js
-var ReduxThunk = window.ReduxThunk.default;
+var ReduxUndo = window.ReduxUndo.default;
 ```
 
 **once again `.default` is required.**
