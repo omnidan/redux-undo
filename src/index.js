@@ -1,33 +1,86 @@
 // debug output
 let __DEBUG__
-function debug (...args) {
-  /* istanbul ignore if */
-  if (__DEBUG__) {
-    if (!console.group) {
-      args.unshift('%credux-undo', 'font-style: italic')
-    }
-    console.log(...args)
+/* istanbul ignore next: debug messaging is not tested */
+let debug = (function debugGrouper () {
+  let displayBuffer
+  const colors = {
+    prevState: '#9E9E9E',
+    action: '#03A9F4',
+    nextState: '#4CAF50'
   }
-}
-function debugStart (action, state) {
-  /* istanbul ignore if */
-  if (__DEBUG__) {
-    const args = ['action', action.type]
+  function initBuffer () {
+    displayBuffer = {
+      header: [],
+      prev: [],
+      action: [],
+      next: [],
+      msgs: []
+    }
+  }
+  function printBuffer () {
+    let { header, prev, next, action, msgs } = displayBuffer
     if (console.group) {
-      args.unshift('%credux-undo', 'font-style: italic')
-      console.groupCollapsed(...args)
-      console.log('received', {state, action})
+      console.groupCollapsed(...header)
+      console.log(...prev)
+      console.log(...action)
+      console.log(...next)
+      console.log(...msgs)
+      console.groupEnd()
     } else {
-      debug(...args)
+      console.log(...header)
+      console.log(...prev)
+      console.log(...action)
+      console.log(...next)
+      console.log(...msgs)
     }
   }
-}
-function debugEnd () {
-  /* istanbul ignore if */
-  if (__DEBUG__) {
-    return console.groupEnd && console.groupEnd()
+
+  function colorFormat (text, color, obj) {
+    return [
+      `%c${text}`,
+      `color: ${color}; font-weight: bold`,
+      obj
+    ]
   }
-}
+  function start (action, state) {
+    initBuffer()
+    if (__DEBUG__) {
+      if (console.group) {
+        displayBuffer.header = ['%credux-undo', 'font-style: italic', 'action', action.type]
+        displayBuffer.action = colorFormat('action', colors.action, action)
+        displayBuffer.prev = colorFormat('prev history', colors.prevState, state)
+      } else {
+        displayBuffer.header = ['redux-undo action', action.type]
+        displayBuffer.action = ['action', action]
+        displayBuffer.prev = ['prev history', state]
+      }
+    }
+  }
+
+  function end (nextState) {
+    if (__DEBUG__) {
+      if (console.group) {
+        displayBuffer.next = colorFormat('next history', colors.nextState, nextState)
+      } else {
+        displayBuffer.next = ['next history', nextState]
+      }
+      printBuffer()
+    }
+  }
+
+  function log (...args) {
+    if (__DEBUG__) {
+      displayBuffer.msgs = displayBuffer.msgs
+        .concat([...args, '\n'])
+    }
+  }
+
+  return {
+    start,
+    end,
+    log
+  }
+})()
 // /debug output
 
 // action types
@@ -75,7 +128,8 @@ function length (history) {
 //         into `past`, setting the new `state` as `present` and erasing
 //         the `future`.
 function insert (history, state, limit) {
-  debug('insert', {state, history, free: limit - length(history)})
+  debug.log('inserting', state)
+  debug.log('new free: ', limit - length(history))
 
   const { past, present } = history
   const historyOverflow = limit && length(history) >= limit
@@ -93,8 +147,6 @@ function insert (history, state, limit) {
 
 // undo: go back to the previous point in history
 function undo (history) {
-  debug('undo', {history})
-
   const { past, present, future } = history
 
   if (past.length <= 0) return history
@@ -112,8 +164,6 @@ function undo (history) {
 
 // redo: go to the next point in history
 function redo (history) {
-  debug('redo', {history})
-
   const { past, present, future } = history
 
   if (future.length <= 0) return history
@@ -208,21 +258,21 @@ export default function undoable (reducer, rawConfig = {}) {
   }
 
   return (state = config.history, action = {}) => {
-    debugStart(action, state)
+    debug.start(action, state)
 
     let history = state
     if (!config.history) {
-      debug('history is uninitialized')
+      debug.log('history is uninitialized')
 
       if (state === undefined) {
         history = createHistory(reducer(state, {}))
-        debug('do not initialize on probe actions')
+        debug.log('do not initialize on probe actions')
       } else if (isHistory(state)) {
         history = config.history = state
-        debug('initialHistory initialized: initialState is a history', config.history)
+        debug.log('initialHistory initialized: initialState is a history', config.history)
       } else {
         history = config.history = createHistory(state)
-        debug('initialHistory initialized: initialState is not a history', config.history)
+        debug.log('initialHistory initialized: initialState is not a history', config.history)
       }
     }
 
@@ -233,67 +283,68 @@ export default function undoable (reducer, rawConfig = {}) {
 
       case config.undoType:
         res = undo(history)
-        debug('after undo', res)
-        debugEnd()
+        debug.log('perform undo')
+        debug.end(res)
         return res
 
       case config.redoType:
         res = redo(history)
-        debug('after redo', res)
-        debugEnd()
+        debug.log('perform redo')
+        debug.end(res)
         return res
 
       case config.jumpToPastType:
         res = jumpToPast(history, action.index)
-        debug('after jumpToPast', res)
-        debugEnd()
+        debug.log(`perform jumpToPast to ${action.index}`)
+        debug.end(res)
         return res
 
       case config.jumpToFutureType:
         res = jumpToFuture(history, action.index)
-        debug('after jumpToFuture', res)
-        debugEnd()
+        debug.log(`perform jumpToFuture to ${action.index}`)
+        debug.end(res)
         return res
 
       case config.jumpType:
         res = jump(history, action.index)
-        debug('after jump', res)
-        debugEnd()
+        debug.log(`perform jump to ${action.index}`)
+        debug.end(res)
         return res
 
       case config.clearHistoryType:
         res = createHistory(history.present)
-        debug('cleared history', res)
-        debugEnd()
+        debug.log('perform clearHistory')
+        debug.end(res)
         return res
 
       default:
         res = reducer(history.present, action)
 
         if (config.initTypes.some((actionType) => actionType === action.type)) {
-          debug('reset history due to init action')
-          debugEnd()
+          debug.log('reset history due to init action')
+          debug.end(config.history)
           return config.history
         }
 
+        if (history.present === res) {
+          // Don't handle this action. Do not call debug.end here,
+          // because this action should not produce side effects to the console
+          return history
+        }
+
         if (typeof config.filter === 'function' && !config.filter(action, res, history)) {
-          debug('filter prevented action, not storing it')
-          debugEnd()
-          return {
+          const nextState = {
             ...history,
             present: res
           }
+          debug.log('filter prevented action, not storing it')
+          debug.end(nextState)
+          return nextState
         }
 
-        if (history.present !== res) {
-          history = insert(history, res, config.limit)
-          debug('inserted new state into history')
-        } else {
-          debug('not inserted, history is unchanged')
-        }
-
-        debug('history: ', history, ' free: ', config.limit - length(history))
-        debugEnd()
+        history = insert(history, res, config.limit)
+        debug.log('inserted new state into history')
+        debug.end(history)
         return history
     }
   }
