@@ -17,6 +17,28 @@ or plan on using 0.6, check out [the `0.6` branch](https://github.com/omnidan/re
 
 ---
 
+## Note on 1.0.0-beta7
+
+If you use Redux Undo in CommonJS environment, **don’t forget to add `.default` to your import**.
+
+```diff
+- var ReduxUndo = require('redux-undo')
++ var ReduxUndo = require('redux-undo').default
+```
+
+If your environment support es modules just go by:
+
+```js
+import ReduxUndo from 'redux-undo';
+```
+
+We are also supporting UMD build:
+
+```js
+var ReduxUndo = window.ReduxUndo.default;
+```
+
+**once again `.default` is required.**
 
 ## Installation
 
@@ -285,7 +307,6 @@ Have a read of the [Implementing Undo History recipe](http://redux.js.org/docs/r
 ## Gitter Chat / Support
 
 If you have a question or just want to discuss something with other redux-undo users/maintainers, [chat with the community on gitter.im/omnidan/redux-undo](https://gitter.im/omnidan/redux-undo)
-
 
 ## License
 
