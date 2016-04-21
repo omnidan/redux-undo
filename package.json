@@ -18,7 +18,7 @@
     "test:watch": "npm run test -- --watch",
     "docs:clean": "rimraf _book",
     "docs:prepare": "gitbook install",
-    "docs:build": "npm run docs:prepare && gitbook build -g reactjs/redux",
+    "docs:build": "npm run docs:prepare && gitbook build -g omnidan/redux-undo",
     "docs:watch": "npm run docs:prepare && gitbook serve",
     "docs:publish": "npm run docs:clean && npm run docs:build && cp CNAME _book && cd _book && git init && git commit --allow-empty -m 'update book' && git checkout -b gh-pages && touch .nojekyll && git add . && git commit -am 'update book' && git push git@github.com:omnidan/redux-undo gh-pages --force"
   },
