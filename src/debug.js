@@ -7,6 +7,7 @@ const colors = {
   nextState: '#4CAF50'
 }
 
+/* istanbul ignore next: debug messaging is not tested */
 function initBuffer () {
   displayBuffer = {
     header: [],
@@ -17,6 +18,7 @@ function initBuffer () {
   }
 }
 
+/* istanbul ignore next: debug messaging is not tested */
 function printBuffer () {
   let { header, prev, next, action, msgs } = displayBuffer
   if (console.group) {
@@ -35,6 +37,7 @@ function printBuffer () {
   }
 }
 
+/* istanbul ignore next: debug messaging is not tested */
 function colorFormat (text, color, obj) {
   return [
     `%c${text}`,
@@ -43,6 +46,7 @@ function colorFormat (text, color, obj) {
   ]
 }
 
+/* istanbul ignore next: debug messaging is not tested */
 function start (action, state) {
   initBuffer()
   if (__DEBUG__) {
@@ -58,6 +62,7 @@ function start (action, state) {
   }
 }
 
+/* istanbul ignore next: debug messaging is not tested */
 function end (nextState) {
   if (__DEBUG__) {
     if (console.group) {
@@ -69,6 +74,7 @@ function end (nextState) {
   }
 }
 
+/* istanbul ignore next: debug messaging is not tested */
 function log (...args) {
   if (__DEBUG__) {
     displayBuffer.msgs = displayBuffer.msgs
@@ -76,6 +82,7 @@ function log (...args) {
   }
 }
 
+/* istanbul ignore next: debug messaging is not tested */
 function set (debug) {
   __DEBUG__ = debug
 }
