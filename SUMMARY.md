@@ -1,5 +1,5 @@
 # Summary
 
 * [Read Me](README.md)
-* FAQ
+* [FAQ](docs/FAQ.md)
 
