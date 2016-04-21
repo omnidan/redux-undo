@@ -31,7 +31,7 @@ export function includeAction (rawActions) {
 }
 
 // excludeAction helper
-export function excludeAction (rawActions = []) {
+export function excludeAction (rawActions) {
   const actions = parseActions(rawActions)
   return (action) => actions.indexOf(action.type) < 0
 }

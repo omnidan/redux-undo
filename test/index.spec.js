@@ -41,7 +41,7 @@ const initialStateThree = {
   future: []
 }
 
-runTestWithConfig({}, undefined, 'Default config')
+runTestWithConfig(undefined, undefined, 'Default config')
 runTestWithConfig({ initTypes: [] }, undefined, 'No Init types')
 runTestWithConfig({ limit: 200 }, 100, 'Initial State equals 100')
 runTestWithConfig({}, {'present': 0}, 'Initial State that looks like a history')
@@ -152,14 +152,14 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
 
     describe('Actions', () => {
       it('should not record unwanted actions', () => {
-        if (testConfig.FOR_TEST_ONLY_excludedActions) {
+        if (testConfig && testConfig.FOR_TEST_ONLY_excludedActions) {
           // don't record this action in history
           let decrementedState = mockUndoableReducer(mockInitialState, { type: testConfig.FOR_TEST_ONLY_excludedActions[0] })
           expect(decrementedState.past).to.deep.equal(mockInitialState.past)
           expect(decrementedState.future).to.deep.equal(mockInitialState.future)
         }
 
-        if (testConfig.FOR_TEST_ONLY_includeActions) {
+        if (testConfig && testConfig.FOR_TEST_ONLY_includeActions) {
           // only record this action in history
           let tmpState = mockUndoableReducer(mockInitialState, { type: testConfig.FOR_TEST_ONLY_includeActions[0] })
           let expected = { ...tmpState, present: tmpState.present + 1 }
@@ -174,10 +174,15 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
         expect(dummyState).to.deep.equal(incrementedState)
       })
 
+      it('should not record undefined actions', () => {
+        let dummyState = mockUndoableReducer(incrementedState, undefined)
+        expect(dummyState).to.deep.equal(incrementedState)
+      })
+
       it('should reset upon init actions', () => {
         let reInitializedState
-        if (testConfig.initTypes) {
-          if (testConfig.initTypes.length) {
+        if (testConfig && testConfig.initTypes) {
+          if (testConfig && testConfig.initTypes.length) {
             let initType = Array.isArray(testConfig.initTypes) ? testConfig.initTypes[0] : testConfig.initTypes
             reInitializedState = mockUndoableReducer(incrementedState, { type: initType })
             expect(reInitializedState).to.deep.equal(mockInitialState)
@@ -206,31 +211,31 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
       })
 
       it('should change present state back by one action', () => {
-        if (testConfig.limit >= 0) {
+        if (testConfig && testConfig.limit >= 0) {
           expect(undoState.present).to.equal(mockInitialState.present)
         }
       })
 
       it('should change present state to last element of \'past\'', () => {
-        if (testConfig.limit >= 0) {
+        if (testConfig && testConfig.limit >= 0) {
           expect(undoState.present).to.equal(incrementedState.past[incrementedState.past.length - 1])
         }
       })
 
       it('should add a new element to \'future\' from last state', () => {
-        if (testConfig.limit >= 0) {
+        if (testConfig && testConfig.limit >= 0) {
           expect(undoState.future[0]).to.equal(incrementedState.present)
         }
       })
 
       it('should decrease length of \'past\' by one', () => {
-        if (testConfig.limit >= 0) {
+        if (testConfig && testConfig.limit >= 0) {
           expect(undoState.past.length).to.equal(incrementedState.past.length - 1)
         }
       })
 
       it('should increase length of \'future\' by one', () => {
-        if (testConfig.limit >= 0) {
+        if (testConfig && testConfig.limit >= 0) {
           expect(undoState.future.length).to.equal(incrementedState.future.length + 1)
         }
       })
@@ -256,25 +261,25 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
       })
 
       it('should change present state to first element of \'future\'', () => {
-        if (testConfig.limit >= 0) {
+        if (testConfig && testConfig.limit >= 0) {
           expect(redoState.present).to.equal(undoState.future[0])
         }
       })
 
       it('should add a new element to \'past\' from last state', () => {
-        if (testConfig.limit >= 0) {
+        if (testConfig && testConfig.limit >= 0) {
           expect(redoState.past[redoState.past.length - 1]).to.equal(undoState.present)
         }
       })
 
       it('should decrease length of \'future\' by one', () => {
-        if (testConfig.limit >= 0) {
+        if (testConfig && testConfig.limit >= 0) {
           expect(redoState.future.length).to.equal(undoState.future.length - 1)
         }
       })
 
       it('should increase length of \'past\' by one', () => {
-        if (testConfig.limit >= 0) {
+        if (testConfig && testConfig.limit >= 0) {
           expect(redoState.past.length).to.equal(undoState.past.length + 1)
         }
       })
