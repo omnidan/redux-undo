@@ -1,4 +1,3 @@
-// action types
 export const ActionTypes = {
   UNDO: '@@redux-undo/UNDO',
   REDO: '@@redux-undo/REDO',
@@ -7,9 +6,7 @@ export const ActionTypes = {
   JUMP: '@@redux-undo/JUMP',
   CLEAR_HISTORY: '@@redux-undo/CLEAR_HISTORY'
 }
-// /action types
 
-// action creators to change the state
 export const ActionCreators = {
   undo () {
     return { type: ActionTypes.UNDO }
@@ -30,6 +27,3 @@ export const ActionCreators = {
     return { type: ActionTypes.CLEAR_HISTORY }
   }
 }
-// /action creators
-
-export { ActionTypes, ActionCreators }

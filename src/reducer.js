@@ -7,7 +7,6 @@ function length (history) {
   const { past, future } = history
   return past.length + 1 + future.length
 }
-// /length
 
 // insert: insert `state` into history, which means adding the current state
 //         into `past`, setting the new `state` as `present` and erasing
@@ -28,7 +27,6 @@ function insert (history, state, limit) {
     future: []
   }
 }
-// /insert
 
 // undo: go back to the previous point in history
 function undo (history) {
@@ -45,7 +43,6 @@ function undo (history) {
     ]
   }
 }
-// /undo
 
 // redo: go to the next point in history
 function redo (history) {
@@ -62,7 +59,6 @@ function redo (history) {
     ]
   }
 }
-// /redo
 
 // jumpToFuture: jump to requested index in future history
 function jumpToFuture (history, index) {
@@ -78,7 +74,6 @@ function jumpToFuture (history, index) {
               .concat(future.slice(0, index))
   }
 }
-// /jumpToFuture
 
 // jumpToPast: jump to requested index in past history
 function jumpToPast (history, index) {
@@ -95,7 +90,6 @@ function jumpToPast (history, index) {
     past: past.slice(0, index)
   }
 }
-// /jumpToPast
 
 // jump: jump n steps in the past or forward
 function jump (history, n) {
@@ -103,7 +97,6 @@ function jump (history, n) {
   if (n < 0) return jumpToPast(history, history.past.length + n)
   return history
 }
-// /jump
 
 // createHistory
 function createHistory (state) {
@@ -113,7 +106,6 @@ function createHistory (state) {
     future: []
   }
 }
-// /createHistory
 
 // redux-undo higher order reducer
 export default function undoable (reducer, rawConfig = {}) {
@@ -223,4 +215,3 @@ export default function undoable (reducer, rawConfig = {}) {
     }
   }
 }
-// /redux-undo

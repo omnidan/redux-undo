@@ -1,4 +1,5 @@
-// parseActions helper
+// parseActions helper: takes a string (or array)
+//                      and makes it an array if it isn't yet
 export function parseActions (rawActions, defaultValue = []) {
   if (Array.isArray(rawActions)) {
     return rawActions
@@ -17,26 +18,30 @@ export function isHistory (history) {
     Array.isArray(history.past)
 }
 
-// distinctState helper
+// distinctState helper: deprecated, does nothing in latest beta
 /* istanbul ignore next */
 export function distinctState () {
-  console.warn('distinctState is deprecated in beta4 and newer. The distinctState behavior is now default, which means only actions resulting in a new state are recorded. See https://github.com/omnidan/redux-undo#filtering-actions for more details.')
+  console.warn('distinctState is deprecated in beta4 and newer. ' +
+               'The distinctState behavior is now default, which means only ' +
+               'actions resulting in a new state are recorded. ' +
+               'See https://github.com/omnidan/redux-undo#filtering-actions ' +
+               'for more details.')
   return () => true
 }
 
-// includeAction helper
+// includeAction helper: whitelist actions to be added to the history
 export function includeAction (rawActions) {
   const actions = parseActions(rawActions)
   return (action) => actions.indexOf(action.type) >= 0
 }
 
-// excludeAction helper
+// excludeAction helper: blacklist actions from being added to the history
 export function excludeAction (rawActions) {
   const actions = parseActions(rawActions)
   return (action) => actions.indexOf(action.type) < 0
 }
 
-// combineFilters helper
+// combineFilters helper: combine multiple filters to one
 export function combineFilters (...filters) {
   return filters.reduce((prev, curr) =>
     (action, currentState, previousHistory) =>
