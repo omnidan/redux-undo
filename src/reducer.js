@@ -18,11 +18,17 @@ function insert (history, state, limit) {
   const { past, present } = history
   const historyOverflow = limit && length(history) >= limit
 
-  return {
-    past: [
+  const newPast = history.wasFiltered
+    ? past // if the last `present` was filtered, don't store it in the history
+    : [
       ...past.slice(historyOverflow ? 1 : 0),
       present
-    ],
+    ]
+
+  console.log('past:', JSON.stringify(newPast))
+
+  return {
+    past: newPast,
     present: state,
     future: []
   }
@@ -140,6 +146,9 @@ export default function undoable (reducer, rawConfig = {}) {
         history = config.history = createHistory(state)
         debug.log('initialHistory initialized: initialState is not a history', config.history)
       }
+
+      // do not store initialState in the history again
+      history.wasFiltered = true
     }
 
     let res
@@ -198,9 +207,14 @@ export default function undoable (reducer, rawConfig = {}) {
           return history
         }
 
+        // insert before filtering because the previous action might not have
+        // been filtered and `insert` checks for `wasFiltered` anyway
+        history = insert(history, res, config.limit)
+
         if (typeof config.filter === 'function' && !config.filter(action, res, history)) {
           const nextState = {
             ...history,
+            wasFiltered: true,
             present: res
           }
           debug.log('filter prevented action, not storing it')
@@ -208,7 +222,6 @@ export default function undoable (reducer, rawConfig = {}) {
           return nextState
         }
 
-        history = insert(history, res, config.limit)
         debug.log('inserted new state into history')
         debug.end(history)
         return history
