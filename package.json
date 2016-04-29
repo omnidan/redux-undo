@@ -3,6 +3,7 @@
   "version": "1.0.0-beta7",
   "description": "simple undo/redo functionality for redux state containers",
   "main": "lib/index.js",
+  "jspm": { "main": "src/index.js" },
   "scripts": {
     "build": "npm run build:commonjs && npm run build:umd && npm run build:umd:min && npm run build:es",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
