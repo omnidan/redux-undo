@@ -153,19 +153,49 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
     describe('Actions', () => {
       it('should not record unwanted actions', () => {
         if (testConfig && testConfig.FOR_TEST_ONLY_excludedActions) {
-          // don't record this action in history
-          let decrementedState = mockUndoableReducer(mockInitialState, { type: testConfig.FOR_TEST_ONLY_excludedActions[0] })
-          expect(decrementedState.past).to.deep.equal(mockInitialState.past)
-          expect(decrementedState.future).to.deep.equal(mockInitialState.future)
+          const excludedAction = { type: testConfig.FOR_TEST_ONLY_excludedActions[0] }
+          const notFilteredReducer = undoable(countReducer, { ...testConfig, filter: null })
+          let expected = notFilteredReducer(mockInitialState, excludedAction)
+          expected = {
+            ...expected,
+            // because action is filtered, this state should be indicated as filtered
+            wasFiltered: true
+          }
+          // should store state (to store the previous present caused by a not filtered action into the past)
+          let actual = mockUndoableReducer(mockInitialState, excludedAction)
+          expect(actual).to.deep.equal(expected)
+          // but not this one... (keeping the presents caused by filtered actions out of the past)
+          expected = {
+            ...expected,
+            present: notFilteredReducer(expected, excludedAction).present
+          }
+          actual = mockUndoableReducer(actual, excludedAction)
+          expect(actual).to.deep.equal(expected)
         }
 
         if (testConfig && testConfig.FOR_TEST_ONLY_includeActions) {
-          // only record this action in history
-          let tmpState = mockUndoableReducer(mockInitialState, { type: testConfig.FOR_TEST_ONLY_includeActions[0] })
-          let expected = { ...tmpState, present: tmpState.present + 1 }
-          // and not this one...
-          tmpState = mockUndoableReducer(tmpState, { type: 'INCREMENT' })
-          expect(tmpState).to.deep.equal(expected)
+          // should record this action's state in history
+          const includedAction = { type: testConfig.FOR_TEST_ONLY_includeActions[0] }
+          const excludedAction = { type: 'INCREMENT' }
+          const commonInitialState = mockUndoableReducer(mockInitialState, includedAction)
+
+          const notFilteredReducer = undoable(countReducer, { ...testConfig, filter: null })
+          let expected = notFilteredReducer(commonInitialState, excludedAction)
+          expected = {
+            ...expected,
+            // because increment action is filtered, this state should be indicated as filtered
+            wasFiltered: true
+          }
+          // and this one, (to store the previous present caused by a not filtered action into the past)
+          let actual = mockUndoableReducer(commonInitialState, excludedAction)
+          expect(actual).to.deep.equal(expected)
+          // but not this one... (keeping the presents caused by filtered actions out of the past)
+          expected = {
+            ...expected,
+            present: notFilteredReducer(expected, excludedAction).present
+          }
+          actual = mockUndoableReducer(actual, excludedAction)
+          expect(actual).to.deep.equal(expected)
         }
       })
 
