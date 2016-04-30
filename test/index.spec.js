@@ -304,7 +304,11 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
       })
 
       it('should change present state to equal state before undo', () => {
-        expect(redoState.present).to.equal(incrementedState.present)
+        // skip this test if steps are filtered out,
+        // because the action might have been was filtered it won't redo to it's state
+        if (testConfig && !testConfig.FOR_TEST_ONLY_includeActions) {
+          expect(redoState.present).to.equal(incrementedState.present)
+        }
       })
 
       it('should change present state to first element of \'future\'', () => {
@@ -359,8 +363,12 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
       })
 
       it('should increase the length of future if successful', () => {
-        if (incrementedState.past.length > jumpToPastIndex) {
-          expect(jumpToPastState.future.length).to.be.above(incrementedState.future.length)
+        // skip this test if steps are filtered out,
+        // because the action might have been was filtered it won't be added to the future
+        if (testConfig && !testConfig.FOR_TEST_ONLY_includeActions) {
+          if (incrementedState.past.length > jumpToPastIndex) {
+            expect(jumpToPastState.future.length).to.be.above(incrementedState.future.length)
+          }
         }
       })
 
