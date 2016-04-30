@@ -341,6 +341,20 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
           expect(secondRedoState.present).to.deep.equal(redoState.present)
         }
       })
+
+      it('should not redo to filtered state', () => {
+        if (testConfig && testConfig.FOR_TEST_ONLY_excludedActions) {
+          const excludedAction = { type: testConfig.FOR_TEST_ONLY_excludedActions[0] }
+          // handle excluded action on a not filtered initial state
+          let state = mockUndoableReducer(mockInitialState, excludedAction)
+          // undo
+          let postRedoState = mockUndoableReducer(state, ActionCreators.undo())
+          // redo
+          state = mockUndoableReducer(postRedoState, ActionCreators.redo())
+          // redo should be ignored, because future state wasn't stored
+          expect(state).to.deep.equal(postRedoState)
+        }
+      })
     })
 
     describe('JumpToPast', () => {
