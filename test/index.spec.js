@@ -155,9 +155,8 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
         if (testConfig && testConfig.FOR_TEST_ONLY_excludedActions) {
           const excludedAction = { type: testConfig.FOR_TEST_ONLY_excludedActions[0] }
           const notFilteredReducer = undoable(countReducer, { ...testConfig, filter: null })
-          let expected = notFilteredReducer(mockInitialState, excludedAction)
-          expected = {
-            ...expected,
+          let expected = {
+            ...notFilteredReducer(mockInitialState, excludedAction),
             // because action is filtered, this state should be indicated as filtered
             wasFiltered: true
           }
