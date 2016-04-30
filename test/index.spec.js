@@ -153,19 +153,48 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
     describe('Actions', () => {
       it('should not record unwanted actions', () => {
         if (testConfig && testConfig.FOR_TEST_ONLY_excludedActions) {
-          // don't record this action in history
-          let decrementedState = mockUndoableReducer(mockInitialState, { type: testConfig.FOR_TEST_ONLY_excludedActions[0] })
-          expect(decrementedState.past).to.deep.equal(mockInitialState.past)
-          expect(decrementedState.future).to.deep.equal(mockInitialState.future)
+          const excludedAction = { type: testConfig.FOR_TEST_ONLY_excludedActions[0] }
+          const notFilteredReducer = undoable(countReducer, { ...testConfig, filter: null })
+          let expected = {
+            ...notFilteredReducer(mockInitialState, excludedAction),
+            // because action is filtered, this state should be indicated as filtered
+            wasFiltered: true
+          }
+          // should store state (to store the previous present caused by a not filtered action into the past)
+          let actual = mockUndoableReducer(mockInitialState, excludedAction)
+          expect(actual).to.deep.equal(expected)
+          // but not this one... (keeping the presents caused by filtered actions out of the past)
+          expected = {
+            ...expected,
+            present: notFilteredReducer(expected, excludedAction).present
+          }
+          actual = mockUndoableReducer(actual, excludedAction)
+          expect(actual).to.deep.equal(expected)
         }
 
         if (testConfig && testConfig.FOR_TEST_ONLY_includeActions) {
-          // only record this action in history
-          let tmpState = mockUndoableReducer(mockInitialState, { type: testConfig.FOR_TEST_ONLY_includeActions[0] })
-          let expected = { ...tmpState, present: tmpState.present + 1 }
-          // and not this one...
-          tmpState = mockUndoableReducer(tmpState, { type: 'INCREMENT' })
-          expect(tmpState).to.deep.equal(expected)
+          // should record this action's state in history
+          const includedAction = { type: testConfig.FOR_TEST_ONLY_includeActions[0] }
+          const excludedAction = { type: 'INCREMENT' }
+          const commonInitialState = mockUndoableReducer(mockInitialState, includedAction)
+
+          const notFilteredReducer = undoable(countReducer, { ...testConfig, filter: null })
+          let expected = notFilteredReducer(commonInitialState, excludedAction)
+          expected = {
+            ...expected,
+            // because increment action is filtered, this state should be indicated as filtered
+            wasFiltered: true
+          }
+          // and this one, (to store the previous present caused by a not filtered action into the past)
+          let actual = mockUndoableReducer(commonInitialState, excludedAction)
+          expect(actual).to.deep.equal(expected)
+          // but not this one... (keeping the presents caused by filtered actions out of the past)
+          expected = {
+            ...expected,
+            present: notFilteredReducer(expected, excludedAction).present
+          }
+          actual = mockUndoableReducer(actual, excludedAction)
+          expect(actual).to.deep.equal(expected)
         }
       })
 
@@ -246,6 +275,23 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
           expect(undoInitialState.present).to.deep.equal(mockInitialState.present)
         }
       })
+
+      it('should undo to last not filtered state', () => {
+        if (testConfig && testConfig.FOR_TEST_ONLY_excludedActions) {
+          const excludedAction = { type: testConfig.FOR_TEST_ONLY_excludedActions[0] }
+          const includedAction = { type: 'INCREMENT' }
+          // handle excluded action on a not filtered initial state
+          let state = mockUndoableReducer(mockInitialState, excludedAction)
+          // handle excluded action 2
+          state = mockUndoableReducer(state, excludedAction)
+          // handle not excluded action
+          const preUndoState = mockUndoableReducer(state, includedAction)
+          // undo
+          state = mockUndoableReducer(preUndoState, ActionCreators.undo())
+          // should undo to (not filtered) initial present
+          expect(state.present).to.deep.equal(preUndoState.past[preUndoState.past.length - 1])
+        }
+      })
     })
 
     describe('Redo', () => {
@@ -257,7 +303,11 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
       })
 
       it('should change present state to equal state before undo', () => {
-        expect(redoState.present).to.equal(incrementedState.present)
+        // skip this test if steps are filtered out,
+        // because the action might have been was filtered it won't redo to it's state
+        if (testConfig && !testConfig.FOR_TEST_ONLY_includeActions) {
+          expect(redoState.present).to.equal(incrementedState.present)
+        }
       })
 
       it('should change present state to first element of \'future\'', () => {
@@ -290,6 +340,20 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
           expect(secondRedoState.present).to.deep.equal(redoState.present)
         }
       })
+
+      it('should not redo to filtered state', () => {
+        if (testConfig && testConfig.FOR_TEST_ONLY_excludedActions) {
+          const excludedAction = { type: testConfig.FOR_TEST_ONLY_excludedActions[0] }
+          // handle excluded action on a not filtered initial state
+          let state = mockUndoableReducer(mockInitialState, excludedAction)
+          // undo
+          let postRedoState = mockUndoableReducer(state, ActionCreators.undo())
+          // redo
+          state = mockUndoableReducer(postRedoState, ActionCreators.redo())
+          // redo should be ignored, because future state wasn't stored
+          expect(state).to.deep.equal(postRedoState)
+        }
+      })
     })
 
     describe('JumpToPast', () => {
@@ -312,8 +376,12 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
       })
 
       it('should increase the length of future if successful', () => {
-        if (incrementedState.past.length > jumpToPastIndex) {
-          expect(jumpToPastState.future.length).to.be.above(incrementedState.future.length)
+        // skip this test if steps are filtered out,
+        // because the action might have been was filtered it won't be added to the future
+        if (testConfig && !testConfig.FOR_TEST_ONLY_includeActions) {
+          if (incrementedState.past.length > jumpToPastIndex) {
+            expect(jumpToPastState.future.length).to.be.above(incrementedState.future.length)
+          }
         }
       })
 
@@ -382,7 +450,11 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
       })
 
       it('-2 steps should result in same state as two times undo', () => {
-        expect(doubleUndoState).to.deep.equal(jumpToPastState)
+        // skip this test if steps are filtered out,
+        // because the double undo would be out of bounds and thus ignored
+        if (testConfig && !testConfig.FOR_TEST_ONLY_includeActions) {
+          expect(doubleUndoState).to.deep.equal(jumpToPastState)
+        }
       })
 
       it('+2 steps should result in same state as two times redo', () => {
