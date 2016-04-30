@@ -412,7 +412,11 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
       })
 
       it('-2 steps should result in same state as two times undo', () => {
-        expect(doubleUndoState).to.deep.equal(jumpToPastState)
+        // skip this test if steps are filtered out,
+        // because the double undo would be out of bounds and thus ignored
+        if (testConfig && !testConfig.FOR_TEST_ONLY_includeActions) {
+          expect(doubleUndoState).to.deep.equal(jumpToPastState)
+        }
       })
 
       it('+2 steps should result in same state as two times redo', () => {
