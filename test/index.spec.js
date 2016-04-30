@@ -4,55 +4,71 @@ import undoable, { ActionCreators, excludeAction, includeAction, isHistory } fro
 
 const decrementActions = ['DECREMENT']
 
-const testConfigZero = {
-  FOR_TEST_ONLY_includeActions: decrementActions,
-  filter: includeAction(decrementActions)
-}
-
-const testConfigOne = {
-  limit: 100,
-  initTypes: 'RE-INITIALIZE',
-  FOR_TEST_ONLY_excludedActions: decrementActions,
-  filter: excludeAction(decrementActions)
-}
-const initialStateOne = {
-  past: [0, 1, 2, 3],
-  present: 4,
-  future: [5, 6, 7]
-}
-
-const testConfigTwo = {
-  limit: 1024,
-  initTypes: 'RE-INITIALIZE'
-}
-const initialStateTwo = {
-  past: [123],
-  present: 5,
-  future: [-1, -2, -3]
-}
-
-const testConfigThree = {
-  limit: -1,
-  initTypes: []
-}
-const initialStateThree = {
-  past: [5, {}, 3, null, 1],
-  present: Math.pow(2, 32),
-  future: []
-}
-
-runTestWithConfig(undefined, undefined, 'Default config')
-runTestWithConfig({ initTypes: [] }, undefined, 'No Init types')
-runTestWithConfig({ limit: 200 }, 100, 'Initial State equals 100')
-runTestWithConfig({}, {'present': 0}, 'Initial State that looks like a history')
-runTestWithConfig(testConfigZero, undefined, 'Filter (Include Actions)')
-runTestWithConfig(testConfigOne, initialStateOne, 'Initial History and Filter (Exclude Actions)')
-runTestWithConfig(testConfigTwo, initialStateTwo, 'Initial State and Init types')
-runTestWithConfig(testConfigThree, initialStateThree, 'Erroneous configuration')
+runTests('Default config')
+runTests('No Init types', {
+  undoableConfig: {
+    initTypes: []
+  }
+})
+runTests('Initial State equals 100', {
+  undoableConfig: {
+    limit: 200
+  },
+  initialStoreState: 100
+})
+runTests('Initial State that looks like a history', {
+  undoableConfig: {},
+  initialStoreState: {'present': 0}
+})
+runTests('Filter (Include Actions)', {
+  undoableConfig: {
+    filter: includeAction(decrementActions)
+  },
+  testConfig: {
+    includeActions: decrementActions
+  }
+})
+runTests('Initial History and Filter (Exclude Actions)', {
+  undoableConfig: {
+    limit: 100,
+    initTypes: 'RE-INITIALIZE',
+    filter: excludeAction(decrementActions)
+  },
+  initialStoreState: {
+    past: [0, 1, 2, 3],
+    present: 4,
+    future: [5, 6, 7]
+  },
+  testConfig: {
+    excludedActions: decrementActions
+  }
+})
+runTests('Initial State and Init types', {
+  undoableConfig: {
+    limit: 1024,
+    initTypes: 'RE-INITIALIZE'
+  },
+  initialStoreState: {
+    past: [123],
+    present: 5,
+    future: [-1, -2, -3]
+  }
+})
+runTests('Erroneous configuration', {
+  undoableConfig: {
+    limit: -1,
+    initTypes: []
+  },
+  initialStoreState: {
+    past: [5, {}, 3, null, 1],
+    present: Math.pow(2, 32),
+    future: []
+  }
+})
 
 // Test undoable reducers as a function of a configuration object
 // `label` describes the nature of the configuration object used to run a test
-function runTestWithConfig (testConfig, initialStoreState, label) {
+function runTests (label, { undoableConfig, initialStoreState, testConfig } = {}) {
   describe('Undoable: ' + label, () => {
     const countReducer = (state = 0, action = {}) => {
       switch (action.type) {
@@ -65,25 +81,14 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
       }
     }
 
-    const tenfoldReducer = (state = 10, action = {}) => {
-      switch (action.type) {
-        case 'INCREMENT':
-          return state + 10
-        case 'DECREMENT':
-          return state - 10
-        default:
-          return state
-      }
-    }
-
     let mockUndoableReducer
     let mockInitialState
     let incrementedState
     let store
 
     before('setup mock reducers and states', () => {
-      // testConfig.debug = true
-      mockUndoableReducer = undoable(countReducer, testConfig)
+      // undoableConfig.debug = true
+      mockUndoableReducer = undoable(countReducer, undoableConfig)
       store = createStore(mockUndoableReducer, initialStoreState)
 
       mockInitialState = mockUndoableReducer(undefined, {})
@@ -123,8 +128,18 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
     })
 
     describe('Replace reducers on the fly', () => {
+      const tenfoldReducer = (state = 10, action = {}) => {
+        switch (action.type) {
+          case 'INCREMENT':
+            return state + 10
+          case 'DECREMENT':
+            return state - 10
+          default:
+            return state
+        }
+      }
       it('should preserve state when reducers are replaced', () => {
-        store.replaceReducer(undoable(tenfoldReducer, testConfig))
+        store.replaceReducer(undoable(tenfoldReducer, undoableConfig))
         expect(store.getState()).to.deep.equal(mockInitialState)
 
         // swap back for other tests
@@ -133,7 +148,7 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
       })
 
       it('should use replaced reducer for new actions', () => {
-        store.replaceReducer(undoable(tenfoldReducer, testConfig))
+        store.replaceReducer(undoable(tenfoldReducer, undoableConfig))
 
         // Increment and check result
         let expectedResult = tenfoldReducer(store.getState().present, {type: 'INCREMENT'})
@@ -152,9 +167,9 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
 
     describe('Actions', () => {
       it('should not record unwanted actions', () => {
-        if (testConfig && testConfig.FOR_TEST_ONLY_excludedActions) {
-          const excludedAction = { type: testConfig.FOR_TEST_ONLY_excludedActions[0] }
-          const notFilteredReducer = undoable(countReducer, { ...testConfig, filter: null })
+        if (testConfig && testConfig.excludedActions) {
+          const excludedAction = { type: testConfig.excludedActions[0] }
+          const notFilteredReducer = undoable(countReducer, { ...undoableConfig, filter: null })
           let expected = {
             ...notFilteredReducer(mockInitialState, excludedAction),
             // because action is filtered, this state should be indicated as filtered
@@ -172,13 +187,13 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
           expect(actual).to.deep.equal(expected)
         }
 
-        if (testConfig && testConfig.FOR_TEST_ONLY_includeActions) {
+        if (testConfig && testConfig.includeActions) {
           // should record this action's state in history
-          const includedAction = { type: testConfig.FOR_TEST_ONLY_includeActions[0] }
+          const includedAction = { type: testConfig.includeActions[0] }
           const excludedAction = { type: 'INCREMENT' }
           const commonInitialState = mockUndoableReducer(mockInitialState, includedAction)
 
-          const notFilteredReducer = undoable(countReducer, { ...testConfig, filter: null })
+          const notFilteredReducer = undoable(countReducer, { ...undoableConfig, filter: null })
           let expected = notFilteredReducer(commonInitialState, excludedAction)
           expected = {
             ...expected,
@@ -210,9 +225,9 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
 
       it('should reset upon init actions', () => {
         let reInitializedState
-        if (testConfig && testConfig.initTypes) {
-          if (testConfig && testConfig.initTypes.length) {
-            let initType = Array.isArray(testConfig.initTypes) ? testConfig.initTypes[0] : testConfig.initTypes
+        if (undoableConfig && undoableConfig.initTypes) {
+          if (undoableConfig.initTypes.length > 0) {
+            let initType = Array.isArray(undoableConfig.initTypes) ? undoableConfig.initTypes[0] : undoableConfig.initTypes
             reInitializedState = mockUndoableReducer(incrementedState, { type: initType })
             expect(reInitializedState).to.deep.equal(mockInitialState)
           } else {
@@ -240,31 +255,31 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
       })
 
       it('should change present state back by one action', () => {
-        if (testConfig && testConfig.limit >= 0) {
+        if (undoableConfig && undoableConfig.limit >= 0) {
           expect(undoState.present).to.equal(mockInitialState.present)
         }
       })
 
       it('should change present state to last element of \'past\'', () => {
-        if (testConfig && testConfig.limit >= 0) {
+        if (undoableConfig && undoableConfig.limit >= 0) {
           expect(undoState.present).to.equal(incrementedState.past[incrementedState.past.length - 1])
         }
       })
 
       it('should add a new element to \'future\' from last state', () => {
-        if (testConfig && testConfig.limit >= 0) {
+        if (undoableConfig && undoableConfig.limit >= 0) {
           expect(undoState.future[0]).to.equal(incrementedState.present)
         }
       })
 
       it('should decrease length of \'past\' by one', () => {
-        if (testConfig && testConfig.limit >= 0) {
+        if (undoableConfig && undoableConfig.limit >= 0) {
           expect(undoState.past.length).to.equal(incrementedState.past.length - 1)
         }
       })
 
       it('should increase length of \'future\' by one', () => {
-        if (testConfig && testConfig.limit >= 0) {
+        if (undoableConfig && undoableConfig.limit >= 0) {
           expect(undoState.future.length).to.equal(incrementedState.future.length + 1)
         }
       })
@@ -277,8 +292,8 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
       })
 
       it('should undo to last not filtered state', () => {
-        if (testConfig && testConfig.FOR_TEST_ONLY_excludedActions) {
-          const excludedAction = { type: testConfig.FOR_TEST_ONLY_excludedActions[0] }
+        if (testConfig && testConfig.excludedActions) {
+          const excludedAction = { type: testConfig.excludedActions[0] }
           const includedAction = { type: 'INCREMENT' }
           // handle excluded action on a not filtered initial state
           let state = mockUndoableReducer(mockInitialState, excludedAction)
@@ -305,31 +320,31 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
       it('should change present state to equal state before undo', () => {
         // skip this test if steps are filtered out,
         // because the action might have been was filtered it won't redo to it's state
-        if (testConfig && !testConfig.FOR_TEST_ONLY_includeActions) {
+        if (testConfig && !testConfig.includeActions) {
           expect(redoState.present).to.equal(incrementedState.present)
         }
       })
 
       it('should change present state to first element of \'future\'', () => {
-        if (testConfig && testConfig.limit >= 0) {
+        if (undoableConfig && undoableConfig.limit >= 0) {
           expect(redoState.present).to.equal(undoState.future[0])
         }
       })
 
       it('should add a new element to \'past\' from last state', () => {
-        if (testConfig && testConfig.limit >= 0) {
+        if (undoableConfig && undoableConfig.limit >= 0) {
           expect(redoState.past[redoState.past.length - 1]).to.equal(undoState.present)
         }
       })
 
       it('should decrease length of \'future\' by one', () => {
-        if (testConfig && testConfig.limit >= 0) {
+        if (undoableConfig && undoableConfig.limit >= 0) {
           expect(redoState.future.length).to.equal(undoState.future.length - 1)
         }
       })
 
       it('should increase length of \'past\' by one', () => {
-        if (testConfig && testConfig.limit >= 0) {
+        if (undoableConfig && undoableConfig.limit >= 0) {
           expect(redoState.past.length).to.equal(undoState.past.length + 1)
         }
       })
@@ -342,8 +357,8 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
       })
 
       it('should not redo to filtered state', () => {
-        if (testConfig && testConfig.FOR_TEST_ONLY_excludedActions) {
-          const excludedAction = { type: testConfig.FOR_TEST_ONLY_excludedActions[0] }
+        if (testConfig && testConfig.excludedActions) {
+          const excludedAction = { type: testConfig.excludedActions[0] }
           // handle excluded action on a not filtered initial state
           let state = mockUndoableReducer(mockInitialState, excludedAction)
           // undo
@@ -378,7 +393,7 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
       it('should increase the length of future if successful', () => {
         // skip this test if steps are filtered out,
         // because the action might have been was filtered it won't be added to the future
-        if (testConfig && !testConfig.FOR_TEST_ONLY_includeActions) {
+        if (testConfig && !testConfig.includeActions) {
           if (incrementedState.past.length > jumpToPastIndex) {
             expect(jumpToPastState.future.length).to.be.above(incrementedState.future.length)
           }
@@ -452,7 +467,7 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
       it('-2 steps should result in same state as two times undo', () => {
         // skip this test if steps are filtered out,
         // because the double undo would be out of bounds and thus ignored
-        if (testConfig && !testConfig.FOR_TEST_ONLY_includeActions) {
+        if (testConfig && !testConfig.includeActions) {
           expect(doubleUndoState).to.deep.equal(jumpToPastState)
         }
       })
