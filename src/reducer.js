@@ -40,13 +40,17 @@ function undo (history) {
 
   if (past.length <= 0) return history
 
-  return {
-    past: past.slice(0, past.length - 1), // remove last element from past
-    present: past[past.length - 1], // set element as new present
-    future: [
+  const newFuture = history.wasFiltered
+    ? future // if the last `present` was filtered, don't store it in the future
+    : [
       present, // old present state is in the future now
       ...future
     ]
+
+  return {
+    past: past.slice(0, past.length - 1), // remove last element from past
+    present: past[past.length - 1], // set element as new present
+    future: newFuture
   }
 }
 
