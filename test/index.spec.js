@@ -6,22 +6,22 @@ const decrementActions = ['DECREMENT']
 
 runTests('Default config')
 runTests('No Init types', {
-  unduableConfig: {
+  undoableConfig: {
     initTypes: []
   }
 })
 runTests('Initial State equals 100', {
-  unduableConfig: {
+  undoableConfig: {
     limit: 200
   },
   initialStoreState: 100
 })
 runTests('Initial State that looks like a history', {
-  unduableConfig: {},
+  undoableConfig: {},
   initialStoreState: {'present': 0}
 })
 runTests('Filter (Include Actions)', {
-  unduableConfig: {
+  undoableConfig: {
     filter: includeAction(decrementActions)
   },
   testConfig: {
@@ -29,7 +29,7 @@ runTests('Filter (Include Actions)', {
   }
 })
 runTests('Initial History and Filter (Exclude Actions)', {
-  unduableConfig: {
+  undoableConfig: {
     limit: 100,
     initTypes: 'RE-INITIALIZE',
     filter: excludeAction(decrementActions)
@@ -44,7 +44,7 @@ runTests('Initial History and Filter (Exclude Actions)', {
   }
 })
 runTests('Initial State and Init types', {
-  unduableConfig: {
+  undoableConfig: {
     limit: 1024,
     initTypes: 'RE-INITIALIZE'
   },
@@ -55,7 +55,7 @@ runTests('Initial State and Init types', {
   }
 })
 runTests('Erroneous configuration', {
-  unduableConfig: {
+  undoableConfig: {
     limit: -1,
     initTypes: []
   },
@@ -68,7 +68,7 @@ runTests('Erroneous configuration', {
 
 // Test undoable reducers as a function of a configuration object
 // `label` describes the nature of the configuration object used to run a test
-function runTests (label, { unduableConfig, initialStoreState, testConfig } = {}) {
+function runTests (label, { undoableConfig, initialStoreState, testConfig } = {}) {
   describe('Undoable: ' + label, () => {
     const countReducer = (state = 0, action = {}) => {
       switch (action.type) {
@@ -87,8 +87,8 @@ function runTests (label, { unduableConfig, initialStoreState, testConfig } = {}
     let store
 
     before('setup mock reducers and states', () => {
-      // unduableConfig.debug = true
-      mockUndoableReducer = undoable(countReducer, unduableConfig)
+      // undoableConfig.debug = true
+      mockUndoableReducer = undoable(countReducer, undoableConfig)
       store = createStore(mockUndoableReducer, initialStoreState)
 
       mockInitialState = mockUndoableReducer(undefined, {})
@@ -139,7 +139,7 @@ function runTests (label, { unduableConfig, initialStoreState, testConfig } = {}
         }
       }
       it('should preserve state when reducers are replaced', () => {
-        store.replaceReducer(undoable(tenfoldReducer, unduableConfig))
+        store.replaceReducer(undoable(tenfoldReducer, undoableConfig))
         expect(store.getState()).to.deep.equal(mockInitialState)
 
         // swap back for other tests
@@ -148,7 +148,7 @@ function runTests (label, { unduableConfig, initialStoreState, testConfig } = {}
       })
 
       it('should use replaced reducer for new actions', () => {
-        store.replaceReducer(undoable(tenfoldReducer, unduableConfig))
+        store.replaceReducer(undoable(tenfoldReducer, undoableConfig))
 
         // Increment and check result
         let expectedResult = tenfoldReducer(store.getState().present, {type: 'INCREMENT'})
@@ -196,9 +196,9 @@ function runTests (label, { unduableConfig, initialStoreState, testConfig } = {}
 
       it('should reset upon init actions', () => {
         let reInitializedState
-        if (unduableConfig && unduableConfig.initTypes) {
-          if (unduableConfig.initTypes.length > 0) {
-            let initType = Array.isArray(unduableConfig.initTypes) ? unduableConfig.initTypes[0] : unduableConfig.initTypes
+        if (undoableConfig && undoableConfig.initTypes) {
+          if (undoableConfig.initTypes.length > 0) {
+            let initType = Array.isArray(undoableConfig.initTypes) ? undoableConfig.initTypes[0] : undoableConfig.initTypes
             reInitializedState = mockUndoableReducer(incrementedState, { type: initType })
             expect(reInitializedState).to.deep.equal(mockInitialState)
           } else {
@@ -226,31 +226,31 @@ function runTests (label, { unduableConfig, initialStoreState, testConfig } = {}
       })
 
       it('should change present state back by one action', () => {
-        if (unduableConfig && unduableConfig.limit >= 0) {
+        if (undoableConfig && undoableConfig.limit >= 0) {
           expect(undoState.present).to.equal(mockInitialState.present)
         }
       })
 
       it('should change present state to last element of \'past\'', () => {
-        if (unduableConfig && unduableConfig.limit >= 0) {
+        if (undoableConfig && undoableConfig.limit >= 0) {
           expect(undoState.present).to.equal(incrementedState.past[incrementedState.past.length - 1])
         }
       })
 
       it('should add a new element to \'future\' from last state', () => {
-        if (unduableConfig && unduableConfig.limit >= 0) {
+        if (undoableConfig && undoableConfig.limit >= 0) {
           expect(undoState.future[0]).to.equal(incrementedState.present)
         }
       })
 
       it('should decrease length of \'past\' by one', () => {
-        if (unduableConfig && unduableConfig.limit >= 0) {
+        if (undoableConfig && undoableConfig.limit >= 0) {
           expect(undoState.past.length).to.equal(incrementedState.past.length - 1)
         }
       })
 
       it('should increase length of \'future\' by one', () => {
-        if (unduableConfig && unduableConfig.limit >= 0) {
+        if (undoableConfig && undoableConfig.limit >= 0) {
           expect(undoState.future.length).to.equal(incrementedState.future.length + 1)
         }
       })
@@ -276,25 +276,25 @@ function runTests (label, { unduableConfig, initialStoreState, testConfig } = {}
       })
 
       it('should change present state to first element of \'future\'', () => {
-        if (unduableConfig && unduableConfig.limit >= 0) {
+        if (undoableConfig && undoableConfig.limit >= 0) {
           expect(redoState.present).to.equal(undoState.future[0])
         }
       })
 
       it('should add a new element to \'past\' from last state', () => {
-        if (unduableConfig && unduableConfig.limit >= 0) {
+        if (undoableConfig && undoableConfig.limit >= 0) {
           expect(redoState.past[redoState.past.length - 1]).to.equal(undoState.present)
         }
       })
 
       it('should decrease length of \'future\' by one', () => {
-        if (unduableConfig && unduableConfig.limit >= 0) {
+        if (undoableConfig && undoableConfig.limit >= 0) {
           expect(redoState.future.length).to.equal(undoState.future.length - 1)
         }
       })
 
       it('should increase length of \'past\' by one', () => {
-        if (unduableConfig && unduableConfig.limit >= 0) {
+        if (undoableConfig && undoableConfig.limit >= 0) {
           expect(redoState.past.length).to.equal(undoState.past.length + 1)
         }
       })
