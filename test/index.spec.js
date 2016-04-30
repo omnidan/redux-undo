@@ -197,7 +197,7 @@ function runTests (label, { unduableConfig, initialStoreState, testConfig } = {}
       it('should reset upon init actions', () => {
         let reInitializedState
         if (unduableConfig && unduableConfig.initTypes) {
-          if (unduableConfig && unduableConfig.initTypes.length) {
+          if (unduableConfig.initTypes.length > 0) {
             let initType = Array.isArray(unduableConfig.initTypes) ? unduableConfig.initTypes[0] : unduableConfig.initTypes
             reInitializedState = mockUndoableReducer(incrementedState, { type: initType })
             expect(reInitializedState).to.deep.equal(mockInitialState)
