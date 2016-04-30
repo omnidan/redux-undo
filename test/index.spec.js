@@ -81,17 +81,6 @@ function runTests (label, { unduableConfig, initialStoreState, testConfig } = {}
       }
     }
 
-    const tenfoldReducer = (state = 10, action = {}) => {
-      switch (action.type) {
-        case 'INCREMENT':
-          return state + 10
-        case 'DECREMENT':
-          return state - 10
-        default:
-          return state
-      }
-    }
-
     let mockUndoableReducer
     let mockInitialState
     let incrementedState
@@ -139,6 +128,16 @@ function runTests (label, { unduableConfig, initialStoreState, testConfig } = {}
     })
 
     describe('Replace reducers on the fly', () => {
+      const tenfoldReducer = (state = 10, action = {}) => {
+        switch (action.type) {
+          case 'INCREMENT':
+            return state + 10
+          case 'DECREMENT':
+            return state - 10
+          default:
+            return state
+        }
+      }
       it('should preserve state when reducers are replaced', () => {
         store.replaceReducer(undoable(tenfoldReducer, unduableConfig))
         expect(store.getState()).to.deep.equal(mockInitialState)
