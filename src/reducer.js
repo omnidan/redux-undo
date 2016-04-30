@@ -146,9 +146,6 @@ export default function undoable (reducer, rawConfig = {}) {
         history = config.history = createHistory(state)
         debug.log('initialHistory initialized: initialState is not a history', config.history)
       }
-
-      // do not store initialState in the history again
-      history.wasFiltered = true
     }
 
     let res
