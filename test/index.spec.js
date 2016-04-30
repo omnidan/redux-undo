@@ -276,6 +276,23 @@ function runTestWithConfig (testConfig, initialStoreState, label) {
           expect(undoInitialState.present).to.deep.equal(mockInitialState.present)
         }
       })
+
+      it('should undo to last not filtered state', () => {
+        if (testConfig && testConfig.FOR_TEST_ONLY_excludedActions) {
+          const excludedAction = { type: testConfig.FOR_TEST_ONLY_excludedActions[0] }
+          const includedAction = { type: 'INCREMENT' }
+          // handle excluded action on a not filtered initial state
+          let state = mockUndoableReducer(mockInitialState, excludedAction)
+          // handle excluded action 2
+          state = mockUndoableReducer(state, excludedAction)
+          // handle not excluded action
+          const preUndoState = mockUndoableReducer(state, includedAction)
+          // undo
+          state = mockUndoableReducer(preUndoState, ActionCreators.undo())
+          // should undo to (not filtered) initial present
+          expect(state.present).to.deep.equal(preUndoState.past[preUndoState.past.length - 1])
+        }
+      })
     })
 
     describe('Redo', () => {
