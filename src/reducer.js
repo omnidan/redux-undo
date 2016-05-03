@@ -25,8 +25,6 @@ function insert (history, state, limit) {
       present
     ]
 
-  console.log('past:', JSON.stringify(newPast))
-
   return {
     past: newPast,
     present: state,
