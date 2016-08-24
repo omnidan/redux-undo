@@ -200,14 +200,14 @@ export default function undoable (reducer, rawConfig = {}) {
           return config.history
         }
 
-        const wasFiltered = typeof config.filter === 'function' && !config.filter(action, res, history);
+        const wasFiltered = (typeof config.filter === 'function' && !config.filter(action, res, history))
 
         if (history.present === res) {
           // Don't handle this action. Do not call debug.end here,
           // because this action should not produce side effects to the console
           return {
-            ...history
-            wasFiltered,
+            ...history,
+            wasFiltered
           }
         }
 
