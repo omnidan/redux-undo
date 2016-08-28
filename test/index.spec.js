@@ -505,5 +505,35 @@ function runTests (label, { undoableConfig, initialStoreState, testConfig } = {}
         expect(clearedState.present).to.equal(incrementedState.present)
       })
     })
+
+    describe('Change Filter', () => {
+      let filteredState, notFilteredState, filteredReducer, notFilteredReducer
+
+      before('perform a changeFilter action to not record action', () => {
+        filteredReducer = undoable(countReducer, {})
+      })
+
+      it('should not record unwanted actions', () => {
+        filteredState = filteredReducer(mockInitialState, { type: 'INCREMENT' })
+        filteredState = filteredReducer(filteredState, ActionCreators.changeFilter(excludeAction(decrementActions)))
+        notFilteredReducer = undoable(countReducer, { filter: null })
+        notFilteredState = notFilteredReducer(mockInitialState, { type: 'INCREMENT' })
+
+        filteredState = filteredReducer(filteredState, { type: 'DECREMENT' })
+        filteredState = filteredReducer(filteredState, { type: 'DECREMENT' })
+        expect(filteredState.past).to.deep.equal(notFilteredState.past)
+      })
+
+      it('should record wanted actions', () => {
+        filteredState = filteredReducer(mockInitialState, { type: 'INCREMENT' })
+        filteredState = filteredReducer(filteredState, ActionCreators.changeFilter(excludeAction(decrementActions)))
+        notFilteredReducer = undoable(countReducer, { filter: null })
+        notFilteredState = notFilteredReducer(mockInitialState, { type: 'INCREMENT' })
+
+        filteredState = filteredReducer(filteredState, { type: 'INCREMENT' })
+        notFilteredState = notFilteredReducer(notFilteredState, { type: 'INCREMENT' })
+        expect(filteredState).to.deep.equal(notFilteredState)
+      })
+    })
   })
 }

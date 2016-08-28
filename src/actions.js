@@ -4,7 +4,8 @@ export const ActionTypes = {
   JUMP_TO_FUTURE: '@@redux-undo/JUMP_TO_FUTURE',
   JUMP_TO_PAST: '@@redux-undo/JUMP_TO_PAST',
   JUMP: '@@redux-undo/JUMP',
-  CLEAR_HISTORY: '@@redux-undo/CLEAR_HISTORY'
+  CLEAR_HISTORY: '@@redux-undo/CLEAR_HISTORY',
+  CHANGE_FILTER: '@@redux-undo/CHANGE_FILTER'
 }
 
 export const ActionCreators = {
@@ -25,5 +26,8 @@ export const ActionCreators = {
   },
   clearHistory () {
     return { type: ActionTypes.CLEAR_HISTORY }
+  },
+  changeFilter (filter) {
+    return { type: ActionTypes.CHANGE_FILTER, filter }
   }
 }
