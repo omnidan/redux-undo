@@ -128,9 +128,11 @@ export default function undoable (reducer, rawConfig = {}) {
     jumpToPastType: rawConfig.jumpToPastType || ActionTypes.JUMP_TO_PAST,
     jumpToFutureType: rawConfig.jumpToFutureType || ActionTypes.JUMP_TO_FUTURE,
     jumpType: rawConfig.jumpType || ActionTypes.JUMP,
-    clearHistoryType: rawConfig.clearHistoryType || ActionTypes.CLEAR_HISTORY
+    clearHistoryType: rawConfig.clearHistoryType || ActionTypes.CLEAR_HISTORY,
+    changeFilter: rawConfig.changeFilterType || ActionTypes.CHANGE_FILTER
   }
 
+  let wasChangedFilter = false
   return (state = config.history, action = {}) => {
     debug.start(action, state)
 
@@ -191,6 +193,13 @@ export default function undoable (reducer, rawConfig = {}) {
         debug.end(res)
         return res
 
+      case config.changeFilter:
+        config.filter = action.filter
+        debug.log('perform changeFilter')
+        debug.end(history)
+        wasChangedFilter = true
+        return history
+
       default:
         res = reducer(history.present, action)
 
@@ -204,6 +213,11 @@ export default function undoable (reducer, rawConfig = {}) {
           // Don't handle this action. Do not call debug.end here,
           // because this action should not produce side effects to the console
           return history
+        }
+
+        if (wasChangedFilter && typeof config.filter === 'function' && !config.filter(action, res, history)) {
+          history.wasFiltered = true
+          wasChangedFilter = false
         }
 
         // insert before filtering because the previous action might not have
