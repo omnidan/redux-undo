@@ -123,6 +123,7 @@ export default function undoable (reducer, rawConfig = {}) {
     initTypes: parseActions(rawConfig.initTypes, ['@@redux-undo/INIT']),
     limit: rawConfig.limit,
     filter: rawConfig.filter || (() => true),
+    resetFilter: rawConfig.resetFilter || (() => false),
     undoType: rawConfig.undoType || ActionTypes.UNDO,
     redoType: rawConfig.redoType || ActionTypes.REDO,
     jumpToPastType: rawConfig.jumpToPastType || ActionTypes.JUMP_TO_PAST,
@@ -201,6 +202,16 @@ export default function undoable (reducer, rawConfig = {}) {
         }
 
         if (history.present === res) {
+          if (history.wasFiltered && typeof config.resetFilter === 'function' &&
+              config.resetFilter(action, res, history)) {
+            const nextState = {
+              ...history,
+              wasFiltered: false
+            }
+            debug.log('filter reset, storing previously filtered action')
+            debug.end(nextState)
+            return nextState
+          }
           // Don't handle this action. Do not call debug.end here,
           // because this action should not produce side effects to the console
           return history
