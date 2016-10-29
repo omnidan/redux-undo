@@ -185,6 +185,7 @@ export default function undoable (reducer, rawConfig = {}) {
         debug.end(res)
         return res
 
+      // WIP adressing #126
       case config.clearHistoryType:
         res = createHistory(history.present)
         debug.log('perform clearHistory')
