@@ -2,10 +2,9 @@ import * as debug from './debug'
 import { ActionTypes } from './actions'
 import { parseActions, isHistory } from './helpers'
 
-// length: get length of history
-function length (history) {
-  const { past, future } = history
-  return past.length + 1 + future.length
+// lengthWithoutFuture: get length of history
+function lengthWithoutFuture (history) {
+  return history.past.length + 1
 }
 
 // insert: insert `state` into history, which means adding the current state
@@ -13,10 +12,10 @@ function length (history) {
 //         the `future`.
 function insert (history, state, limit) {
   debug.log('inserting', state)
-  debug.log('new free: ', limit - length(history))
+  debug.log('new free: ', limit - lengthWithoutFuture(history))
 
   const { past, present } = history
-  const historyOverflow = limit && length(history) >= limit
+  const historyOverflow = limit && lengthWithoutFuture(history) >= limit
 
   const newPast = history.wasFiltered
     ? past // if the last `present` was filtered, don't store it in the history
