@@ -8,7 +8,7 @@ module 'redux-undo' {
   }
 
   export type FilterFunction = (action: Action) => boolean;
-  export type combineFilters = (...filters: FilterFunction[]) => FilterFunction;
+  export type CombineFilters = (...filters: FilterFunction[]) => FilterFunction;
 
   interface Options {
     /* Set a limit for the history */
@@ -45,8 +45,8 @@ module 'redux-undo' {
   }
 
 
-  type includeAction = (actions: string | string[]) => FilterFunction;
-  type excludeAction = typeof includeAction;
+  type IncludeAction = (actions: string | string[]) => FilterFunction;
+  type ExcludeAction = typeof IncludeAction;
 
   const undoable: Undoable;
 
@@ -56,13 +56,13 @@ module 'redux-undo' {
    * If you don't want to include every action in the undo/redo history, you can add a filter function to undoable.
    * redux-undo provides you with the includeAction and excludeAction helpers for basic filtering.
    */
-  export const includeAction: includeAction;
+  export const includeAction: IncludeAction;
 
   /**
    * If you don't want to include every action in the undo/redo history, you can add a filter function to undoable.
    * redux-undo provides you with the includeAction and excludeAction helpers for basic filtering.
    */
-  export const excludeAction: excludeAction;
+  export const excludeAction: ExcludeAction;
 
-  export const combineFilters: combineFilters;
+  export const combineFilters: CombineFilters;
 }
