@@ -127,7 +127,8 @@ export default function undoable (reducer, rawConfig = {}) {
     jumpToPastType: rawConfig.jumpToPastType || ActionTypes.JUMP_TO_PAST,
     jumpToFutureType: rawConfig.jumpToFutureType || ActionTypes.JUMP_TO_FUTURE,
     jumpType: rawConfig.jumpType || ActionTypes.JUMP,
-    clearHistoryType: rawConfig.clearHistoryType || ActionTypes.CLEAR_HISTORY
+    clearHistoryType: rawConfig.clearHistoryType || ActionTypes.CLEAR_HISTORY,
+    neverSkipReducer: false
   }
 
   return (state = config.history, action = {}) => {
@@ -149,6 +150,10 @@ export default function undoable (reducer, rawConfig = {}) {
       }
     }
 
+    const skipReducer = (res) => config.neverSkipReducer
+      ? { ...res, present: reducer(res, action) }
+      : res
+
     let res
     switch (action.type) {
       case undefined:
@@ -158,37 +163,37 @@ export default function undoable (reducer, rawConfig = {}) {
         res = undo(history)
         debug.log('perform undo')
         debug.end(res)
-        return res
+        return skipReducer(res)
 
       case config.redoType:
         res = redo(history)
         debug.log('perform redo')
         debug.end(res)
-        return res
+        return skipReducer(res)
 
       case config.jumpToPastType:
         res = jumpToPast(history, action.index)
         debug.log(`perform jumpToPast to ${action.index}`)
         debug.end(res)
-        return res
+        return skipReducer(res)
 
       case config.jumpToFutureType:
         res = jumpToFuture(history, action.index)
         debug.log(`perform jumpToFuture to ${action.index}`)
         debug.end(res)
-        return res
+        return skipReducer(res)
 
       case config.jumpType:
         res = jump(history, action.index)
         debug.log(`perform jump to ${action.index}`)
         debug.end(res)
-        return res
+        return skipReducer(res)
 
       case config.clearHistoryType:
         res = createHistory(history.present)
         debug.log('perform clearHistory')
         debug.end(res)
-        return res
+        return skipReducer(res)
 
       default:
         res = reducer(history.present, action)

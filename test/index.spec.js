@@ -5,6 +5,11 @@ import undoable, { ActionCreators, excludeAction, includeAction, isHistory } fro
 const decrementActions = ['DECREMENT']
 
 runTests('Default config')
+runTests('Never skip reducer', {
+  undoableConfig: {
+    neverSkipReducer: false
+  }
+})
 runTests('No Init types', {
   undoableConfig: {
     initTypes: []

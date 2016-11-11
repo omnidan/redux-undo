@@ -159,6 +159,8 @@ undoable(reducer, {
   initTypes: ['@@redux-undo/INIT'] // history will be (re)set upon init action type
 
   debug: false, // set to `true` to turn on debugging
+
+  neverSkipReducer: false, // prevent undoable from skipping the reducer on undo/redo
 })
 ```
 
