@@ -116,9 +116,13 @@ function createHistory (state) {
 }
 
 // helper to dynamically match in the reducer's switch-case
-function actionTypeAmongClearHistoryTypes (actionType, clearHistoryTypes) {
-  const res = clearHistoryTypes.indexOf(actionType) > -1 ? actionType : !actionType
-  return res
+function actionTypeAmongClearHistoryType (actionType, clearHistoryType) {
+  if (Array.isArray(clearHistoryType)) {
+    return clearHistoryType.indexOf(actionType) > -1 ? actionType : !actionType
+  } else {
+    // assuming clearHistoryType is a string here
+    return actionType === clearHistoryType ? actionType : !actionType
+  }
 }
 
 // redux-undo higher order reducer
@@ -134,8 +138,7 @@ export default function undoable (reducer, rawConfig = {}) {
     jumpToPastType: rawConfig.jumpToPastType || ActionTypes.JUMP_TO_PAST,
     jumpToFutureType: rawConfig.jumpToFutureType || ActionTypes.JUMP_TO_FUTURE,
     jumpType: rawConfig.jumpType || ActionTypes.JUMP,
-    clearHistoryType: rawConfig.clearHistoryType || ActionTypes.CLEAR_HISTORY,
-    clearHistoryTypes: rawConfig.clearHistoryTypes || []
+    clearHistoryType: rawConfig.clearHistoryType || ActionTypes.CLEAR_HISTORY
   }
 
   return (state = config.history, action = {}) => {
@@ -192,8 +195,7 @@ export default function undoable (reducer, rawConfig = {}) {
         debug.end(res)
         return res
 
-      case actionTypeAmongClearHistoryTypes(action.type, config.clearHistoryTypes):
-      case config.clearHistoryType:
+      case actionTypeAmongClearHistoryType(action.type, config.clearHistoryType):
         res = createHistory(history.present)
         debug.log('perform clearHistory')
         debug.end(res)

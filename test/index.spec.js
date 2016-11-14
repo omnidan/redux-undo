@@ -54,9 +54,9 @@ runTests('Initial State and Init types', {
     future: [-1, -2, -3]
   }
 })
-runTests('Array as clearHistoryTypes', {
+runTests('Array as clearHistoryType', {
   undoableConfig: {
-    clearHistoryTypes: ['TYPE_1', 'TYPE_2']
+    clearHistoryType: ['TYPE_1', 'TYPE_2']
   }
 })
 runTests('Erroneous configuration', {
@@ -498,8 +498,8 @@ function runTests (label, { undoableConfig, initialStoreState, testConfig } = {}
       let clearedState
 
       before('perform a clearHistory action', () => {
-        const clearHistoryTypes = undoableConfig && undoableConfig.clearHistoryTypes
-        const actionType = clearHistoryTypes && clearHistoryTypes.length ? {type: clearHistoryTypes[0]} : ActionCreators.clearHistory()
+        const clearHistoryType = undoableConfig && undoableConfig.clearHistoryType
+        const actionType = clearHistoryType && Array.isArray(clearHistoryType) && clearHistoryType.length ? {type: clearHistoryType[0]} : ActionCreators.clearHistory()
         clearedState = mockUndoableReducer(incrementedState, actionType)
       })
 
