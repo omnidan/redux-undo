@@ -204,17 +204,22 @@ export default function undoable (reducer, rawConfig = {}) {
           return config.history
         }
 
+        const wasFiltered = (typeof config.filter === 'function' && !config.filter(action, res, history))
+
         if (history.present === res) {
           // Don't handle this action. Do not call debug.end here,
           // because this action should not produce side effects to the console
-          return history
+          return {
+            ...history,
+            wasFiltered
+          }
         }
 
         // insert before filtering because the previous action might not have
         // been filtered and `insert` checks for `wasFiltered` anyway
         history = insert(history, res, config.limit)
 
-        if (typeof config.filter === 'function' && !config.filter(action, res, history)) {
+        if (wasFiltered) {
           const nextState = {
             ...history,
             wasFiltered: true,
