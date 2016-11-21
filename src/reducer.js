@@ -139,7 +139,7 @@ export default function undoable (reducer, rawConfig = {}) {
       debug.log('history is uninitialized')
 
       if (state === undefined) {
-        history = createHistory(reducer(state, {}))
+        history = createHistory(reducer(state, { type: '@@redux-undo/CREATE_HISTORY' }))
         debug.log('do not initialize on probe actions')
       } else if (isHistory(state)) {
         history = config.history = state
