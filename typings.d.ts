@@ -1,6 +1,6 @@
-import { Reducer, Action } from 'redux';
+declare module 'redux-undo' {
+  import { Reducer, Action } from 'redux';
 
-module 'redux-undo' {
   export interface StateWithHistory<State> {
     past: State[];
     present: State;
@@ -9,6 +9,24 @@ module 'redux-undo' {
 
   export type FilterFunction = (action: Action) => boolean;
   export type CombineFilters = (...filters: FilterFunction[]) => FilterFunction;
+
+  export class ActionCreators {
+    static undo: () => void;
+    static redo: () => void;
+    static jump: (point: number) => void;
+    static jumpToPast: (index: number) => void;
+    static jumpToFuture: (index: number) => void;
+    static clearHistory: () => void;
+  }
+
+  export class ActionTypes {
+    static UNDO: string;
+    static REDO: string;
+    static JUMP: string;
+    static JUMP_TO_PAST: string;
+    static JUMP_TO_FUTURE: string;
+    static CLEAR_HISTORY: string;
+  }
 
   interface Options {
     /* Set a limit for the history */
@@ -37,7 +55,7 @@ module 'redux-undo' {
     initTypes?: string[];
 
     /** Set to `true` to turn on debugging */
-    debug?: boolean; 
+    debug?: boolean;
   }
 
   interface Undoable {
@@ -46,7 +64,7 @@ module 'redux-undo' {
 
 
   type IncludeAction = (actions: string | string[]) => FilterFunction;
-  type ExcludeAction = typeof IncludeAction;
+  type ExcludeAction = IncludeAction;
 
   const undoable: Undoable;
 
