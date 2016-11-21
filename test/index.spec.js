@@ -1,13 +1,13 @@
 import { expect } from 'chai'
 import { createStore } from 'redux'
-import undoable, { ActionCreators, excludeAction, includeAction, isHistory } from '../src/index'
+import undoable, { ActionCreators, ActionTypes, excludeAction, includeAction, isHistory } from '../src/index'
 
 const decrementActions = ['DECREMENT']
 
 runTests('Default config')
 runTests('Never skip reducer', {
   undoableConfig: {
-    neverSkipReducer: false
+    neverSkipReducer: true
   }
 })
 runTests('No Init types', {
@@ -73,10 +73,16 @@ runTests('Erroneous configuration', {
 
 // Test undoable reducers as a function of a configuration object
 // `label` describes the nature of the configuration object used to run a test
-function runTests (label, { undoableConfig, initialStoreState, testConfig } = {}) {
+function runTests (label, { undoableConfig = {}, initialStoreState, testConfig } = {}) {
   describe('Undoable: ' + label, () => {
+    let wasCalled = false
+
     const countReducer = (state = 0, action = {}) => {
       switch (action.type) {
+        case ActionTypes.UNDO:
+        case ActionTypes.REDO:
+          wasCalled = true
+          return state
         case 'INCREMENT':
           return state + 1
         case 'DECREMENT':
@@ -256,7 +262,12 @@ function runTests (label, { undoableConfig, initialStoreState, testConfig } = {}
     describe('Undo', () => {
       let undoState
       before('perform an undo action', () => {
+        wasCalled = false
         undoState = mockUndoableReducer(incrementedState, ActionCreators.undo())
+      })
+
+      it('should have called the reducer if neverSkipReducer is true', () => {
+        expect(wasCalled).to.equal(Boolean(undoableConfig.neverSkipReducer))
       })
 
       it('should change present state back by one action', () => {
@@ -318,8 +329,13 @@ function runTests (label, { undoableConfig, initialStoreState, testConfig } = {}
       let undoState
       let redoState
       before('perform an undo action then a redo action', () => {
+        wasCalled = false
         undoState = mockUndoableReducer(incrementedState, ActionCreators.undo())
         redoState = mockUndoableReducer(undoState, ActionCreators.redo())
+      })
+
+      it('should have called the reducer if neverSkipReducer is true', () => {
+        expect(wasCalled).to.equal(Boolean(undoableConfig.neverSkipReducer))
       })
 
       it('should change present state to equal state before undo', () => {

@@ -78,7 +78,7 @@ function jumpToFuture (history, index) {
     future: future.slice(index + 1),
     present: future[index],
     past: past.concat([present])
-              .concat(future.slice(0, index))
+      .concat(future.slice(0, index))
   }
 }
 
@@ -91,8 +91,8 @@ function jumpToPast (history, index) {
 
   return {
     future: past.slice(index + 1)
-                .concat([present])
-                .concat(future),
+      .concat([present])
+      .concat(future),
     present: past[index],
     past: past.slice(0, index)
   }
@@ -128,7 +128,7 @@ export default function undoable (reducer, rawConfig = {}) {
     jumpToFutureType: rawConfig.jumpToFutureType || ActionTypes.JUMP_TO_FUTURE,
     jumpType: rawConfig.jumpType || ActionTypes.JUMP,
     clearHistoryType: rawConfig.clearHistoryType || ActionTypes.CLEAR_HISTORY,
-    neverSkipReducer: false
+    neverSkipReducer: rawConfig.neverSkipReducer || false
   }
 
   return (state = config.history, action = {}) => {
@@ -151,7 +151,7 @@ export default function undoable (reducer, rawConfig = {}) {
     }
 
     const skipReducer = (res) => config.neverSkipReducer
-      ? { ...res, present: reducer(res, action) }
+      ? { ...res, present: reducer(res.present, action) }
       : res
 
     let res
