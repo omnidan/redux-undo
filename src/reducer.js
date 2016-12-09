@@ -18,7 +18,7 @@ function insert (history, state, limit) {
   const historyOverflow = limit && lengthWithoutFuture(history) >= limit
 
   const pastSliced = past.slice(historyOverflow ? 1 : 0)
-  const newPast = _latestUnfiltered
+  const newPast = _latestUnfiltered != null
     ? [
       ...pastSliced,
       _latestUnfiltered
@@ -38,9 +38,8 @@ function undo (history) {
 
   if (past.length <= 0) return history
 
-  const newFuture = _latestUnfiltered
-    ? _latestUnfiltered === future[0]
-    ? future : [
+  const newFuture = _latestUnfiltered != null
+    ? [
       _latestUnfiltered,
       ...future
     ] : [
@@ -62,9 +61,8 @@ function redo (history) {
 
   if (future.length <= 0) return history
 
-  const newPast = _latestUnfiltered
-    ? _latestUnfiltered === past[past.length - 1]
-    ? past : [
+  const newPast = _latestUnfiltered != null
+    ? [
       ...past,
       _latestUnfiltered
     ] : [
@@ -119,10 +117,15 @@ function jump (history, n) {
 }
 
 // createHistory
-function createHistory (state) {
-  return {
+function createHistory (state, ignoreInitialState) {
+  return ignoreInitialState ? {
     past: [],
     present: state,
+    future: []
+  } : {
+    past: [],
+    present: state,
+    _latestUnfiltered: state,
     future: []
   }
 }
@@ -141,7 +144,8 @@ export default function undoable (reducer, rawConfig = {}) {
     jumpToFutureType: rawConfig.jumpToFutureType || ActionTypes.JUMP_TO_FUTURE,
     jumpType: rawConfig.jumpType || ActionTypes.JUMP,
     clearHistoryType: rawConfig.clearHistoryType || ActionTypes.CLEAR_HISTORY,
-    neverSkipReducer: rawConfig.neverSkipReducer || false
+    neverSkipReducer: rawConfig.neverSkipReducer || false,
+    ignoreInitialState: rawConfig.ignoreInitialState || false
   }
 
   return (state = config.history, action = {}) => {
@@ -152,7 +156,10 @@ export default function undoable (reducer, rawConfig = {}) {
       debug.log('history is uninitialized')
 
       if (state === undefined) {
-        history = createHistory(reducer(state, { type: '@@redux-undo/CREATE_HISTORY' }))
+        history = createHistory(reducer(
+          state, { type: '@@redux-undo/CREATE_HISTORY' }),
+          config.ignoreInitialState
+        )
         debug.log('do not initialize on probe actions')
       } else if (isHistory(state)) {
         history = config.history = state
@@ -227,7 +234,7 @@ export default function undoable (reducer, rawConfig = {}) {
           // if filtering an action, first check latestUnfiltered, and update past;
           // then clear _latestUnfiltered and update present
           const { past, future, _latestUnfiltered } = history
-          const newPast = _latestUnfiltered
+          const newPast = _latestUnfiltered != null
             ? [
               ...past,
               _latestUnfiltered
