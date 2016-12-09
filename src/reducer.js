@@ -34,7 +34,7 @@ function insert (history, state, limit) {
 
 // undo: go back to the previous point in history
 function undo (history) {
-  const { past, present, future, _latestUnfiltered } = history
+  const { past, future, _latestUnfiltered } = history
 
   if (past.length <= 0) return history
 
@@ -42,22 +42,20 @@ function undo (history) {
     ? [
       _latestUnfiltered,
       ...future
-    ] : [
-      present,
-      ...future
-    ]
+    ] : future
 
   const newPresent = past[past.length - 1]
   return {
     past: past.slice(0, past.length - 1), // remove last element from past
     present: newPresent, // set element as new present
+    _latestUnfiltered: newPresent,
     future: newFuture
   }
 }
 
 // redo: go to the next point in history
 function redo (history) {
-  const { past, present, future, _latestUnfiltered } = history
+  const { past, future, _latestUnfiltered } = history
 
   if (future.length <= 0) return history
 
@@ -65,15 +63,13 @@ function redo (history) {
     ? [
       ...past,
       _latestUnfiltered
-    ] : [
-      ...past,
-      present
-    ]
+    ] : past
 
   const newPresent = future[0]
   return {
     future: future.slice(1, future.length), // remove element from future
     present: newPresent, // set element as new present
+    _latestUnfiltered: newPresent,
     past: newPast
   }
 }
@@ -233,17 +229,9 @@ export default function undoable (reducer, rawConfig = {}) {
         if (typeof config.filter === 'function' && !config.filter(action, res, history)) {
           // if filtering an action, first check latestUnfiltered, and update past;
           // then clear _latestUnfiltered and update present
-          const { past, future, _latestUnfiltered } = history
-          const newPast = _latestUnfiltered != null
-            ? [
-              ...past,
-              _latestUnfiltered
-            ] : past
-
           const nextState = {
-            past: newPast,
-            present: res,
-            future
+            ...history,
+            present: res
           }
           debug.log('filter prevented action, not storing it')
           debug.end(nextState)
