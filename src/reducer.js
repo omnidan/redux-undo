@@ -227,8 +227,7 @@ export default function undoable (reducer, rawConfig = {}) {
         }
 
         if (typeof config.filter === 'function' && !config.filter(action, res, history)) {
-          // if filtering an action, first check latestUnfiltered, and update past;
-          // then clear _latestUnfiltered and update present
+          // if filtering an action, merely update the present
           const nextState = {
             ...history,
             present: res
