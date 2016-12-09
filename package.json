@@ -17,7 +17,7 @@
     "build:umd:min": "cross-env BABEL_ENV=commonjs NODE_ENV=production webpack",
     "clean": "./node_modules/.bin/rimraf lib dist es",
     "lint": "./node_modules/.bin/eslint webpack.config.babel.js src test",
-    "prepublish": "npm run lint && npm run test && npm run clean && npm run build",
+    "prepublish": "npm run lint && npm run clean && npm run build",
     "test": "cross-env NODE_ENV=test ./node_modules/.bin/mocha --compilers js:babel-core/register",
     "test:bail": "npm run test:watch -- --bail",
     "test:cov": "./node_modules/.bin/babel-node ./node_modules/.bin/isparta cover --root src/ ./node_modules/.bin/_mocha",
