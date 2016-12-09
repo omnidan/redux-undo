@@ -14,13 +14,15 @@ function insert (history, state, limit) {
   debug.log('inserting', state)
   debug.log('new free: ', limit - lengthWithoutFuture(history))
 
-  const { past, present } = history
+  const { past, _latestUnfiltered } = history
   const historyOverflow = limit && lengthWithoutFuture(history) >= limit
 
-  const newPast = [
-    ...past.slice(historyOverflow ? 1 : 0),
-    present
-  ]
+  const pastSliced = past.slice(historyOverflow ? 1 : 0)
+  const newPast = _latestUnfiltered
+    ? [
+      ...pastSliced,
+      _latestUnfiltered
+    ] : pastSliced
 
   return {
     past: newPast,
@@ -37,17 +39,19 @@ function undo (history) {
   if (past.length <= 0) return history
 
   const newFuture = _latestUnfiltered
-    ? [
+    ? _latestUnfiltered === future[0]
+    ? future : [
       _latestUnfiltered,
       ...future
     ] : [
       present,
-      future
+      ...future
     ]
 
+  const newPresent = past[past.length - 1]
   return {
     past: past.slice(0, past.length - 1), // remove last element from past
-    present: past[past.length - 1], // set element as new present
+    present: newPresent, // set element as new present
     future: newFuture
   }
 }
@@ -59,7 +63,8 @@ function redo (history) {
   if (future.length <= 0) return history
 
   const newPast = _latestUnfiltered
-    ? [
+    ? _latestUnfiltered === past[past.length - 1]
+    ? past : [
       ...past,
       _latestUnfiltered
     ] : [
@@ -67,9 +72,10 @@ function redo (history) {
       present
     ]
 
+  const newPresent = future[0]
   return {
     future: future.slice(1, future.length), // remove element from future
-    present: future[0], // set element as new present
+    present: newPresent, // set element as new present
     past: newPast
   }
 }
@@ -217,18 +223,26 @@ export default function undoable (reducer, rawConfig = {}) {
           return history
         }
 
-        // insert before filtering because the previous action might not have
-        // been filtered and `insert` checks for `wasFiltered` anyway
-
         if (typeof config.filter === 'function' && !config.filter(action, res, history)) {
+          // if filtering an action, first check latestUnfiltered, and update past;
+          // then clear _latestUnfiltered and update present
+          const { past, future, _latestUnfiltered } = history
+          const newPast = _latestUnfiltered
+            ? [
+              ...past,
+              _latestUnfiltered
+            ] : past
+
           const nextState = {
-            ...history,
-            present: res
+            past: newPast,
+            present: res,
+            future
           }
           debug.log('filter prevented action, not storing it')
           debug.end(nextState)
           return nextState
         } else {
+          // If the action was filtered, insert normally
           history = insert(history, res, config.limit)
 
           debug.log('inserted new state into history')
