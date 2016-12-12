@@ -384,13 +384,13 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
         if (testConfig && testConfig.excludedActions) {
           const excludedAction = { type: testConfig.excludedActions[0] }
           // handle excluded action on a not filtered initial state
-          let state = mockUndoableReducer(mockInitialState, excludedAction)
+          const excludedState = mockUndoableReducer(mockInitialState, excludedAction)
           // undo
-          let postRedoState = mockUndoableReducer(state, ActionCreators.undo())
+          const postUndoState = mockUndoableReducer(excludedState, ActionCreators.undo())
           // redo
-          state = mockUndoableReducer(postRedoState, ActionCreators.redo())
+          const postRedoState = mockUndoableReducer(postUndoState, ActionCreators.redo())
           // redo should be ignored, because future state wasn't stored
-          expect(state).to.deep.equal(postRedoState)
+          expect(mockInitialState).to.deep.equal(postRedoState)
         }
       })
     })
