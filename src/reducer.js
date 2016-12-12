@@ -79,12 +79,15 @@ function jumpToFuture (history, index) {
   if (index === 0) return redo(history)
   if (index < 0 || index >= history.future.length) return history
 
-  const { past, present, future } = history
+  const { past, future, _latestUnfiltered } = history
+
+  const newPresent = future[index]
 
   return {
     future: future.slice(index + 1),
-    present: future[index],
-    past: past.concat([present])
+    present: newPresent,
+    _latestUnfiltered: newPresent,
+    past: past.concat([_latestUnfiltered])
       .concat(future.slice(0, index))
   }
 }
@@ -94,13 +97,16 @@ function jumpToPast (history, index) {
   if (index === history.past.length - 1) return undo(history)
   if (index < 0 || index >= history.past.length) return history
 
-  const { past, present, future } = history
+  const { past, future, _latestUnfiltered } = history
+
+  const newPresent = past[index]
 
   return {
     future: past.slice(index + 1)
-      .concat([present])
+      .concat([_latestUnfiltered])
       .concat(future),
-    present: past[index],
+    present: newPresent,
+    _latestUnfiltered: newPresent,
     past: past.slice(0, index)
   }
 }
