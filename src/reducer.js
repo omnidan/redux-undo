@@ -120,6 +120,9 @@ function jump (history, n) {
 
 // createHistory
 function createHistory (state, ignoreInitialState) {
+  // ignoreInitialState essentially prevents the user from undoing to the
+  // beginning, in the case that the undoable reducer handles initialization
+  // in a way that can't be redone simply
   return ignoreInitialState ? {
     past: [],
     present: state,
@@ -242,7 +245,7 @@ export default function undoable (reducer, rawConfig = {}) {
           debug.end(nextState)
           return nextState
         } else {
-          // If the action was filtered, insert normally
+          // If the action wasn't filtered, insert normally
           history = insert(history, res, config.limit)
 
           debug.log('inserted new state into history')
