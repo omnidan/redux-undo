@@ -42,7 +42,6 @@ runTests('Initial History and Filter (Exclude Actions)', {
   initialStoreState: {
     past: [0, 1, 2, 3],
     present: 4,
-    _latestUnfiltered: 4,
     future: [5, 6, 7]
   },
   testConfig: {
@@ -57,7 +56,6 @@ runTests('Initial State and Init types', {
   initialStoreState: {
     past: [123],
     present: 5,
-    _latestUnfiltered: 5,
     future: [-1, -2, -3]
   }
 })
@@ -69,7 +67,6 @@ runTests('Erroneous configuration', {
   initialStoreState: {
     past: [5, {}, 3, null, 1],
     present: Math.pow(2, 32),
-    _latestUnfiltered: Math.pow(2, 32),
     future: []
   }
 })
@@ -126,7 +123,17 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
 
       it('should be initialized with the the store\'s initial `history` if provided', () => {
         if (initialStoreState !== undefined && isHistory(initialStoreState)) {
-          expect(mockInitialState).to.deep.equal(initialStoreState)
+          const expected = {
+            past: mockInitialState.past,
+            present: mockInitialState.present,
+            future: mockInitialState.future
+          }
+          const actual = {
+            past: initialStoreState.past,
+            present: initialStoreState.present,
+            future: initialStoreState.future
+          }
+          expect(expected).to.deep.equal(actual)
         }
       })
 
