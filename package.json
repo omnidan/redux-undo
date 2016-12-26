@@ -1,14 +1,16 @@
 {
   "name": "redux-undo",
-  "version": "1.0.0-beta9",
+  "version": "1.0.0-beta9-3",
   "description": "simple undo/redo functionality for redux state containers",
   "main": "lib/index.js",
+  "typings": "typings.d.ts",
   "jspm": {
     "main": "src/index.js",
     "format": "esm"
   },
   "scripts": {
-    "build": "npm run build:commonjs && npm run build:umd && npm run build:umd:min && npm run build:es",
+    "prebuild": "npm run clean",
+    "build": "npm-run-all --parallel build:*",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
     "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
     "build:umd": "cross-env BABEL_ENV=commonjs NODE_ENV=development webpack",
@@ -63,6 +65,7 @@
     "isparta": "^4.0.0",
     "mocha": "^3.0.2",
     "mocha-lcov-reporter": "^1.2.0",
+    "npm-run-all": "^3.1.1",
     "rimraf": "^2.5.4",
     "webpack": "^1.13.1"
   },
