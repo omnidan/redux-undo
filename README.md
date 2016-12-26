@@ -155,6 +155,7 @@ undoable(reducer, {
   jumpToFutureType: ActionTypes.JUMP_TO_FUTURE, // define custom action type for this jumpToFuture action
 
   clearHistoryType: ActionTypes.CLEAR_HISTORY, // [beta only] define custom action type for this clearHistory action
+  // you can also pass an array of strings to define several action types that would clear the history
 
   initTypes: ['@@redux-undo/INIT'] // history will be (re)set upon init action type
 
