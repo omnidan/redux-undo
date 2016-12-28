@@ -11,12 +11,12 @@ declare module 'redux-undo' {
   export type CombineFilters = (...filters: FilterFunction[]) => FilterFunction;
 
   export class ActionCreators {
-    static undo: () => void;
-    static redo: () => void;
-    static jump: (point: number) => void;
-    static jumpToPast: (index: number) => void;
-    static jumpToFuture: (index: number) => void;
-    static clearHistory: () => void;
+    static undo: () => Action;
+    static redo: () => Action;
+    static jump: (point: number) => Action;
+    static jumpToPast: (index: number) => Action;
+    static jumpToFuture: (index: number) => Action;
+    static clearHistory: () => Action;
   }
 
   export class ActionTypes {
