@@ -169,7 +169,7 @@ export default function undoable (reducer, rawConfig = {}) {
       debug.log('history is uninitialized')
 
       if (state === undefined) {
-        history = createHistory(reducer(
+        history = config.history = createHistory(reducer(
           state, { type: '@@redux-undo/CREATE_HISTORY' }),
           config.ignoreInitialState
         )
