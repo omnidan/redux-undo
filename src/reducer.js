@@ -158,7 +158,8 @@ export default function undoable (reducer, rawConfig = {}) {
       ? rawConfig.clearHistoryType
       : [rawConfig.clearHistoryType || ActionTypes.CLEAR_HISTORY],
     neverSkipReducer: rawConfig.neverSkipReducer || false,
-    ignoreInitialState: rawConfig.ignoreInitialState || false
+    ignoreInitialState: rawConfig.ignoreInitialState || false,
+    diff: rawConfig.diff || false,
   }
 
   return (state = config.history, action = {}) => {
