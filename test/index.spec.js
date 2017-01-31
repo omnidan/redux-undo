@@ -75,6 +75,12 @@ runTests('Erroneous configuration', {
     future: []
   }
 })
+runTests('Diff', {
+  undoableConfig: {
+    enableDiff: true
+  }
+})
+
 
 // Test undoable reducers as a function of a configuration object
 // `label` describes the nature of the configuration object used to run a test

@@ -1,4 +1,5 @@
 import * as debug from './debug'
+import * as diff from "./diff"
 import { ActionTypes } from './actions'
 import { parseActions, isHistory } from './helpers'
 
@@ -10,18 +11,22 @@ function lengthWithoutFuture (history) {
 // insert: insert `state` into history, which means adding the current state
 //         into `past`, setting the new `state` as `present` and erasing
 //         the `future`.
-function insert (history, state, limit) {
+function insert (history, state, limit, enableDiff) {
   debug.log('inserting', state)
   debug.log('new free: ', limit - lengthWithoutFuture(history))
 
   const { past, _latestUnfiltered } = history
   const historyOverflow = limit && lengthWithoutFuture(history) >= limit
 
+  const insertState = enableDiff
+    ? diff.diff(_latestUnfiltered, state)
+    : _latestUnfiltered
+
   const pastSliced = past.slice(historyOverflow ? 1 : 0)
   const newPast = _latestUnfiltered != null
     ? [
       ...pastSliced,
-      _latestUnfiltered
+      insertState
     ] : pastSliced
 
   return {
@@ -33,18 +38,21 @@ function insert (history, state, limit) {
 }
 
 // undo: go back to the previous point in history
-function undo (history) {
+function undo (history, enableDiff) {
   const { past, future, _latestUnfiltered } = history
 
   if (past.length <= 0) return history
 
+  const insertState = enableDiff ? past[past.length - 1] : _latestUnfiltered
   const newFuture = _latestUnfiltered != null
     ? [
-      _latestUnfiltered,
+      insertState,
       ...future
     ] : future
 
-  const newPresent = past[past.length - 1]
+  const newPresent = enableDiff
+    ? diff.revert(_latestUnfiltered, insertState)
+    : past[past.length - 1]
   return {
     past: past.slice(0, past.length - 1), // remove last element from past
     present: newPresent, // set element as new present
@@ -54,18 +62,21 @@ function undo (history) {
 }
 
 // redo: go to the next point in history
-function redo (history) {
+function redo (history, enableDiff) {
   const { past, future, _latestUnfiltered } = history
 
   if (future.length <= 0) return history
 
+  const insertState = enableDiff ? future[0] : _latestUnfiltered
   const newPast = _latestUnfiltered != null
     ? [
       ...past,
-      _latestUnfiltered
+      insertState
     ] : past
 
-  const newPresent = future[0]
+  const newPresent = enableDiff
+    ? diff.apply(_latestUnfiltered, insertState)
+    : future[0]
   return {
     future: future.slice(1, future.length), // remove element from future
     present: newPresent, // set element as new present
@@ -75,46 +86,66 @@ function redo (history) {
 }
 
 // jumpToFuture: jump to requested index in future history
-function jumpToFuture (history, index) {
+function jumpToFuture (history, index, enableDiff) {
   if (index === 0) return redo(history)
   if (index < 0 || index >= history.future.length) return history
 
   const { past, future, _latestUnfiltered } = history
 
-  const newPresent = future[index]
+  const newPresent = enableDiff
+    ? future.slice(0, index + 1).reduce((acc, d) => {
+        return diff.apply(acc, d)
+      }, _latestUnfiltered)
+    : future[index]
+
+  const newPast = enableDiff
+    ? past.concat(future.slice(0, index + 1))
+    : past.concat([_latestUnfiltered])
+      .concat(future.slice(0, index))
 
   return {
     future: future.slice(index + 1),
     present: newPresent,
     _latestUnfiltered: newPresent,
-    past: past.concat([_latestUnfiltered])
-      .concat(future.slice(0, index))
+    past: newPast
   }
 }
 
 // jumpToPast: jump to requested index in past history
-function jumpToPast (history, index) {
+function jumpToPast (history, index, enableDiff) {
   if (index === history.past.length - 1) return undo(history)
   if (index < 0 || index >= history.past.length) return history
 
   const { past, future, _latestUnfiltered } = history
 
-  const newPresent = past[index]
+  const newPresent = enableDiff
+    ? past.slice(index).reverse().reduce((acc, d) => {
+        return diff.revert(acc, d)
+      }, _latestUnfiltered)
+    : past[index]
+
+  const newFuture = enableDiff
+    ? past.slice(index).concat(future)
+    : past.slice(index + 1)
+      .concat([_latestUnfiltered])
+      .concat(future)
+
+  const newPast = enableDiff
+    ? past.slice(0, index + 1)
+    : past.slice(0, index)
 
   return {
-    future: past.slice(index + 1)
-      .concat([_latestUnfiltered])
-      .concat(future),
+    future: newFuture,
     present: newPresent,
     _latestUnfiltered: newPresent,
-    past: past.slice(0, index)
+    past: newPast
   }
 }
 
 // jump: jump n steps in the past or forward
-function jump (history, n) {
-  if (n > 0) return jumpToFuture(history, n - 1)
-  if (n < 0) return jumpToPast(history, history.past.length + n)
+function jump (history, n, enableDiff) {
+  if (n > 0) return jumpToFuture(history, n - 1, enableDiff)
+  if (n < 0) return jumpToPast(history, history.past.length + n, enableDiff)
   return history
 }
 
@@ -144,6 +175,10 @@ function actionTypeAmongClearHistoryType (actionType, clearHistoryType) {
 export default function undoable (reducer, rawConfig = {}) {
   debug.set(rawConfig.debug)
 
+  debug.start('config')
+  debug.log(rawConfig)
+  debug.end()
+
   const config = {
     initTypes: parseActions(rawConfig.initTypes, ['@@redux-undo/INIT']),
     limit: rawConfig.limit,
@@ -159,7 +194,7 @@ export default function undoable (reducer, rawConfig = {}) {
       : [rawConfig.clearHistoryType || ActionTypes.CLEAR_HISTORY],
     neverSkipReducer: rawConfig.neverSkipReducer || false,
     ignoreInitialState: rawConfig.ignoreInitialState || false,
-    diff: rawConfig.diff || false,
+    enableDiff: rawConfig.enableDiff || false,
   }
 
   return (state = config.history, action = {}) => {
@@ -198,31 +233,31 @@ export default function undoable (reducer, rawConfig = {}) {
         return history
 
       case config.undoType:
-        res = undo(history)
+        res = undo(history, config.enableDiff)
         debug.log('perform undo')
         debug.end(res)
         return skipReducer(res)
 
       case config.redoType:
-        res = redo(history)
+        res = redo(history, config.enableDiff)
         debug.log('perform redo')
         debug.end(res)
         return skipReducer(res)
 
       case config.jumpToPastType:
-        res = jumpToPast(history, action.index)
+        res = jumpToPast(history, action.index, config.enableDiff)
         debug.log(`perform jumpToPast to ${action.index}`)
         debug.end(res)
         return skipReducer(res)
 
       case config.jumpToFutureType:
-        res = jumpToFuture(history, action.index)
+        res = jumpToFuture(history, action.index, config.enableDiff)
         debug.log(`perform jumpToFuture to ${action.index}`)
         debug.end(res)
         return skipReducer(res)
 
       case config.jumpType:
-        res = jump(history, action.index)
+        res = jump(history, action.index, config.enableDiff)
         debug.log(`perform jump to ${action.index}`)
         debug.end(res)
         return skipReducer(res)
@@ -259,7 +294,7 @@ export default function undoable (reducer, rawConfig = {}) {
           return nextState
         } else {
           // If the action wasn't filtered, insert normally
-          history = insert(history, res, config.limit)
+          history = insert(history, res, config.limit, config.enableDiff)
 
           debug.log('inserted new state into history')
           debug.end(history)
