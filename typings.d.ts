@@ -58,7 +58,7 @@ declare module 'redux-undo' {
     debug?: boolean;
     
     /** Set to `true` to prevent undoable from skipping the reducer on undo/redo **/
-    neverSkipReducer: boolean;
+    neverSkipReducer?: boolean;
   }
 
   interface Undoable {
