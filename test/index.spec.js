@@ -13,17 +13,26 @@ runTests('Never skip reducer', {
 runTests('No Init types', {
   undoableConfig: {
     initTypes: []
+  },
+  testConfig: {
+    checkSlices: true
   }
 })
 runTests('Initial State equals 100', {
   undoableConfig: {
     limit: 200
   },
-  initialStoreState: 100
+  initialStoreState: 100,
+  testConfig: {
+    checkSlices: true
+  }
 })
 runTests('Initial State that looks like a history', {
   undoableConfig: {},
-  initialStoreState: {'present': 0}
+  initialStoreState: {'present': 0},
+  testConfig: {
+    checkSlices: true
+  }
 })
 runTests('Filter (Include Actions)', {
   undoableConfig: {
@@ -45,7 +54,8 @@ runTests('Initial History and Filter (Exclude Actions)', {
     future: [5, 6, 7]
   },
   testConfig: {
-    excludedActions: decrementActions
+    excludedActions: decrementActions,
+    checkSlices: true
   }
 })
 runTests('Initial State and Init types', {
@@ -57,11 +67,17 @@ runTests('Initial State and Init types', {
     past: [123],
     present: 5,
     future: [-1, -2, -3]
+  },
+  testConfig: {
+    checkSlices: true
   }
 })
 runTests('Array as clearHistoryType', {
   undoableConfig: {
     clearHistoryType: ['TYPE_1', 'TYPE_2']
+  },
+  testConfig: {
+    checkSlices: true
   }
 })
 runTests('Erroneous configuration', {
@@ -73,6 +89,14 @@ runTests('Erroneous configuration', {
     past: [5, {}, 3, null, 1],
     present: Math.pow(2, 32),
     future: []
+  },
+  testConfig: {
+    checkSlices: true
+  }
+})
+runTests('Get Slices', {
+  testConfig: {
+    checkSlices: true
   }
 })
 
@@ -542,6 +566,69 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
       it('should preserve the present value', () => {
         expect(clearedState.present).to.equal(incrementedState.present)
       })
+    })
+    describe('running getSlices', () => {
+      if (testConfig && testConfig.checkSlices) {
+        const initialState = {
+          normalState: 0,
+          slice1: 100
+        }
+        const sliceReducer = (state, action, slice1) => {
+          switch(action.type) {
+            case 'INCREMENT':
+              return state + 1
+            case 'DECREMENT':
+              return state - 1
+            case 'COPY_SLICE':
+              return slice1
+            default:
+              return state
+          }
+        }
+        const undoableSliceReducer = undoable(sliceReducer, undoableConfig)
+        const fullReducer = (state, action) => ({
+          normalState: undoableSliceReducer(state.normalState, action, state.slice1),
+          slice1: state.slice1
+        })
+        let secondState
+        let thirdState
+        let fourthState
+        let fifthState
+        let sixthState
+        let seventhState
+        before('run reducer a few times', () => {
+          secondState = fullReducer(initialState, { type: 'BOGUS'})
+          thirdState = fullReducer(secondState, { type: 'INCREMENT'})
+          fourthState = fullReducer(thirdState, { type: ActionTypes.UNDO})
+          fifthState = fullReducer(fourthState, { type: ActionTypes.REDO})
+          sixthState = fullReducer(fifthState, { type: 'COPY_SLICE'})
+          seventhState = fullReducer(sixthState, { type: 'DECREMENT'})
+        })
+        it('should keep same initial state on ignored action', () => {
+          expect(secondState.normalState.present).to.equal(initialState.normalState)
+          expect(secondState.slice1).to.equal(initialState.slice1)
+        })
+        it('should increment normally', () => {
+          expect(thirdState.normalState.present).to.equal(initialState.normalState + 1)
+          expect(thirdState.slice1).to.equal(initialState.slice1)
+        })
+        it('should undo normally', () => {
+          expect(fourthState.normalState.present).to.equal(secondState.normalState.present)
+          expect(fourthState.slice1).to.equal(initialState.slice1)
+        })
+        it('should redo normally', () => {
+          expect(fifthState.normalState.present).to.equal(thirdState.normalState.present)
+          expect(fifthState.slice1).to.equal(initialState.slice1)
+        })
+        it('should referenced sliced state normally', () => {
+          expect(sixthState.normalState.present).to.equal(sixthState.slice1)
+          expect(sixthState.slice1).to.equal(initialState.slice1)
+        })
+        it('should work normally after referencing slices', () => {
+          expect(seventhState.normalState.present).to.equal(sixthState.normalState.present - 1)
+          expect(seventhState.slice1).to.equal(initialState.slice1)
+        })
+      }
     })
   })
 }
