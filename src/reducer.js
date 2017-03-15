@@ -161,7 +161,7 @@ export default function undoable (reducer, rawConfig = {}) {
     ignoreInitialState: rawConfig.ignoreInitialState || false
   }
 
-  return (state = config.history, action = {}) => {
+  return (state = config.history, action = {}, ...slices) => {
     debug.start(action, state)
 
     let history = state
@@ -171,7 +171,8 @@ export default function undoable (reducer, rawConfig = {}) {
       if (state === undefined) {
         history = config.history = createHistory(reducer(
           state, { type: '@@redux-undo/CREATE_HISTORY' }),
-          config.ignoreInitialState
+          config.ignoreInitialState,
+          ...slices
         )
         debug.log('do not initialize on probe actions')
       } else if (isHistory(state)) {
@@ -188,8 +189,10 @@ export default function undoable (reducer, rawConfig = {}) {
     }
 
     const skipReducer = (res) => config.neverSkipReducer
-      ? { ...res, present: reducer(res.present, action) }
-      : res
+      ? {
+        ...res,
+        present: reducer(res.present, action, ...slices)
+      } : res
 
     let res
     switch (action.type) {
@@ -233,7 +236,11 @@ export default function undoable (reducer, rawConfig = {}) {
         return skipReducer(res)
 
       default:
-        res = reducer(history.present, action)
+        res = reducer(
+          history.present,
+          action,
+          ...slices
+        )
 
         if (config.initTypes.some((actionType) => actionType === action.type)) {
           debug.log('reset history due to init action')
