@@ -574,7 +574,7 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
           slice1: 100
         }
         const sliceReducer = (state, action, slice1) => {
-          switch(action.type) {
+          switch (action.type) {
             case 'INCREMENT':
               return state + 1
             case 'DECREMENT':
@@ -597,12 +597,12 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
         let sixthState
         let seventhState
         before('run reducer a few times', () => {
-          secondState = fullReducer(initialState, { type: 'BOGUS'})
-          thirdState = fullReducer(secondState, { type: 'INCREMENT'})
-          fourthState = fullReducer(thirdState, { type: ActionTypes.UNDO})
-          fifthState = fullReducer(fourthState, { type: ActionTypes.REDO})
-          sixthState = fullReducer(fifthState, { type: 'COPY_SLICE'})
-          seventhState = fullReducer(sixthState, { type: 'DECREMENT'})
+          secondState = fullReducer(initialState, { type: 'BOGUS' })
+          thirdState = fullReducer(secondState, { type: 'INCREMENT' })
+          fourthState = fullReducer(thirdState, { type: ActionTypes.UNDO })
+          fifthState = fullReducer(fourthState, { type: ActionTypes.REDO })
+          sixthState = fullReducer(fifthState, { type: 'COPY_SLICE' })
+          seventhState = fullReducer(sixthState, { type: 'DECREMENT' })
         })
         it('should keep same initial state on ignored action', () => {
           expect(secondState.normalState.present).to.equal(initialState.normalState)
