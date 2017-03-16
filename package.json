@@ -1,6 +1,6 @@
 {
   "name": "redux-undo",
-  "version": "1.0.0-beta9-7",
+  "version": "1.0.0-beta9-8",
   "description": "simple undo/redo functionality for redux state containers",
   "main": "lib/index.js",
   "typings": "typings.d.ts",
