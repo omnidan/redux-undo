@@ -163,7 +163,7 @@ undoable(reducer, {
 
   debug: false, // set to `true` to turn on debugging
 
-  neverSkipReducer: false, // prevent undoable from skipping the reducer on undo/redo
+  neverSkipReducer: false, // prevent undoable from skipping the reducer on undo/redo and clearHistoryType actions
 })
 ```
 
