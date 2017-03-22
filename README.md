@@ -156,12 +156,14 @@ undoable(reducer, {
 
   clearHistoryType: ActionTypes.CLEAR_HISTORY, // [beta only] define custom action type for this clearHistory action
   // you can also pass an array of strings to define several action types that would clear the history
+  // beware: those actions will not be passed down to the wrapped reducers
 
   initTypes: ['@@redux-undo/INIT'] // history will be (re)set upon init action type
+  // beware: those actions will not be passed down to the wrapped reducers
 
   debug: false, // set to `true` to turn on debugging
 
-  neverSkipReducer: false, // prevent undoable from skipping the reducer on undo/redo
+  neverSkipReducer: false, // prevent undoable from skipping the reducer on undo/redo and clearHistoryType actions
 })
 ```
 
