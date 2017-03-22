@@ -92,6 +92,8 @@ combineReducers({
 })
 ```
 
+## Apply redux-undo magic to specific slice of your state.
+
 
 ## History API
 
