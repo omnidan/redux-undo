@@ -172,7 +172,8 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
             past: [],
             present: initialStoreState,
             _latestUnfiltered: initialStoreState,
-            future: []
+            future: [],
+            group: null
           })
         }
       })
@@ -426,6 +427,8 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
           // redo
           const postRedoState = mockUndoableReducer(postUndoState, ActionCreators.redo())
           // redo should be ignored, because future state wasn't stored
+          console.log(postRedoState)
+          console.log(mockInitialState)
           expect(mockInitialState).to.deep.equal(postRedoState)
         }
       })
