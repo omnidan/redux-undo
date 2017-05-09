@@ -58,6 +58,12 @@ runTests('Initial History and Filter (Exclude Actions)', {
     checkSlices: true
   }
 })
+runTests('Squash', {
+  undoableConfig: {
+    filter: includeAction(decrementActions),
+    squash: (action) => action.squash
+  }
+})
 runTests('Initial State and Init types', {
   undoableConfig: {
     limit: 1024,
@@ -260,6 +266,37 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
           }
           actual = mockUndoableReducer(actual, excludedAction)
           expect(actual).to.deep.equal(expected)
+        }
+      })
+
+      it('should synchonize states on squashed and filtered actions', () => {
+        if (undoableConfig && undoableConfig.squash && undoableConfig.filter) {
+          let actual = mockUndoableReducer(incrementedState, { type: 'INCREMENT' })
+          actual = mockUndoableReducer(actual, { type: 'DECREMENT', squash: true })
+          expect(actual._latestUnfiltered).to.deep.equal(actual.present)
+          actual = mockUndoableReducer(actual, { type: 'DECREMENT', squash: true })
+          expect(actual._latestUnfiltered).to.equal(actual.present)
+          expect(actual._latestUnfiltered).to.equal(0)
+        }
+      })
+
+      it('should synchonize states on squashed and not filtered actions', () => {
+        if (undoableConfig && undoableConfig.squash && undoableConfig.filter) {
+          let actual = mockUndoableReducer(incrementedState, { type: 'INCREMENT', squash: true })
+          expect(actual._latestUnfiltered).to.equal(actual.present)
+          actual = mockUndoableReducer(actual, { type: 'INCREMENT' })
+          expect(actual._latestUnfiltered).to.equal(2)
+          expect(actual.present).to.equal(3)
+          actual = mockUndoableReducer(actual, { type: 'DECREMENT' })
+          expect(actual.past).to.eql([2])
+          expect(actual._latestUnfiltered).to.equal(2)
+          actual = mockUndoableReducer(actual, { type: 'INCREMENT' })
+          actual = mockUndoableReducer(actual, { type: 'INCREMENT' })
+          expect(actual._latestUnfiltered).to.equal(2)
+          expect(actual.present).to.equal(4)
+          actual = mockUndoableReducer(actual, { type: 'INCREMENT', squash: true })
+          expect(actual._latestUnfiltered).to.equal(5)
+          expect(actual.present).to.equal(5)
         }
       })
 
