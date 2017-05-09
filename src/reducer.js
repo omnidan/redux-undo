@@ -140,6 +140,33 @@ function actionTypeAmongClearHistoryType (actionType, clearHistoryType) {
   return clearHistoryType.indexOf(actionType) > -1 ? actionType : !actionType
 }
 
+function defaultReduce (history, action, res, config) {
+  const isSquashed = typeof config.squash === 'function' && config.squash(action, res, history)
+
+  if (typeof config.filter === 'function' && !config.filter(action, res, history)) {
+    // if filtering an action, merely update the present
+    const filteredState = {
+      ...history,
+      present: res,
+      _latestUnfiltered: isSquashed ? res : history._latestUnfiltered
+    }
+    debug.log('filter prevented action, not storing it')
+    debug.end(filteredState)
+    return filteredState
+  } else {
+    // If the action wasn't filtered, insert normally
+    const squashedState = isSquashed ? {
+      ...history,
+      _latestUnfiltered: history.present
+    } : history
+    const newState = insert(squashedState, res, config.limit)
+
+    debug.log('inserted new state into history')
+    debug.end(newState)
+    return newState
+  }
+}
+
 // redux-undo higher order reducer
 export default function undoable (reducer, rawConfig = {}) {
   debug.set(rawConfig.debug)
@@ -148,6 +175,7 @@ export default function undoable (reducer, rawConfig = {}) {
     initTypes: parseActions(rawConfig.initTypes, ['@@redux-undo/INIT']),
     limit: rawConfig.limit,
     filter: rawConfig.filter || (() => true),
+    squash: rawConfig.squash || null,
     undoType: rawConfig.undoType || ActionTypes.UNDO,
     redoType: rawConfig.redoType || ActionTypes.REDO,
     jumpToPastType: rawConfig.jumpToPastType || ActionTypes.JUMP_TO_PAST,
@@ -254,23 +282,7 @@ export default function undoable (reducer, rawConfig = {}) {
           return history
         }
 
-        if (typeof config.filter === 'function' && !config.filter(action, res, history)) {
-          // if filtering an action, merely update the present
-          const nextState = {
-            ...history,
-            present: res
-          }
-          debug.log('filter prevented action, not storing it')
-          debug.end(nextState)
-          return nextState
-        } else {
-          // If the action wasn't filtered, insert normally
-          history = insert(history, res, config.limit)
-
-          debug.log('inserted new state into history')
-          debug.end(history)
-          return history
-        }
+        return defaultReduce(history, action, res, config)
     }
   }
 }

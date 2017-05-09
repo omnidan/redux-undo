@@ -34,6 +34,8 @@ declare module 'redux-undo' {
 
     /** If you don't want to include every action in the undo/redo history, you can add a filter function to undoable */
     filter?: FilterFunction;
+    /** A function that returns a boolean whether you want the present state to be reflected in the next history insertion */
+    squash?: FilterFunction;
 
     /** Define a custom action type for this undo action */
     undoType?: string;
