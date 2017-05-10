@@ -49,3 +49,8 @@ export function combineFilters (...filters) {
       curr(action, currentState, previousHistory)
   , () => true)
 }
+
+export function groupByActionTypes (rawActions) {
+  const actions = parseActions(rawActions)
+  return (action) => actions.indexOf(action.type) >= 0 ? action.type : null
+}
