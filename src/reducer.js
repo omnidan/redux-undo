@@ -200,7 +200,7 @@ export default function undoable (reducer, rawConfig = {}) {
     const skipReducer = (res) => config.neverSkipReducer
       ? {
         ...res,
-        present: reducer(res.present, action, ...slices),
+        present: reducer(res.present, action, ...slices)
       } : res
 
     let res

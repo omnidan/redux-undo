@@ -99,6 +99,14 @@ runTests('Get Slices', {
     checkSlices: true
   }
 })
+runTests('Group By', {
+  undoableConfig: {
+    groupBy: (action) => action.group || null
+  },
+  testConfig: {
+    checkSlices: true
+  }
+})
 
 // Test undoable reducers as a function of a configuration object
 // `label` describes the nature of the configuration object used to run a test
@@ -299,6 +307,96 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
       })
     })
 
+    describe('groupBy', () => {
+      it('should run normally without undo/redo', () => {
+        if (undoableConfig && undoableConfig.groupBy && !testConfig.excludedActions) {
+          const first = mockUndoableReducer(mockInitialState, {
+            type: 'INCREMENT',
+            group: 'a'
+          })
+          const second = mockUndoableReducer(first, {
+            type: 'INCREMENT',
+            group: 'a'
+          })
+          const third = mockUndoableReducer(second, {
+            type: 'INCREMENT',
+            group: 'a'
+          })
+          const fourth = mockUndoableReducer(third, {
+            type: 'DECREMENT',
+            group: 'b'
+          })
+          const fifth = mockUndoableReducer(fourth, {
+            type: 'DECREMENT',
+            group: 'b'
+          })
+          const sixth = mockUndoableReducer(fifth, {
+            type: 'DECREMENT',
+            group: 'b'
+          })
+          const seventh = mockUndoableReducer(sixth, {
+            type: 'INCREMENT'
+          })
+          const eighth = mockUndoableReducer(seventh, {
+            type: 'INCREMENT'
+          })
+          expect(first.past.length).to.equal(1)
+          expect(second.past.length).to.equal(first.past.length)
+          expect(third.past.length).to.equal(second.past.length)
+          expect(third.present).to.equal(mockInitialState.present + 3)
+          expect(fourth.past.length).to.equal(2)
+          expect(fifth.past.length).to.equal(fourth.past.length)
+          expect(sixth.past.length).to.equal(fifth.past.length)
+          expect(sixth.present).to.equal(mockInitialState.present)
+          expect(seventh.present).to.equal(first.present)
+          expect(seventh.past.length).to.equal(3)
+          expect(eighth.past.length).to.equal(4)
+        }
+      })
+
+      it('should save undo/redo', () => {
+        if (undoableConfig && undoableConfig.groupBy && !testConfig.excludedActions) {
+          const first = mockUndoableReducer(mockInitialState, {
+            type: 'INCREMENT',
+            group: 'a'
+          })
+          const second = mockUndoableReducer(first, {
+            type: 'INCREMENT',
+            group: 'a'
+          })
+          const third = mockUndoableReducer(second, ActionCreators.undo())
+          const fourth = mockUndoableReducer(third, ActionCreators.redo())
+          const fifth = mockUndoableReducer(fourth, {
+            type: 'INCREMENT',
+            group: 'a'
+          })
+          const sixth = mockUndoableReducer(fifth, {
+            type: 'DECREMENT',
+            group: 'b'
+          })
+          const seventh = mockUndoableReducer(sixth, {
+            type: 'DECREMENT',
+            group: 'b'
+          })
+          const eighth = mockUndoableReducer(seventh, ActionCreators.undo())
+          const ninth = mockUndoableReducer(eighth, ActionCreators.undo())
+          const tenth = mockUndoableReducer(ninth, ActionCreators.undo())
+          expect(first.past.length).to.equal(1)
+          expect(second.past.length).to.equal(first.past.length)
+          expect(third.past.length).to.equal(0)
+          expect(third.present).to.equal(mockInitialState.present)
+          expect(fourth.past.length).to.equal(second.past.length)
+          expect(fourth.present).to.equal(second.present)
+          expect(fifth.past.length).to.equal(fourth.past.length + 1)
+          expect(sixth.past.length).to.equal(fifth.past.length + 1)
+          expect(seventh.past.length).to.equal(sixth.past.length)
+          expect(eighth.present).to.equal(fifth.present)
+          expect(ninth.present).to.equal(fourth.present)
+          expect(tenth.present).to.equal(mockInitialState.present)
+        }
+      })
+    })
+
     describe('Undo', () => {
       let undoState
       before('perform an undo action', () => {
@@ -427,8 +525,6 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
           // redo
           const postRedoState = mockUndoableReducer(postUndoState, ActionCreators.redo())
           // redo should be ignored, because future state wasn't stored
-          console.log(postRedoState)
-          console.log(mockInitialState)
           expect(mockInitialState).to.deep.equal(postRedoState)
         }
       })
