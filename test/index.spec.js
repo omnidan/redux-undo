@@ -314,42 +314,42 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
             type: 'INCREMENT',
             group: 'a'
           })
+          expect(first.past.length).to.equal(1)
           const second = mockUndoableReducer(first, {
             type: 'INCREMENT',
             group: 'a'
           })
+          expect(second.past.length).to.equal(first.past.length)
           const third = mockUndoableReducer(second, {
             type: 'INCREMENT',
             group: 'a'
           })
+          expect(third.past.length).to.equal(second.past.length)
+          expect(third.present).to.equal(mockInitialState.present + 3)
           const fourth = mockUndoableReducer(third, {
             type: 'DECREMENT',
             group: 'b'
           })
+          expect(fourth.past.length).to.equal(2)
           const fifth = mockUndoableReducer(fourth, {
             type: 'DECREMENT',
             group: 'b'
           })
+          expect(fifth.past.length).to.equal(fourth.past.length)
           const sixth = mockUndoableReducer(fifth, {
             type: 'DECREMENT',
             group: 'b'
           })
+          expect(sixth.past.length).to.equal(fifth.past.length)
+          expect(sixth.present).to.equal(mockInitialState.present)
           const seventh = mockUndoableReducer(sixth, {
             type: 'INCREMENT'
           })
+          expect(seventh.present).to.equal(first.present)
+          expect(seventh.past.length).to.equal(3)
           const eighth = mockUndoableReducer(seventh, {
             type: 'INCREMENT'
           })
-          expect(first.past.length).to.equal(1)
-          expect(second.past.length).to.equal(first.past.length)
-          expect(third.past.length).to.equal(second.past.length)
-          expect(third.present).to.equal(mockInitialState.present + 3)
-          expect(fourth.past.length).to.equal(2)
-          expect(fifth.past.length).to.equal(fourth.past.length)
-          expect(sixth.past.length).to.equal(fifth.past.length)
-          expect(sixth.present).to.equal(mockInitialState.present)
-          expect(seventh.present).to.equal(first.present)
-          expect(seventh.past.length).to.equal(3)
           expect(eighth.past.length).to.equal(4)
         }
       })
@@ -360,38 +360,38 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
             type: 'INCREMENT',
             group: 'a'
           })
+          expect(first.past.length).to.equal(1)
           const second = mockUndoableReducer(first, {
             type: 'INCREMENT',
             group: 'a'
           })
+          expect(second.past.length).to.equal(first.past.length)
           const third = mockUndoableReducer(second, ActionCreators.undo())
+          expect(third.past.length).to.equal(0)
+          expect(third.present).to.equal(mockInitialState.present)
           const fourth = mockUndoableReducer(third, ActionCreators.redo())
+          expect(fourth.past.length).to.equal(second.past.length)
+          expect(fourth.present).to.equal(second.present)
           const fifth = mockUndoableReducer(fourth, {
             type: 'INCREMENT',
             group: 'a'
           })
+          expect(fifth.past.length).to.equal(fourth.past.length + 1)
           const sixth = mockUndoableReducer(fifth, {
             type: 'DECREMENT',
             group: 'b'
           })
+          expect(sixth.past.length).to.equal(fifth.past.length + 1)
           const seventh = mockUndoableReducer(sixth, {
             type: 'DECREMENT',
             group: 'b'
           })
-          const eighth = mockUndoableReducer(seventh, ActionCreators.undo())
-          const ninth = mockUndoableReducer(eighth, ActionCreators.undo())
-          const tenth = mockUndoableReducer(ninth, ActionCreators.undo())
-          expect(first.past.length).to.equal(1)
-          expect(second.past.length).to.equal(first.past.length)
-          expect(third.past.length).to.equal(0)
-          expect(third.present).to.equal(mockInitialState.present)
-          expect(fourth.past.length).to.equal(second.past.length)
-          expect(fourth.present).to.equal(second.present)
-          expect(fifth.past.length).to.equal(fourth.past.length + 1)
-          expect(sixth.past.length).to.equal(fifth.past.length + 1)
           expect(seventh.past.length).to.equal(sixth.past.length)
+          const eighth = mockUndoableReducer(seventh, ActionCreators.undo())
           expect(eighth.present).to.equal(fifth.present)
+          const ninth = mockUndoableReducer(eighth, ActionCreators.undo())
           expect(ninth.present).to.equal(fourth.present)
+          const tenth = mockUndoableReducer(ninth, ActionCreators.undo())
           expect(tenth.present).to.equal(mockInitialState.present)
         }
       })
