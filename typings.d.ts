@@ -5,9 +5,12 @@ declare module 'redux-undo' {
     past: State[];
     present: State;
     future: State[];
+    _latestUnfiltered: State[];
+    group: any;
   }
 
   export type FilterFunction = (action: Action) => boolean;
+  export type GroupByFunction = (action: Action) => any;
   export type CombineFilters = (...filters: FilterFunction[]) => FilterFunction;
 
   export class ActionCreators {
@@ -35,6 +38,9 @@ declare module 'redux-undo' {
     /** If you don't want to include every action in the undo/redo history, you can add a filter function to undoable */
     filter?: FilterFunction;
 
+    /** Groups actions together into one undo step */
+    groupBy?: GroupByFunction;
+
     /** Define a custom action type for this undo action */
     undoType?: string;
     /** Define a custom action type for this redo action */
@@ -56,7 +62,7 @@ declare module 'redux-undo' {
 
     /** Set to `true` to turn on debugging */
     debug?: boolean;
-    
+
     /** Set to `true` to prevent undoable from skipping the reducer on undo/redo **/
     neverSkipReducer?: boolean;
   }
@@ -68,6 +74,7 @@ declare module 'redux-undo' {
 
   type IncludeAction = (actions: string | string[]) => FilterFunction;
   type ExcludeAction = IncludeAction;
+  type GroupByActionTypes = (actions: string | string[]) => GroupByFunction;
 
   const undoable: Undoable;
 
@@ -86,4 +93,7 @@ declare module 'redux-undo' {
   export const excludeAction: ExcludeAction;
 
   export const combineFilters: CombineFilters;
+
+  export const groupByActionTypes: GroupByActionTypes;
+
 }
