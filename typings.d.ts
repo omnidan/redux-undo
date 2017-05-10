@@ -10,7 +10,7 @@ declare module 'redux-undo' {
   }
 
   export type FilterFunction = (action: Action) => boolean;
-  export type GroupByFunction = (action: Action) => any;
+  export type GroupByFunction = <State>(action: Action, currentState: State, previousHistory: StateWithHistory<State>) => any;
   export type CombineFilters = (...filters: FilterFunction[]) => FilterFunction;
 
   export class ActionCreators {
