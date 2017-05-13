@@ -145,6 +145,7 @@ undoable(reducer, {
   limit: false, // set to a number to turn on a limit for the history
 
   filter: () => true, // see `Filtering Actions` section
+  resetFilter: () => false, // see `Filtering Actions` section
 
   undoType: ActionTypes.UNDO, // define a custom action type for this undo action
   redoType: ActionTypes.REDO, // define a custom action type for this redo action
@@ -275,6 +276,22 @@ undoable(reducer, {
   filter: combineFilters(isActionSelfExcluded, areWeRecording)
 })
 ```
+
+### Reseting filtered state
+
+This is useful if you have for example a point that is dragged around by a mouse, and you filter these move actions, but then want to store the last position to the undo stack on mouseup.
+The mouseup action itself does not change the state, so normally redux-undo would ignore it.
+But you can set the `resetFilter` option:
+
+```js
+undoable(reducer, {
+  filter: excludeAction(MOUSE_MOVE),
+  resetFilter: includeAction(MOUSE_UP)
+})
+```
+
+If the mouse was not moved and the previous action was not filtered, nothing will happen at mouseup, but if it was moved, the present state will be marked as not filtered and will be included in the undo stack.
+
 
 ### Ignoring Actions
 

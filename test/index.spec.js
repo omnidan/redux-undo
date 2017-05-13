@@ -3,6 +3,7 @@ import { createStore } from 'redux'
 import undoable, { ActionCreators, ActionTypes, excludeAction, includeAction, isHistory } from '../src/index'
 
 const decrementActions = ['DECREMENT']
+const resetFilterActions = ['RESET_FILTER']
 
 runTests('Default config')
 runTests('Never skip reducer', {
@@ -36,7 +37,8 @@ runTests('Initial State that looks like a history', {
 })
 runTests('Filter (Include Actions)', {
   undoableConfig: {
-    filter: includeAction(decrementActions)
+    filter: includeAction(decrementActions),
+    resetFilter: includeAction(resetFilterActions)
   },
   testConfig: {
     includeActions: decrementActions
@@ -46,7 +48,8 @@ runTests('Initial History and Filter (Exclude Actions)', {
   undoableConfig: {
     limit: 100,
     initTypes: 'RE-INITIALIZE',
-    filter: excludeAction(decrementActions)
+    filter: excludeAction(decrementActions),
+    resetFilter: includeAction(resetFilterActions)
   },
   initialStoreState: {
     past: [0, 1, 2, 3],
@@ -239,6 +242,15 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
             mockUndoableReducer(actual, excludedAction),
             excludedAction
           )
+          expect(actual).to.deep.equal(expected)
+
+          // should reset wasFiltered on resetFilter action
+          const resetAction = { type: resetFilterActions[0] }
+          expected = {
+            ...expected,
+            wasFiltered: false
+          }
+          actual = mockUndoableReducer(actual, resetAction)
           expect(actual).to.deep.equal(expected)
         }
 
