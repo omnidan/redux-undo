@@ -99,6 +99,56 @@ runTests('Get Slices', {
     checkSlices: true
   }
 })
+runTests('Diff', {
+  undoableConfig: {
+    enableDiff: true,
+    limit: 200
+  }
+})
+runTests('Diff – Default config', {
+  undoableConfig: {
+    enableDiff: true,
+  }
+})
+runTests('Diff – Never skip reducer', {
+  undoableConfig: {
+    enableDiff: true,
+    neverSkipReducer: true
+  }
+})
+runTests('Diff – No Init types', {
+  undoableConfig: {
+    enableDiff: true,
+    initTypes: []
+  }
+})
+runTests('Diff – Initial State equals 100', {
+  undoableConfig: {
+    enableDiff: true,
+    limit: 200
+  },
+  initialStoreState: 100
+})
+runTests('Diff – Initial State that looks like a history', {
+  undoableConfig: {},
+  enableDiff: true,
+  initialStoreState: {'present': 0}
+})
+runTests('Diff – Filter (Include Actions)', {
+  undoableConfig: {
+    enableDiff: true,
+    filter: includeAction(decrementActions)
+  },
+  testConfig: {
+    includeActions: decrementActions
+  }
+})
+runTests('Diff – Array as clearHistoryType', {
+  undoableConfig: {
+    enableDiff: true,
+    clearHistoryType: ['TYPE_1', 'TYPE_2']
+  }
+})
 
 // Test undoable reducers as a function of a configuration object
 // `label` describes the nature of the configuration object used to run a test
@@ -316,14 +366,18 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
       })
 
       it('should change present state to last element of \'past\'', () => {
-        if (undoableConfig && undoableConfig.limit >= 0) {
-          expect(undoState.present).to.equal(incrementedState.past[incrementedState.past.length - 1])
+        if (undoableConfig && !undoableConfig.enableDiff) {
+          if (undoableConfig.limit >= 0) {
+            expect(undoState.present).to.equal(incrementedState.past[incrementedState.past.length - 1])
+          }
         }
       })
 
       it('should add a new element to \'future\' from last state', () => {
-        if (undoableConfig && undoableConfig.limit >= 0) {
-          expect(undoState.future[0]).to.equal(incrementedState.present)
+        if (undoableConfig && !undoableConfig.enableDiff) {
+          if (undoableConfig.limit >= 0) {
+            expect(undoState.future[0]).to.equal(incrementedState.present)
+          }
         }
       })
 
@@ -386,14 +440,18 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
       })
 
       it('should change present state to first element of \'future\'', () => {
-        if (undoableConfig && undoableConfig.limit >= 0) {
-          expect(redoState.present).to.equal(undoState.future[0])
+        if (undoableConfig && !undoableConfig.enableDiff) {
+          if (undoableConfig.limit >= 0) {
+            expect(redoState.present).to.equal(undoState.future[0])
+          }
         }
       })
 
       it('should add a new element to \'past\' from last state', () => {
-        if (undoableConfig && undoableConfig.limit >= 0) {
-          expect(redoState.past[redoState.past.length - 1]).to.equal(undoState.present)
+        if (undoableConfig && !undoableConfig.enableDiff) {
+          if (undoableConfig.limit >= 0) {
+            expect(redoState.past[redoState.past.length - 1]).to.equal(undoState.present)
+          }
         }
       })
 
