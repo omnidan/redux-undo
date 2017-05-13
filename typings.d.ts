@@ -7,7 +7,7 @@ declare module 'redux-undo' {
     future: State[];
   }
 
-  export type FilterFunction = (action: Action) => boolean;
+  export type FilterFunction = <State>(action: Action, currentState: State, previousHistory: StateWithHistory<State>) => boolean;
   export type CombineFilters = (...filters: FilterFunction[]) => FilterFunction;
 
   export class ActionCreators {
@@ -28,7 +28,7 @@ declare module 'redux-undo' {
     static CLEAR_HISTORY: string;
   }
 
-  interface Options {
+  export interface UndoableOptions {
     /* Set a limit for the history */
     limit?: number;
 
@@ -59,10 +59,13 @@ declare module 'redux-undo' {
     
     /** Set to `true` to prevent undoable from skipping the reducer on undo/redo **/
     neverSkipReducer?: boolean;
+
+    /** Set to `true` to prevent the user from undoing to the initial state  **/
+    ignoreInitialState?: boolean;
   }
 
   interface Undoable {
-    <State>(reducer: Reducer<State>, options?: Options): Reducer<StateWithHistory<State>>;
+    <State>(reducer: Reducer<State>, options?: UndoableOptions): Reducer<StateWithHistory<State>>;
   }
 
 
