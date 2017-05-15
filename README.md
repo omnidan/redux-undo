@@ -205,6 +205,44 @@ const store = createStore(undoable(counter), {foo: 'bar'});
 
 ```
 
+### Grouping Actions
+If you want to group your actions together into single undo/redo steps, you
+can add a `groupBy` function to `undoable`. `redux-undo` provides
+`groupByActionTypes` as a basic groupBy function:
+
+```js
+import undoable, { groupByActionTypes } from 'redux-undo';
+
+undoable(reducer, { groupBy: groupByActionTypes(SOME_ACTION) })
+// or with arrays
+undoable(reducer, { groupBy: groupByActionTypes([SOME_ACTION]) })
+```
+
+In these cases, consecutive SOME_ACTION actions will be considered a single
+step in the undo/redo history.
+
+### Further GroupBy Explanation
+
+If you want to create your own `groupBy` function, pass in your own function
+with the signature `(action, currentState, previousHistory)`. If the return
+value is not null, then the new state will be grouped by that return value.
+If the next state is grouped into the same group as the previous state, then
+the two states will be grouped together in one step.
+
+If the groupBy return value is `null`, then the state will not be grouped, and
+`redux-undo` not group the next state with the previous state.
+
+The `groupByActionTypes` function essentially returns the following:
+* If a grouped action type (`SOME_ACTION`), the action type of the action (`SOME_ACTION`).
+* If not a grouped action type (any other action type), `null`.
+
+When groupBy runs groups a state change, the associated `group` will be saved
+alongside `past`, `present`, and `future` so that it may be referenced by the
+next state change.
+
+After an undo/redo occurs, the current group gets reset to `null` so that the
+undo/redo history is remembered.
+
 ### Filtering Actions
 
 If you don't want to include every action in the undo/redo history, you can
