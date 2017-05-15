@@ -240,7 +240,7 @@ When groupBy runs groups a state change, the associated `group` will be saved
 alongside `past`, `present`, and `future` so that it may be referenced by the
 next state change.
 
-After an undo/redo occurs, the current group gets reset to `null` so that the
+After an undo/redo/jump occurs, the current group gets reset to `null` so that the
 undo/redo history is remembered.
 
 ### Filtering Actions
