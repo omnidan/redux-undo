@@ -10,7 +10,7 @@ function lengthWithoutFuture (history) {
 // insert: insert `state` into history, which means adding the current state
 //         into `past`, setting the new `state` as `present` and erasing
 //         the `future`.
-function insert (history, state, limit) {
+function insert (history, state, limit, group) {
   debug.log('inserting', state)
   debug.log('new free: ', limit - lengthWithoutFuture(history))
 
@@ -28,7 +28,8 @@ function insert (history, state, limit) {
     past: newPast,
     present: state,
     _latestUnfiltered: state,
-    future: []
+    future: [],
+    group: group
   }
 }
 
@@ -49,7 +50,8 @@ function undo (history) {
     past: past.slice(0, past.length - 1), // remove last element from past
     present: newPresent, // set element as new present
     _latestUnfiltered: newPresent,
-    future: newFuture
+    future: newFuture,
+    group: null
   }
 }
 
@@ -70,7 +72,8 @@ function redo (history) {
     future: future.slice(1, future.length), // remove element from future
     present: newPresent, // set element as new present
     _latestUnfiltered: newPresent,
-    past: newPast
+    past: newPast,
+    group: null
   }
 }
 
@@ -87,8 +90,9 @@ function jumpToFuture (history, index) {
     future: future.slice(index + 1),
     present: newPresent,
     _latestUnfiltered: newPresent,
-    past: past.concat([_latestUnfiltered])
-      .concat(future.slice(0, index))
+    past: past.concat([_latestUnfiltered]).concat(future.slice(0, index)),
+    group: null
+
   }
 }
 
@@ -107,7 +111,8 @@ function jumpToPast (history, index) {
       .concat(future),
     present: newPresent,
     _latestUnfiltered: newPresent,
-    past: past.slice(0, index)
+    past: past.slice(0, index),
+    group: null
   }
 }
 
@@ -126,12 +131,14 @@ function createHistory (state, ignoreInitialState) {
   return ignoreInitialState ? {
     past: [],
     present: state,
-    future: []
+    future: [],
+    group: null
   } : {
     past: [],
     present: state,
     _latestUnfiltered: state,
-    future: []
+    future: [],
+    group: null
   }
 }
 
@@ -148,6 +155,7 @@ export default function undoable (reducer, rawConfig = {}) {
     initTypes: parseActions(rawConfig.initTypes, ['@@redux-undo/INIT']),
     limit: rawConfig.limit,
     filter: rawConfig.filter || (() => true),
+    groupBy: rawConfig.groupBy || (() => null),
     undoType: rawConfig.undoType || ActionTypes.UNDO,
     redoType: rawConfig.redoType || ActionTypes.REDO,
     jumpToPastType: rawConfig.jumpToPastType || ActionTypes.JUMP_TO_PAST,
@@ -179,7 +187,8 @@ export default function undoable (reducer, rawConfig = {}) {
         history = config.history = config.ignoreInitialState
           ? state : {
             ...state,
-            _latestUnfiltered: state.present
+            _latestUnfiltered: state.present,
+            group: null
           }
         debug.log('initialHistory initialized: initialState is a history', config.history)
       } else {
@@ -254,18 +263,30 @@ export default function undoable (reducer, rawConfig = {}) {
           return history
         }
 
+        const group = config.groupBy(action, res, history)
+
         if (typeof config.filter === 'function' && !config.filter(action, res, history)) {
           // if filtering an action, merely update the present
-          const nextState = {
+          const filteredState = {
             ...history,
+            present: res,
+            group: null
+          }
+          debug.log('filter ignored action, not storing it in past')
+          debug.end(filteredState)
+          return filteredState
+        } else if (group != null && group === history.group) {
+          const groupedState = {
+            ...history,
+            _latestUnfiltered: res,
             present: res
           }
-          debug.log('filter prevented action, not storing it')
-          debug.end(nextState)
-          return nextState
+          debug.log('groupBy grouped the action with the previous action')
+          debug.end(groupedState)
+          return groupedState
         } else {
           // If the action wasn't filtered, insert normally
-          history = insert(history, res, config.limit)
+          history = insert(history, res, config.limit, group)
 
           debug.log('inserted new state into history')
           debug.end(history)
