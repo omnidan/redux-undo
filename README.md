@@ -170,7 +170,7 @@ undoable(reducer, {
 **Note:** If you want to use just the `initTypes` functionality, but not import
 the whole redux-undo library, use [redux-recycle](https://github.com/omnidan/redux-recycle)!
 
-#### Initial State and History
+### Initial State and History
 
 You can use your redux store to set an initial history for your undoable reducers:
 
@@ -206,9 +206,10 @@ const store = createStore(undoable(counter), {foo: 'bar'});
 ```
 
 ### Grouping Actions
+
 If you want to group your actions together into single undo/redo steps, you
 can add a `groupBy` function to `undoable`. `redux-undo` provides
-`groupByActionTypes` as a basic groupBy function:
+`groupByActionTypes` as a basic `groupBy` function:
 
 ```js
 import undoable, { groupByActionTypes } from 'redux-undo';
@@ -218,38 +219,39 @@ undoable(reducer, { groupBy: groupByActionTypes(SOME_ACTION) })
 undoable(reducer, { groupBy: groupByActionTypes([SOME_ACTION]) })
 ```
 
-In these cases, consecutive SOME_ACTION actions will be considered a single
+In these cases, consecutive `SOME_ACTION` actions will be considered a single
 step in the undo/redo history.
 
-### Further GroupBy Explanation
+#### Custom `groupBy` Function
 
-If you want to create your own `groupBy` function, pass in your own function
+If you want to implement custom grouping behaviour, pass in your own function
 with the signature `(action, currentState, previousHistory)`. If the return
-value is not null, then the new state will be grouped by that return value.
+value is not `null`, then the new state will be grouped by that return value.
 If the next state is grouped into the same group as the previous state, then
 the two states will be grouped together in one step.
 
-If the groupBy return value is `null`, then the state will not be grouped, and
-`redux-undo` not group the next state with the previous state.
+If the return value is `null`, then `redux-undo` will not group the next state
+with the previous state.
 
 The `groupByActionTypes` function essentially returns the following:
 * If a grouped action type (`SOME_ACTION`), the action type of the action (`SOME_ACTION`).
 * If not a grouped action type (any other action type), `null`.
 
-When groupBy runs groups a state change, the associated `group` will be saved
+When `groupBy` groups a state change, the associated `group` will be saved
 alongside `past`, `present`, and `future` so that it may be referenced by the
 next state change.
 
-After an undo/redo/jump occurs, the current group gets reset to `null` so that the
-undo/redo history is remembered.
+After an undo/redo/jump occurs, the current group gets reset to `null` so that
+the undo/redo history is remembered.
 
 ### Filtering Actions
 
-If you don't want to include every action in the undo/redo history, you can
-add a `filter` function to `undoable`. `redux-undo` provides you with the
-`includeAction` and `excludeAction` helpers for basic filtering.
+If you don't want to include every action in the undo/redo history, you can add
+a `filter` function to `undoable`. This is useful for, for example, excluding
+actions that were not triggered by the user.
 
-They should be imported like this:
+`redux-undo` provides you with the `includeAction` and `excludeAction` helpers
+for basic filtering. They should be imported like this:
 
 ```js
 import undoable, { includeAction, excludeAction } from 'redux-undo';
@@ -271,7 +273,7 @@ undoable(reducer, { filter: excludeAction([SOME_ACTION, SOME_OTHER_ACTION]) })
           only actions resulting in a new state are recorded. This means the
           (now deprecated) `distinctState()` filter is auto-applied.
 
-#### Custom filters
+#### Custom Filters
 
 If you want to create your own filter, pass in a function with the signature
 `(action, currentState, previousHistory)`. For example:
@@ -294,7 +296,7 @@ undoable(reducer, {
 })
 ```
 
-### Combining Filters
+#### Combining Filters
 
 You can also use our helper to combine filters.
 
