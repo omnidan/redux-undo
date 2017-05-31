@@ -68,6 +68,9 @@ declare module 'redux-undo' {
 
     /** Set to `true` to prevent the user from undoing to the initial state  **/
     ignoreInitialState?: boolean;
+
+    /** Set to `true` to synchronize the _latestUnfiltered state with present wen a excluded action is dispatched **/
+    syncFilter?: boolean;
   }
 
   interface Undoable {

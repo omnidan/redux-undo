@@ -166,7 +166,8 @@ export default function undoable (reducer, rawConfig = {}) {
       ? rawConfig.clearHistoryType
       : [rawConfig.clearHistoryType || ActionTypes.CLEAR_HISTORY],
     neverSkipReducer: rawConfig.neverSkipReducer || false,
-    ignoreInitialState: rawConfig.ignoreInitialState || false
+    ignoreInitialState: rawConfig.ignoreInitialState || false,
+    syncFilter: rawConfig.syncFilter || false
   }
 
   return (state = config.history, action = {}, ...slices) => {
@@ -270,6 +271,7 @@ export default function undoable (reducer, rawConfig = {}) {
           const filteredState = {
             ...history,
             present: res,
+            _latestUnfiltered: config.syncFilter ? res : history._latestUnfiltered,
             group: null
           }
           debug.log('filter ignored action, not storing it in past')
