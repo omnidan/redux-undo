@@ -277,6 +277,22 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
         expect(dummyState).to.deep.equal(incrementedState)
       })
 
+      it('should synchronize latest unfiltered state to present when filtering actions', () => {
+        if (testConfig && testConfig.excludedActions) {
+          const excludedAction = { type: testConfig.excludedActions[0] }
+
+          const synchronizedFilteredReducer = undoable(countReducer, {
+            ...undoableConfig,
+            syncFilter: true
+          })
+          let unsynchronized = mockUndoableReducer(mockInitialState, excludedAction)
+          let synchronized = synchronizedFilteredReducer(mockInitialState, excludedAction)
+          expect(unsynchronized.present).to.deep.equal(synchronized.present)
+          expect(unsynchronized._latestUnfiltered).to.not.deep.equal(synchronized._latestUnfiltered)
+          expect(synchronized.present).to.deep.equal(synchronized._latestUnfiltered)
+        }
+      })
+
       it('should not record undefined actions', () => {
         let dummyState = mockUndoableReducer(incrementedState, undefined)
         expect(dummyState).to.deep.equal(incrementedState)
