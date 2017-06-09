@@ -17,7 +17,7 @@ function createHistory (state, ignoreInitialState) {
   // ignoreInitialState essentially prevents the user from undoing to the
   // beginning, in the case that the undoable reducer handles initialization
   // in a way that can't be redone simply
-  let history = newHistory([], state, [])
+  const history = newHistory([], state, [])
   return ignoreInitialState ? {
     ...history,
     _latestUnfiltered: null
