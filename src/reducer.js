@@ -33,53 +33,8 @@ function insert (history, state, limit, group) {
   }
 }
 
-// undo: go back to the previous point in history
-function undo (history) {
-  const { past, future, _latestUnfiltered } = history
-
-  if (past.length <= 0) return history
-
-  const newFuture = _latestUnfiltered != null
-    ? [
-      _latestUnfiltered,
-      ...future
-    ] : future
-
-  const newPresent = past[past.length - 1]
-  return {
-    past: past.slice(0, past.length - 1), // remove last element from past
-    present: newPresent, // set element as new present
-    _latestUnfiltered: newPresent,
-    future: newFuture,
-    group: null
-  }
-}
-
-// redo: go to the next point in history
-function redo (history) {
-  const { past, future, _latestUnfiltered } = history
-
-  if (future.length <= 0) return history
-
-  const newPast = _latestUnfiltered != null
-    ? [
-      ...past,
-      _latestUnfiltered
-    ] : past
-
-  const newPresent = future[0]
-  return {
-    future: future.slice(1, future.length), // remove element from future
-    present: newPresent, // set element as new present
-    _latestUnfiltered: newPresent,
-    past: newPast,
-    group: null
-  }
-}
-
 // jumpToFuture: jump to requested index in future history
 function jumpToFuture (history, index) {
-  if (index === 0) return redo(history)
   if (index < 0 || index >= history.future.length) return history
 
   const { past, future, _latestUnfiltered } = history
@@ -92,13 +47,11 @@ function jumpToFuture (history, index) {
     _latestUnfiltered: newPresent,
     past: past.concat([_latestUnfiltered]).concat(future.slice(0, index)),
     group: null
-
   }
 }
 
 // jumpToPast: jump to requested index in past history
 function jumpToPast (history, index) {
-  if (index === history.past.length - 1) return undo(history)
   if (index < 0 || index >= history.past.length) return history
 
   const { past, future, _latestUnfiltered } = history
@@ -210,13 +163,13 @@ export default function undoable (reducer, rawConfig = {}) {
         return history
 
       case config.undoType:
-        res = undo(history)
+        res = jump(history, -1)
         debug.log('perform undo')
         debug.end(res)
         return skipReducer(res)
 
       case config.redoType:
-        res = redo(history)
+        res = jump(history, 1)
         debug.log('perform redo')
         debug.end(res)
         return skipReducer(res)
