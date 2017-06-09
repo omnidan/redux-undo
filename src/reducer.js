@@ -2,6 +2,28 @@ import * as debug from './debug'
 import { ActionTypes } from './actions'
 import { parseActions, isHistory } from './helpers'
 
+function newHistory (past, present, future, group = null) {
+  return {
+    past,
+    present,
+    future,
+    group,
+    _latestUnfiltered: present
+  }
+}
+
+// createHistory
+function createHistory (state, ignoreInitialState) {
+  // ignoreInitialState essentially prevents the user from undoing to the
+  // beginning, in the case that the undoable reducer handles initialization
+  // in a way that can't be redone simply
+  let history = newHistory([], state, [])
+  return ignoreInitialState ? {
+    ...history,
+    _latestUnfiltered: null
+  } : history
+}
+
 // lengthWithoutFuture: get length of history
 function lengthWithoutFuture (history) {
   return history.past.length + 1
@@ -24,13 +46,7 @@ function insert (history, state, limit, group) {
       _latestUnfiltered
     ] : pastSliced
 
-  return {
-    past: newPast,
-    present: state,
-    _latestUnfiltered: state,
-    future: [],
-    group: group
-  }
+  return newHistory(newPast, state, [], group)
 }
 
 // jumpToFuture: jump to requested index in future history
@@ -39,15 +55,11 @@ function jumpToFuture (history, index) {
 
   const { past, future, _latestUnfiltered } = history
 
+  const newPast = past.concat([_latestUnfiltered]).concat(future.slice(0, index))
   const newPresent = future[index]
+  const newFuture = future.slice(index + 1)
 
-  return {
-    future: future.slice(index + 1),
-    present: newPresent,
-    _latestUnfiltered: newPresent,
-    past: past.concat([_latestUnfiltered]).concat(future.slice(0, index)),
-    group: null
-  }
+  return newHistory(newPast, newPresent, newFuture)
 }
 
 // jumpToPast: jump to requested index in past history
@@ -56,17 +68,13 @@ function jumpToPast (history, index) {
 
   const { past, future, _latestUnfiltered } = history
 
+  const newPast = past.slice(0, index)
+  const newFuture = past.slice(index + 1)
+    .concat([_latestUnfiltered])
+    .concat(future)
   const newPresent = past[index]
 
-  return {
-    future: past.slice(index + 1)
-      .concat([_latestUnfiltered])
-      .concat(future),
-    present: newPresent,
-    _latestUnfiltered: newPresent,
-    past: past.slice(0, index),
-    group: null
-  }
+  return newHistory(newPast, newPresent, newFuture)
 }
 
 // jump: jump n steps in the past or forward
@@ -74,25 +82,6 @@ function jump (history, n) {
   if (n > 0) return jumpToFuture(history, n - 1)
   if (n < 0) return jumpToPast(history, history.past.length + n)
   return history
-}
-
-// createHistory
-function createHistory (state, ignoreInitialState) {
-  // ignoreInitialState essentially prevents the user from undoing to the
-  // beginning, in the case that the undoable reducer handles initialization
-  // in a way that can't be redone simply
-  return ignoreInitialState ? {
-    past: [],
-    present: state,
-    future: [],
-    group: null
-  } : {
-    past: [],
-    present: state,
-    _latestUnfiltered: state,
-    future: [],
-    group: null
-  }
 }
 
 // helper to dynamically match in the reducer's switch-case
@@ -221,21 +210,20 @@ export default function undoable (reducer, rawConfig = {}) {
 
         if (typeof config.filter === 'function' && !config.filter(action, res, history)) {
           // if filtering an action, merely update the present
-          const filteredState = {
-            ...history,
-            present: res,
-            _latestUnfiltered: config.syncFilter ? res : history._latestUnfiltered,
-            group: null
+          let filteredState = newHistory(history.past, res, history.future)
+          if (!config.syncFilter) {
+            filteredState._latestUnfiltered = history._latestUnfiltered
           }
           debug.log('filter ignored action, not storing it in past')
           debug.end(filteredState)
           return filteredState
         } else if (group != null && group === history.group) {
-          const groupedState = {
-            ...history,
-            _latestUnfiltered: res,
-            present: res
-          }
+          const groupedState = newHistory(
+            history.past,
+            res,
+            history.future,
+            history.group,
+          )
           debug.log('groupBy grouped the action with the previous action')
           debug.end(groupedState)
           return groupedState
