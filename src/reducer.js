@@ -8,7 +8,9 @@ function newHistory (past, present, future, group = null) {
     present,
     future,
     group,
-    _latestUnfiltered: present
+    _latestUnfiltered: present,
+    index: past.length,
+    limit: past.length + future.length + 1
   }
 }
 
@@ -17,11 +19,11 @@ function createHistory (state, ignoreInitialState) {
   // ignoreInitialState essentially prevents the user from undoing to the
   // beginning, in the case that the undoable reducer handles initialization
   // in a way that can't be redone simply
-  const history = newHistory([], state, [])
-  return ignoreInitialState ? {
-    ...history,
-    _latestUnfiltered: null
-  } : history
+  let history = newHistory([], state, [])
+  if (ignoreInitialState) {
+    history._latestUnfiltered = null
+  }
+  return history
 }
 
 // lengthWithoutFuture: get length of history
@@ -128,11 +130,11 @@ export default function undoable (reducer, rawConfig = {}) {
         debug.log('do not initialize on probe actions')
       } else if (isHistory(state)) {
         history = config.history = config.ignoreInitialState
-          ? state : {
-            ...state,
-            _latestUnfiltered: state.present,
-            group: null
-          }
+          ? state : newHistory(
+            state.past,
+            state.present,
+            state.future
+          )
         debug.log('initialHistory initialized: initialState is a history', config.history)
       } else {
         history = config.history = createHistory(state)

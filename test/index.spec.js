@@ -181,7 +181,9 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
             present: initialStoreState,
             _latestUnfiltered: initialStoreState,
             future: [],
-            group: null
+            group: null,
+            index: 0,
+            limit: 1
           })
         }
       })
