@@ -57,7 +57,7 @@ function jumpToFuture (history, index) {
 
   const { past, future, _latestUnfiltered } = history
 
-  const newPast = past.concat([_latestUnfiltered]).concat(future.slice(0, index))
+  const newPast = [...past, _latestUnfiltered, ...future.slice(0, index)]
   const newPresent = future[index]
   const newFuture = future.slice(index + 1)
 
@@ -71,9 +71,7 @@ function jumpToPast (history, index) {
   const { past, future, _latestUnfiltered } = history
 
   const newPast = past.slice(0, index)
-  const newFuture = past.slice(index + 1)
-    .concat([_latestUnfiltered])
-    .concat(future)
+  const newFuture = [...past.slice(index + 1), _latestUnfiltered, ...future]
   const newPresent = past[index]
 
   return newHistory(newPast, newPresent, newFuture)
@@ -122,11 +120,14 @@ export default function undoable (reducer, rawConfig = {}) {
       debug.log('history is uninitialized')
 
       if (state === undefined) {
-        history = config.history = createHistory(reducer(
-          state, { type: '@@redux-undo/CREATE_HISTORY' }),
-          config.ignoreInitialState,
-          ...slices
+        const clearHistoryAction = { type: ActionTypes.CLEAR_HISTORY }
+        const start = reducer(state, clearHistoryAction, ...slices)
+
+        history = config.history = createHistory(
+          start,
+          config.ignoreInitialState
         )
+
         debug.log('do not initialize on probe actions')
       } else if (isHistory(state)) {
         history = config.history = config.ignoreInitialState
@@ -135,10 +136,19 @@ export default function undoable (reducer, rawConfig = {}) {
             state.present,
             state.future
           )
-        debug.log('initialHistory initialized: initialState is a history', config.history)
+        debug.log(
+          'initialHistory initialized: initialState is a history',
+          config.history
+        )
       } else {
-        history = config.history = createHistory(state)
-        debug.log('initialHistory initialized: initialState is not a history', config.history)
+        history = config.history = createHistory(
+          state,
+          config.ignoreInitialState
+        )
+        debug.log(
+          'initialHistory initialized: initialState is not a history',
+          config.history
+        )
       }
     }
 
@@ -208,9 +218,14 @@ export default function undoable (reducer, rawConfig = {}) {
           return history
         }
 
+        const filtered = typeof config.filter === 'function' && !config.filter(
+          action,
+          res,
+          history
+        )
         const group = config.groupBy(action, res, history)
 
-        if (typeof config.filter === 'function' && !config.filter(action, res, history)) {
+        if (filtered) {
           // if filtering an action, merely update the present
           let filteredState = newHistory(history.past, res, history.future)
           if (!config.syncFilter) {
