@@ -5,7 +5,7 @@ declare module 'redux-undo' {
     past: State[];
     present: State;
     future: State[];
-    _latestUnfiltered: State[];
+    _latestUnfiltered: State;
     group: any;
   }
 
