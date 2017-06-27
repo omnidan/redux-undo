@@ -227,7 +227,12 @@ export default function undoable (reducer, rawConfig = {}) {
 
         if (filtered) {
           // if filtering an action, merely update the present
-          let filteredState = newHistory(history.past, res, history.future)
+          let filteredState = newHistory(
+            history.past,
+            res,
+            history.future,
+            history.group
+          )
           if (!config.syncFilter) {
             filteredState._latestUnfiltered = history._latestUnfiltered
           }
