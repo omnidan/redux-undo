@@ -2,6 +2,30 @@ import * as debug from './debug'
 import { ActionTypes } from './actions'
 import { parseActions, isHistory } from './helpers'
 
+function newHistory (past, present, future, group = null) {
+  return {
+    past,
+    present,
+    future,
+    group,
+    _latestUnfiltered: present,
+    index: past.length,
+    limit: past.length + future.length + 1
+  }
+}
+
+// createHistory
+function createHistory (state, ignoreInitialState) {
+  // ignoreInitialState essentially prevents the user from undoing to the
+  // beginning, in the case that the undoable reducer handles initialization
+  // in a way that can't be redone simply
+  let history = newHistory([], state, [])
+  if (ignoreInitialState) {
+    history._latestUnfiltered = null
+  }
+  return history
+}
+
 // lengthWithoutFuture: get length of history
 function lengthWithoutFuture (history) {
   return history.past.length + 1
@@ -24,96 +48,33 @@ function insert (history, state, limit, group) {
       _latestUnfiltered
     ] : pastSliced
 
-  return {
-    past: newPast,
-    present: state,
-    _latestUnfiltered: state,
-    future: [],
-    group: group
-  }
-}
-
-// undo: go back to the previous point in history
-function undo (history) {
-  const { past, future, _latestUnfiltered } = history
-
-  if (past.length <= 0) return history
-
-  const newFuture = _latestUnfiltered != null
-    ? [
-      _latestUnfiltered,
-      ...future
-    ] : future
-
-  const newPresent = past[past.length - 1]
-  return {
-    past: past.slice(0, past.length - 1), // remove last element from past
-    present: newPresent, // set element as new present
-    _latestUnfiltered: newPresent,
-    future: newFuture,
-    group: null
-  }
-}
-
-// redo: go to the next point in history
-function redo (history) {
-  const { past, future, _latestUnfiltered } = history
-
-  if (future.length <= 0) return history
-
-  const newPast = _latestUnfiltered != null
-    ? [
-      ...past,
-      _latestUnfiltered
-    ] : past
-
-  const newPresent = future[0]
-  return {
-    future: future.slice(1, future.length), // remove element from future
-    present: newPresent, // set element as new present
-    _latestUnfiltered: newPresent,
-    past: newPast,
-    group: null
-  }
+  return newHistory(newPast, state, [], group)
 }
 
 // jumpToFuture: jump to requested index in future history
 function jumpToFuture (history, index) {
-  if (index === 0) return redo(history)
   if (index < 0 || index >= history.future.length) return history
 
   const { past, future, _latestUnfiltered } = history
 
+  const newPast = [...past, _latestUnfiltered, ...future.slice(0, index)]
   const newPresent = future[index]
+  const newFuture = future.slice(index + 1)
 
-  return {
-    future: future.slice(index + 1),
-    present: newPresent,
-    _latestUnfiltered: newPresent,
-    past: past.concat([_latestUnfiltered]).concat(future.slice(0, index)),
-    group: null
-
-  }
+  return newHistory(newPast, newPresent, newFuture)
 }
 
 // jumpToPast: jump to requested index in past history
 function jumpToPast (history, index) {
-  if (index === history.past.length - 1) return undo(history)
   if (index < 0 || index >= history.past.length) return history
 
   const { past, future, _latestUnfiltered } = history
 
+  const newPast = past.slice(0, index)
+  const newFuture = [...past.slice(index + 1), _latestUnfiltered, ...future]
   const newPresent = past[index]
 
-  return {
-    future: past.slice(index + 1)
-      .concat([_latestUnfiltered])
-      .concat(future),
-    present: newPresent,
-    _latestUnfiltered: newPresent,
-    past: past.slice(0, index),
-    group: null
-  }
+  return newHistory(newPast, newPresent, newFuture)
 }
 
 // jump: jump n steps in the past or forward
@@ -121,25 +82,6 @@ function jump (history, n) {
   if (n > 0) return jumpToFuture(history, n - 1)
   if (n < 0) return jumpToPast(history, history.past.length + n)
   return history
-}
-
-// createHistory
-function createHistory (state, ignoreInitialState) {
-  // ignoreInitialState essentially prevents the user from undoing to the
-  // beginning, in the case that the undoable reducer handles initialization
-  // in a way that can't be redone simply
-  return ignoreInitialState ? {
-    past: [],
-    present: state,
-    future: [],
-    group: null
-  } : {
-    past: [],
-    present: state,
-    _latestUnfiltered: state,
-    future: [],
-    group: null
-  }
 }
 
 // helper to dynamically match in the reducer's switch-case
@@ -178,23 +120,35 @@ export default function undoable (reducer, rawConfig = {}) {
       debug.log('history is uninitialized')
 
       if (state === undefined) {
-        history = config.history = createHistory(reducer(
-          state, { type: '@@redux-undo/CREATE_HISTORY' }),
-          config.ignoreInitialState,
-          ...slices
+        const clearHistoryAction = { type: ActionTypes.CLEAR_HISTORY }
+        const start = reducer(state, clearHistoryAction, ...slices)
+
+        history = config.history = createHistory(
+          start,
+          config.ignoreInitialState
         )
+
         debug.log('do not initialize on probe actions')
       } else if (isHistory(state)) {
         history = config.history = config.ignoreInitialState
-          ? state : {
-            ...state,
-            _latestUnfiltered: state.present,
-            group: null
-          }
-        debug.log('initialHistory initialized: initialState is a history', config.history)
+          ? state : newHistory(
+            state.past,
+            state.present,
+            state.future
+          )
+        debug.log(
+          'initialHistory initialized: initialState is a history',
+          config.history
+        )
       } else {
-        history = config.history = createHistory(state)
-        debug.log('initialHistory initialized: initialState is not a history', config.history)
+        history = config.history = createHistory(
+          state,
+          config.ignoreInitialState
+        )
+        debug.log(
+          'initialHistory initialized: initialState is not a history',
+          config.history
+        )
       }
     }
 
@@ -210,13 +164,13 @@ export default function undoable (reducer, rawConfig = {}) {
         return history
 
       case config.undoType:
-        res = undo(history)
+        res = jump(history, -1)
         debug.log('perform undo')
         debug.end(res)
         return skipReducer(res)
 
       case config.redoType:
-        res = redo(history)
+        res = jump(history, 1)
         debug.log('perform redo')
         debug.end(res)
         return skipReducer(res)
@@ -264,25 +218,34 @@ export default function undoable (reducer, rawConfig = {}) {
           return history
         }
 
+        const filtered = typeof config.filter === 'function' && !config.filter(
+          action,
+          res,
+          history
+        )
         const group = config.groupBy(action, res, history)
 
-        if (typeof config.filter === 'function' && !config.filter(action, res, history)) {
+        if (filtered) {
           // if filtering an action, merely update the present
-          const filteredState = {
-            ...history,
-            present: res,
-            _latestUnfiltered: config.syncFilter ? res : history._latestUnfiltered,
-            group: null
+          let filteredState = newHistory(
+            history.past,
+            res,
+            history.future,
+            history.group
+          )
+          if (!config.syncFilter) {
+            filteredState._latestUnfiltered = history._latestUnfiltered
           }
           debug.log('filter ignored action, not storing it in past')
           debug.end(filteredState)
           return filteredState
         } else if (group != null && group === history.group) {
-          const groupedState = {
-            ...history,
-            _latestUnfiltered: res,
-            present: res
-          }
+          const groupedState = newHistory(
+            history.past,
+            res,
+            history.future,
+            history.group,
+          )
           debug.log('groupBy grouped the action with the previous action')
           debug.end(groupedState)
           return groupedState

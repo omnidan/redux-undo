@@ -7,6 +7,8 @@ declare module 'redux-undo' {
     future: State[];
     _latestUnfiltered: State;
     group: any;
+    index: number;
+    limit: number;
   }
 
   export type FilterFunction = <State>(action: Action, currentState: State, previousHistory: StateWithHistory<State>) => boolean;
