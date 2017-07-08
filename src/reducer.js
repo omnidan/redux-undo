@@ -113,45 +113,36 @@ export default function undoable (reducer, rawConfig = {}) {
   }
 
   let initialState = config.history
-  let defaultState = config.history
-  return (state = defaultState, action = {}, ...slices) => {
+  return (state = initialState, action = {}, ...slices) => {
     debug.start(action, state)
 
     let history = state
-    if (!defaultState) {
+    if (!initialState) {
       debug.log('history is uninitialized')
 
       if (state === undefined) {
         const clearHistoryAction = { type: ActionTypes.CLEAR_HISTORY }
         const start = reducer(state, clearHistoryAction, ...slices)
 
-        history = initialState = createHistory(
+        history = createHistory(
           start,
           config.ignoreInitialState
         )
 
-        debug.log('do not set defaultState on probe actions')
+        debug.log('do not set initialState on probe actions')
       } else if (isHistory(state)) {
-        history = config.ignoreInitialState
+        history = initialState = config.ignoreInitialState
           ? state : newHistory(
             state.past,
             state.present,
             state.future
           )
-        if (initialState === defaultState) {
-          // initialState hasn't been set by the state === undefined branch
-          initialState = defaultState = history
-        } else {
-          // initialState has been set by the state === undefined branch
-          // so here we finally provide a default value
-          defaultState = initialState
-        }
         debug.log(
           'initialHistory initialized: initialState is a history',
           initialState
         )
       } else {
-        history = initialState = defaultState = createHistory(
+        history = initialState = createHistory(
           state,
           config.ignoreInitialState
         )
