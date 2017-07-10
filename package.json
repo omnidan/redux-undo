@@ -67,10 +67,8 @@
     "mocha": "^3.0.2",
     "mocha-lcov-reporter": "^1.2.0",
     "npm-run-all": "^3.1.1",
+    "redux": "^3.7.1",
     "rimraf": "^2.5.4",
     "webpack": "^2.6.1"
-  },
-  "dependencies": {
-    "redux": "^3.5.2"
   }
 }
