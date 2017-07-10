@@ -112,25 +112,26 @@ export default function undoable (reducer, rawConfig = {}) {
     syncFilter: rawConfig.syncFilter || false
   }
 
-  return (state = config.history, action = {}, ...slices) => {
+  let initialState = config.history
+  return (state = initialState, action = {}, ...slices) => {
     debug.start(action, state)
 
     let history = state
-    if (!config.history) {
+    if (!initialState) {
       debug.log('history is uninitialized')
 
       if (state === undefined) {
         const clearHistoryAction = { type: ActionTypes.CLEAR_HISTORY }
         const start = reducer(state, clearHistoryAction, ...slices)
 
-        history = config.history = createHistory(
+        history = createHistory(
           start,
           config.ignoreInitialState
         )
 
-        debug.log('do not initialize on probe actions')
+        debug.log('do not set initialState on probe actions')
       } else if (isHistory(state)) {
-        history = config.history = config.ignoreInitialState
+        history = initialState = config.ignoreInitialState
           ? state : newHistory(
             state.past,
             state.present,
@@ -138,16 +139,16 @@ export default function undoable (reducer, rawConfig = {}) {
           )
         debug.log(
           'initialHistory initialized: initialState is a history',
-          config.history
+          initialState
         )
       } else {
-        history = config.history = createHistory(
+        history = initialState = createHistory(
           state,
           config.ignoreInitialState
         )
         debug.log(
           'initialHistory initialized: initialState is not a history',
-          config.history
+          initialState
         )
       }
     }
@@ -208,8 +209,8 @@ export default function undoable (reducer, rawConfig = {}) {
 
         if (config.initTypes.some((actionType) => actionType === action.type)) {
           debug.log('reset history due to init action')
-          debug.end(config.history)
-          return config.history
+          debug.end(initialState)
+          return initialState
         }
 
         if (history.present === res) {
