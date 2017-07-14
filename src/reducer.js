@@ -213,7 +213,7 @@ export default function undoable (reducer, rawConfig = {}) {
           return initialState
         }
 
-        if (history.present === res) {
+        if (history._latestUnfiltered === res) {
           // Don't handle this action. Do not call debug.end here,
           // because this action should not produce side effects to the console
           return history
