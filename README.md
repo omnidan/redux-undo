@@ -144,7 +144,8 @@ are default values):
 undoable(reducer, {
   limit: false, // set to a number to turn on a limit for the history
 
-  filter: () => true, // see `Filtering Actions` section
+  filter: () => true, // see `Filtering Actions`
+  groupBy: () => null, // see `Grouping Actions`
 
   undoType: ActionTypes.UNDO, // define a custom action type for this undo action
   redoType: ActionTypes.REDO, // define a custom action type for this redo action
@@ -158,12 +159,14 @@ undoable(reducer, {
   // you can also pass an array of strings to define several action types that would clear the history
   // beware: those actions will not be passed down to the wrapped reducers
 
-  initTypes: ['@@redux-undo/INIT'] // history will be (re)set upon init action type
+  initTypes: ['@@redux-undo/INIT'], // history will be (re)set upon init action type
   // beware: those actions will not be passed down to the wrapped reducers
 
   debug: false, // set to `true` to turn on debugging
+  ignoreInitialState: false, // prevent user from undoing to the beginning, ex: client-side hydration
 
   neverSkipReducer: false, // prevent undoable from skipping the reducer on undo/redo and clearHistoryType actions
+  syncFilter: false // set to `true` to synchronize the `_latestUnfiltered` state with `present` when an excluded action is dispatched
 })
 ```
 
