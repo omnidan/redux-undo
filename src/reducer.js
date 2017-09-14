@@ -1,18 +1,6 @@
 import * as debug from './debug'
 import { ActionTypes } from './actions'
-import { parseActions, isHistory } from './helpers'
-
-function newHistory (past, present, future, group = null) {
-  return {
-    past,
-    present,
-    future,
-    group,
-    _latestUnfiltered: present,
-    index: past.length,
-    limit: past.length + future.length + 1
-  }
-}
+import { parseActions, isHistory, newHistory } from './helpers'
 
 // createHistory
 function createHistory (state, ignoreInitialState) {

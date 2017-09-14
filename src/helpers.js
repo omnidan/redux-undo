@@ -54,3 +54,15 @@ export function groupByActionTypes (rawActions) {
   const actions = parseActions(rawActions)
   return (action) => actions.indexOf(action.type) >= 0 ? action.type : null
 }
+
+export function newHistory (past, present, future, group = null) {
+  return {
+    past,
+    present,
+    future,
+    group,
+    _latestUnfiltered: present,
+    index: past.length,
+    limit: past.length + future.length + 1
+  }
+}
