@@ -7,5 +7,6 @@
   "only": [
     "src/*",
     "test/*",
+    "webpack.config.js"
   ]
 }
