@@ -5,6 +5,7 @@
     "transform-object-rest-spread"
   ],
   "only": [
-    "src/"
+    "src/*",
+    "test/*",
   ]
 }
