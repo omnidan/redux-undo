@@ -215,11 +215,10 @@ export default function undoable (reducer, rawConfig = {}) {
         const group = config.groupBy(action, res, history)
 
         if (filtered) {
-          // if filtering an action, merely update the present
           let filteredState = newHistory(
-            history.past,
+            history.past.map((past) => reducer(past, action, ...slices)),
             res,
-            history.future,
+            history.future.map((future) => reducer(future, action, ...slices)),
             history.group
           )
           if (!config.syncFilter) {
