@@ -183,7 +183,7 @@ export default function undoable (reducer, rawConfig = {}) {
         return skipReducer(res)
 
       case actionTypeAmongClearHistoryType(action.type, config.clearHistoryType):
-        res = createHistory(history.present)
+        res = createHistory(history.present, config.ignoreInitialState)
         debug.log('perform clearHistory')
         debug.end(res)
         return skipReducer(res)
