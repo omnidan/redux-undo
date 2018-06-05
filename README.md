@@ -187,6 +187,10 @@ const initialHistory = {
   future: [5, 6, 7]
 }
 
+// Alternatively use the helper:
+// import { newHistory } from 'redux-undo';
+// const initialHistory = newHistory([0, 1, 2, 3], 4, [5, 6, 7]);
+
 const store = createStore(undoable(counter), initialHistory);
 
 ```
