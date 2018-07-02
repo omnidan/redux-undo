@@ -83,6 +83,7 @@ declare module 'redux-undo' {
   type IncludeAction = (actions: string | string[]) => FilterFunction;
   type ExcludeAction = IncludeAction;
   type GroupByActionTypes = (actions: string | string[]) => GroupByFunction;
+  type NewHistory = <State>(past: State[], present: State, future: State[], group?: any) => StateWithHistory<State>;
 
   const undoable: Undoable;
 
@@ -103,5 +104,7 @@ declare module 'redux-undo' {
   export const combineFilters: CombineFilters;
 
   export const groupByActionTypes: GroupByActionTypes;
+
+  export const newHistory: NewHistory;
 
 }
