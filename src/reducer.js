@@ -212,7 +212,6 @@ export default function undoable (reducer, rawConfig = {}) {
           res,
           history
         )
-        const group = config.groupBy(action, res, history)
 
         if (filtered) {
           // if filtering an action, merely update the present
@@ -228,7 +227,11 @@ export default function undoable (reducer, rawConfig = {}) {
           debug.log('filter ignored action, not storing it in past')
           debug.end(filteredState)
           return filteredState
-        } else if (group != null && group === history.group) {
+        }
+
+        const group = config.groupBy(action, res, history)
+        if (group != null && group === history.group) {
+          // if grouping with the previous action, only update the present
           const groupedState = newHistory(
             history.past,
             res,
@@ -238,14 +241,14 @@ export default function undoable (reducer, rawConfig = {}) {
           debug.log('groupBy grouped the action with the previous action')
           debug.end(groupedState)
           return groupedState
-        } else {
-          // If the action wasn't filtered, insert normally
-          history = insert(history, res, config.limit, group)
-
-          debug.log('inserted new state into history')
-          debug.end(history)
-          return history
         }
+
+        // If the action wasn't filtered or grouped, insert normally
+        history = insert(history, res, config.limit, group)
+
+        debug.log('inserted new state into history')
+        debug.end(history)
+        return history
     }
   }
 }
