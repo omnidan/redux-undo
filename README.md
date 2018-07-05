@@ -92,6 +92,47 @@ combineReducers({
 })
 ```
 
+## Apply redux-undo magic to specific slice of your state.
+When you expose an undo redo history action to your app users, you will not want those action 
+to apply on your whole redux state.
+Lets see this with naive document editor state.
+
+```js
+const rootReducer = combineReducers({
+  ui: uiReducer,
+  document: documentReducer,
+})
+```
+
+wrapping the documentReducer with undoable higher order reducer
+
+```js
+const rootReducer = combineReducers({
+  ui: uiReducer,
+  document: undoable(documentReducer),
+})
+```
+will provide only the document mountpoint of your state with an history.
+
+an even more advanced usage would be to have many different mountpoint of your redux state, managed
+under redux-undo.
+```js
+const rootReducer = combineReducers({
+  ui: uiReducer,
+  document: undoable(documentReducer, {
+    undoType: 'DOCUMENT_UNDO',
+    redoType: 'DOCUMENT_REDO',
+    // here you will want to configure specific redux-undo action type  
+  }),
+  anotherDocument: undoable(documentReducer, {
+    undoType: 'ANOTHERDOCUMENT_UNDO',
+    redoType: 'ANOTHERDOCUMENT_REDO',
+    // here you will want to configure specific redux-undo action type  
+  }),
+})
+```
+Don't forget to configure specifics redux-undo action type for each of your mount point if you don't
+want to see your different history to undo/redo in sync.
 
 ## History API
 
