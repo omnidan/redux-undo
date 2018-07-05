@@ -9,7 +9,9 @@
     "format": "esm"
   },
   "babel": {
-    "presets": ["es2015"],
+    "presets": [
+      "env"
+    ],
     "plugins": [
       "add-module-exports",
       "transform-object-rest-spread"
@@ -65,7 +67,7 @@
     "babel-loader": "^6.2.4",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-transform-object-rest-spread": "^6.8.0",
-    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-env": "^1.7.0",
     "chai": "^3.5.0",
     "coveralls": "^2.11.12",
     "cross-env": "^2.0.0",
