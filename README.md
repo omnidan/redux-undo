@@ -10,6 +10,8 @@ _simple undo/redo functionality for redux state containers_
 
 **Switching from 0.x to 1.0 (beta):** Make sure to update your programs to the [latest History API](#history-api).
 
+**Help wanted:** We are looking for volunteers to maintain this project, if you are interested, feel free to contact me at [me@omnidan.net](mailto:me@omnidan.net)
+
 ---
 
 **This README is about the new 1.0-beta branch of redux-undo, if you are using
