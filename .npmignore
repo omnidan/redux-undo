@@ -3,3 +3,4 @@
 src
 test
 coverage
+.babelrc

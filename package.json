@@ -8,20 +8,6 @@
     "main": "src/index.js",
     "format": "esm"
   },
-  "babel": {
-    "presets": [
-      "env"
-    ],
-    "plugins": [
-      "add-module-exports",
-      "transform-object-rest-spread"
-    ],
-    "only": [
-      "src/*",
-      "test/*",
-      "webpack.config.babel.js"
-    ]
-  },
   "scripts": {
     "prebuild": "npm run clean",
     "build": "npm-run-all --parallel build:*",

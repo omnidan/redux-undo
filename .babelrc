@@ -1,0 +1,14 @@
+{
+    "presets": [
+      "env"
+    ],
+    "plugins": [
+      "add-module-exports",
+      "transform-object-rest-spread"
+    ],
+    "only": [
+      "src/*",
+      "test/*",
+      "webpack.config.babel.js"
+    ]
+  }
