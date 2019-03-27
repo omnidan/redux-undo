@@ -93,8 +93,8 @@ export default function undoable (reducer, rawConfig = {}) {
     jumpType: rawConfig.jumpType || ActionTypes.JUMP,
     clearHistoryType:
       Array.isArray(rawConfig.clearHistoryType)
-      ? rawConfig.clearHistoryType
-      : [rawConfig.clearHistoryType || ActionTypes.CLEAR_HISTORY],
+        ? rawConfig.clearHistoryType
+        : [rawConfig.clearHistoryType || ActionTypes.CLEAR_HISTORY],
     neverSkipReducer: rawConfig.neverSkipReducer || false,
     ignoreInitialState: rawConfig.ignoreInitialState || false,
     syncFilter: rawConfig.syncFilter || false
@@ -236,7 +236,7 @@ export default function undoable (reducer, rawConfig = {}) {
             history.past,
             res,
             history.future,
-            history.group,
+            history.group
           )
           debug.log('groupBy grouped the action with the previous action')
           debug.end(groupedState)
