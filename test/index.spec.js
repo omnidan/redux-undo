@@ -29,7 +29,7 @@ runTests('Initial State equals 100', {
 })
 runTests('Initial State that looks like a history', {
   undoableConfig: {},
-  initialStoreState: {'present': 0},
+  initialStoreState: { 'present': 0 },
   testConfig: {
     checkSlices: true
   }
@@ -213,16 +213,16 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
         store.replaceReducer(undoable(tenfoldReducer, undoableConfig))
 
         // Increment and check result
-        let expectedResult = tenfoldReducer(store.getState().present, {type: 'INCREMENT'})
-        store.dispatch({type: 'INCREMENT'})
+        let expectedResult = tenfoldReducer(store.getState().present, { type: 'INCREMENT' })
+        store.dispatch({ type: 'INCREMENT' })
         expect(store.getState().present).to.equal(expectedResult)
 
         // swap back for other tests
         store.replaceReducer(mockUndoableReducer)
 
         // Increment and check result again
-        expectedResult = countReducer(store.getState().present, {type: 'INCREMENT'})
-        store.dispatch({type: 'INCREMENT'})
+        expectedResult = countReducer(store.getState().present, { type: 'INCREMENT' })
+        store.dispatch({ type: 'INCREMENT' })
         expect(store.getState().present).to.equal(expectedResult)
       })
     })
@@ -320,7 +320,7 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
 
       it('should increment when action is dispatched to store', () => {
         let expectedResult = store.getState().present + 1
-        store.dispatch({type: 'INCREMENT'})
+        store.dispatch({ type: 'INCREMENT' })
         expect(store.getState().present).to.equal(expectedResult)
       })
     })
@@ -671,7 +671,7 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
 
       before('perform a clearHistory action', () => {
         const clearHistoryType = undoableConfig && undoableConfig.clearHistoryType
-        const actionType = clearHistoryType && Array.isArray(clearHistoryType) && clearHistoryType.length ? {type: clearHistoryType[0]} : ActionCreators.clearHistory()
+        const actionType = clearHistoryType && Array.isArray(clearHistoryType) && clearHistoryType.length ? { type: clearHistoryType[0] } : ActionCreators.clearHistory()
         clearedState = mockUndoableReducer(incrementedState, actionType)
       })
 
