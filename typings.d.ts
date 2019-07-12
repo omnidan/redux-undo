@@ -1,5 +1,5 @@
 declare module 'redux-undo' {
-  import { Reducer, Action } from 'redux';
+  import { Reducer, Action, AnyAction } from 'redux';
 
   export interface StateWithHistory<State> {
     past: State[];
@@ -76,7 +76,7 @@ declare module 'redux-undo' {
   }
 
   interface Undoable {
-    <State>(reducer: Reducer<State>, options?: UndoableOptions): Reducer<StateWithHistory<State>>;
+    <State, A extends Action = AnyAction>(reducer: Reducer<State, A>, options?: UndoableOptions): Reducer<StateWithHistory<State>>;
   }
 
 
