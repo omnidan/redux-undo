@@ -187,6 +187,8 @@ are default values):
 undoable(reducer, {
   limit: false, // set to a number to turn on a limit for the history
 
+  filterStateProps: (_) => (_), // see `Filtering State Properties`
+
   filter: () => true, // see `Filtering Actions`
   groupBy: () => null, // see `Grouping Actions`
 
@@ -393,6 +395,52 @@ ignoreActions(
 )
 ```
 
+### Filtering State Properties
+
+There exist [use cases](https://github.com/omnidan/redux-undo/issues/237) where you need to customize the `present` state before 
+save it to history. In those cases you can use `filterStateProps`. For instance, 
+consider the following state
+
+```js
+const initialState = {
+  // Used only in present state and do not want to save it to history.
+  insignificant: {
+    x: 0,
+    y: 0
+  },
+
+  // ...other properties
+}
+```
+
+To filter out the `insignificant` property from the history you can use 
+`filterStateProps`, which takes a function with present unsaved `state`
+ and returns the actual state to be saved in history.
+
+```js
+/**
+ * Redux root reducer.
+ */
+
+import { combineReducers } from 'redux'
+
+import undoable from 'redux-undoable'
+import reducer  from './app/some/reducer'
+
+export default () =>
+  combineReducers({
+    someReducer: undoable(reducer, {
+      filterStateProps: (currentState) => {
+        // Remove `insignificant` from state
+        delete currentState.insignificant
+        return currentState
+      },
+    }),
+  })
+
+```
+
+Now `past` states will not include `insignificant` property.
 
 ## What is this magic? How does it work?
 
