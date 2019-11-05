@@ -8,11 +8,14 @@ export const ActionTypes = {
 }
 
 export const ActionCreators = {
-  undo () {
-    return { type: ActionTypes.UNDO }
-  },
-  redo () {
-    return { type: ActionTypes.REDO }
+//   undo () {
+//     return { type: ActionTypes.UNDO }
+//   },
+//   redo () {
+//     return { type: ActionTypes.REDO }
+//   },
+  clearHistory () {
+    return { type: ActionTypes.CLEAR_HISTORY }
   },
   jumpToFuture (index) {
     return { type: ActionTypes.JUMP_TO_FUTURE, index }
@@ -22,8 +25,5 @@ export const ActionCreators = {
   },
   jump (index) {
     return { type: ActionTypes.JUMP, index }
-  },
-  clearHistory () {
-    return { type: ActionTypes.CLEAR_HISTORY }
   }
 }
