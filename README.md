@@ -60,7 +60,7 @@ undoable(reducer, config)
 
 ## Making your reducers undoable
 
-`redux-undo` is a reducer enhancer (higher-order reducer), it provides the `undoable` function, which
+`redux-undo` is a reducer enhancer (higher-order reducer). It provides the `undoable` function, which
 takes an existing reducer and a configuration object and enhances your existing
 reducer with undo functionality.
 
@@ -133,7 +133,7 @@ const rootReducer = combineReducers({
   }),
 })
 ```
-Don't forget to configure specifics redux-undo action type for each of your mount point if you don't
+Don't forget to configure specific redux-undo action type for each of your mount point if you don't
 want to see your different history to undo/redo in sync.
 
 ## History API
