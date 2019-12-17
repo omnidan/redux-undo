@@ -8,18 +8,18 @@ _simple undo/redo functionality for redux state containers_
 
 **Protip:** Check out the [todos-with-undo example](https://github.com/omnidan/redux-undo/tree/master/examples/todos-with-undo) or the [redux-undo-boilerplate](https://github.com/omnidan/redux-undo-boilerplate) to quickly get started with `redux-undo`.
 
-**Switching from 0.x to 1.0 (beta):** Make sure to update your programs to the [latest History API](#history-api).
+**Switching from 0.x to 1.0:** Make sure to update your programs to the [latest History API](#history-api).
 
 **Help wanted:** We are looking for volunteers to maintain this project, if you are interested, feel free to contact me at [me@omnidan.net](mailto:me@omnidan.net)
 
 ---
 
-**This README is about the new 1.0-beta branch of redux-undo, if you are using
+**This README is about the new 1.0 branch of redux-undo, if you are using
 or plan on using 0.6, check out [the `0.6` branch](https://github.com/omnidan/redux-undo/tree/0.6)**
 
 ---
 
-## Note on 1.0.0-beta7
+## Note on Imports
 
 If you use Redux Undo in CommonJS environment, **don’t forget to add `.default` to your import**.
 
@@ -45,7 +45,7 @@ var ReduxUndo = window.ReduxUndo.default;
 ## Installation
 
 ```
-npm install --save redux-undo@beta
+npm install --save redux-undo
 ```
 
 
@@ -89,7 +89,7 @@ A [configuration](#configuration) can be passed like this:
 ```js
 combineReducers({
   counter: undoable(counter, {
-    limit: 10 // set a limit for the history
+    limit: 10 // set a limit for the size of the history
   })
 })
 ```
@@ -152,6 +152,8 @@ Now you can get your current state like this: `state.present`
 
 And you can access all past states (e.g. to show a history) like this: `state.past`
 
+**Note:** Your reducer still receives the current state, a.k.a. `state.present`. Therefore, you would not have to update an existing reducer to add undo functionality.
+
 
 ## Undo/Redo Actions
 
@@ -174,7 +176,7 @@ store.dispatch(ActionCreators.jump(5)) // redo 5 steps
 store.dispatch(ActionCreators.jumpToPast(index)) // jump to requested index in the past[] array
 store.dispatch(ActionCreators.jumpToFuture(index)) // jump to requested index in the future[] array
 
-store.dispatch(ActionCreators.clearHistory()) // [beta only] Remove all items from past[] and future[] arrays
+store.dispatch(ActionCreators.clearHistory()) // Remove all items from past[] and future[] arrays
 ```
 
 
@@ -198,7 +200,7 @@ undoable(reducer, {
   jumpToPastType: ActionTypes.JUMP_TO_PAST, // define custom action type for this jumpToPast action
   jumpToFutureType: ActionTypes.JUMP_TO_FUTURE, // define custom action type for this jumpToFuture action
 
-  clearHistoryType: ActionTypes.CLEAR_HISTORY, // [beta only] define custom action type for this clearHistory action
+  clearHistoryType: ActionTypes.CLEAR_HISTORY, // define custom action type for this clearHistory action
   // you can also pass an array of strings to define several action types that would clear the history
   // beware: those actions will not be passed down to the wrapped reducers
 
@@ -402,6 +404,8 @@ Have a read of the [Implementing Undo History recipe](https://redux.js.org/recip
 ## Gitter Chat / Support
 
 If you have a question or just want to discuss something with other redux-undo users/maintainers, [chat with the community on gitter.im/omnidan/redux-undo](https://gitter.im/omnidan/redux-undo)
+
+Also, look at the documentation over at [redux-undo.js.org](https://redux-undo.js.org/).
 
 ## License
 
