@@ -52,7 +52,7 @@ function runTestCombineFilters () {
     })
 
     it('should not call remaining filters if one already returned false', () => {
-      let act = { hasBeenCalled: false }
+      const act = { hasBeenCalled: false }
       const combined = combineFilters(checkStateNot1, checkStateNot2, checkIfCalled)
 
       combined(act, 2)

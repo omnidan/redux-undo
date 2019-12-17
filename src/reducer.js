@@ -7,7 +7,7 @@ function createHistory (state, ignoreInitialState) {
   // ignoreInitialState essentially prevents the user from undoing to the
   // beginning, in the case that the undoable reducer handles initialization
   // in a way that can't be redone simply
-  let history = newHistory([], state, [])
+  const history = newHistory([], state, [])
   if (ignoreInitialState) {
     history._latestUnfiltered = null
   }
@@ -207,6 +207,7 @@ export default function undoable (reducer, rawConfig = {}) {
           return history
         }
 
+        /* eslint-disable-next-line no-case-declarations */
         const filtered = typeof config.filter === 'function' && !config.filter(
           action,
           res,
@@ -215,7 +216,7 @@ export default function undoable (reducer, rawConfig = {}) {
 
         if (filtered) {
           // if filtering an action, merely update the present
-          let filteredState = newHistory(
+          const filteredState = newHistory(
             history.past,
             res,
             history.future,
@@ -229,6 +230,7 @@ export default function undoable (reducer, rawConfig = {}) {
           return filteredState
         }
 
+        /* eslint-disable-next-line no-case-declarations */
         const group = config.groupBy(action, res, history)
         if (group != null && group === history.group) {
           // if grouping with the previous action, only update the present
