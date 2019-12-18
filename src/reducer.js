@@ -109,8 +109,8 @@ export default function undoable (reducer, rawConfig = {}) {
       debug.log('history is uninitialized')
 
       if (state === undefined) {
-        const clearHistoryAction = { type: ActionTypes.CLEAR_HISTORY }
-        const start = reducer(state, clearHistoryAction, ...slices)
+        const createHistoryAction = { type: '@@redux-undo/CREATE_HISTORY' }
+        const start = reducer(state, createHistoryAction, ...slices)
 
         history = createHistory(
           start,
@@ -118,6 +118,8 @@ export default function undoable (reducer, rawConfig = {}) {
         )
 
         debug.log('do not set initialState on probe actions')
+        debug.end(history)
+        return history
       } else if (isHistory(state)) {
         history = initialState = config.ignoreInitialState
           ? state : newHistory(
