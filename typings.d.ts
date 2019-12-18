@@ -5,14 +5,14 @@ declare module 'redux-undo' {
     past: State[];
     present: State;
     future: State[];
-    _latestUnfiltered: State;
-    group: any;
-    index: number;
-    limit: number;
+    _latestUnfiltered?: State;
+    group?: any;
+    index?: number;
+    limit?: number;
   }
 
   export type FilterFunction = <State>(action: Action, currentState: State, previousHistory: StateWithHistory<State>) => boolean;
-  export type GroupByFunction = <State>(action: Action, currentState: State, previousHistory: StateWithHistory<State>) => any;
+  export type GroupByFunction = (action: Action) => any;
   export type CombineFilters = (...filters: FilterFunction[]) => FilterFunction;
 
   export class ActionCreators {
@@ -57,7 +57,7 @@ declare module 'redux-undo' {
     jumpToFutureType?: string;
 
     /** Define custom action type for this clearHistory action */
-    clearHistoryType?: string;
+    clearHistoryType?: string | string[];
 
     /** History will be (re)set upon init action type */
     initTypes?: string[];

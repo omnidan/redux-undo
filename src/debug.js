@@ -20,7 +20,7 @@ function initBuffer () {
 
 /* istanbul ignore next: debug messaging is not tested */
 function printBuffer () {
-  let { header, prev, next, action, msgs } = displayBuffer
+  const { header, prev, next, action, msgs } = displayBuffer
   if (console.group) {
     console.groupCollapsed(...header)
     console.log(...prev)

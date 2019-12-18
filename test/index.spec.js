@@ -29,7 +29,7 @@ runTests('Initial State equals 100', {
 })
 runTests('Initial State that looks like a history', {
   undoableConfig: {},
-  initialStoreState: { 'present': 0 },
+  initialStoreState: { present: 0 },
   testConfig: {
     checkSlices: true
   }
@@ -275,7 +275,7 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
       })
 
       it('should not record non state changing actions', () => {
-        let dummyState = mockUndoableReducer(incrementedState, { type: 'DUMMY' })
+        const dummyState = mockUndoableReducer(incrementedState, { type: 'DUMMY' })
         expect(dummyState).to.deep.equal(incrementedState)
       })
 
@@ -287,8 +287,8 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
             ...undoableConfig,
             syncFilter: true
           })
-          let unsynchronized = mockUndoableReducer(mockInitialState, excludedAction)
-          let synchronized = synchronizedFilteredReducer(mockInitialState, excludedAction)
+          const unsynchronized = mockUndoableReducer(mockInitialState, excludedAction)
+          const synchronized = synchronizedFilteredReducer(mockInitialState, excludedAction)
           expect(unsynchronized.present).to.deep.equal(synchronized.present)
           expect(unsynchronized._latestUnfiltered).to.not.deep.equal(synchronized._latestUnfiltered)
           expect(synchronized.present).to.deep.equal(synchronized._latestUnfiltered)
@@ -296,7 +296,7 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
       })
 
       it('should not record undefined actions', () => {
-        let dummyState = mockUndoableReducer(incrementedState, undefined)
+        const dummyState = mockUndoableReducer(incrementedState, undefined)
         expect(dummyState).to.deep.equal(incrementedState)
       })
 
@@ -304,7 +304,7 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
         let reInitializedState
         if (undoableConfig && undoableConfig.initTypes) {
           if (undoableConfig.initTypes.length > 0) {
-            let initType = Array.isArray(undoableConfig.initTypes) ? undoableConfig.initTypes[0] : undoableConfig.initTypes
+            const initType = Array.isArray(undoableConfig.initTypes) ? undoableConfig.initTypes[0] : undoableConfig.initTypes
             reInitializedState = mockUndoableReducer(incrementedState, { type: initType })
             expect(reInitializedState).to.deep.equal(mockInitialState)
           } else {
@@ -319,7 +319,7 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
       })
 
       it('should increment when action is dispatched to store', () => {
-        let expectedResult = store.getState().present + 1
+        const expectedResult = store.getState().present + 1
         store.dispatch({ type: 'INCREMENT' })
         expect(store.getState().present).to.equal(expectedResult)
       })
@@ -457,7 +457,7 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
       })
 
       it('should do nothing if \'past\' is empty', () => {
-        let undoInitialState = mockUndoableReducer(mockInitialState, ActionCreators.undo())
+        const undoInitialState = mockUndoableReducer(mockInitialState, ActionCreators.undo())
         if (!mockInitialState.past.length) {
           expect(undoInitialState.present).to.deep.equal(mockInitialState.present)
         }
@@ -527,7 +527,7 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
       })
 
       it('should do nothing if \'future\' is empty', () => {
-        let secondRedoState = mockUndoableReducer(redoState, ActionCreators.redo())
+        const secondRedoState = mockUndoableReducer(redoState, ActionCreators.redo())
         if (!redoState.future.length) {
           expect(secondRedoState.present).to.deep.equal(redoState.present)
         }
@@ -563,7 +563,7 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
       })
 
       it('should do nothing if past index is out of bounds', () => {
-        let jumpToOutOfBounds = mockUndoableReducer(incrementedState, ActionCreators.jumpToPast(-1))
+        const jumpToOutOfBounds = mockUndoableReducer(incrementedState, ActionCreators.jumpToPast(-1))
         expect(jumpToOutOfBounds).to.deep.equal(incrementedState)
       })
 
@@ -599,7 +599,7 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
       })
 
       it('should do nothing if future index is out of bounds', () => {
-        let jumpToOutOfBounds = mockUndoableReducer(mockInitialState, ActionCreators.jumpToFuture(-1))
+        const jumpToOutOfBounds = mockUndoableReducer(mockInitialState, ActionCreators.jumpToFuture(-1))
         expect(jumpToOutOfBounds).to.deep.equal(mockInitialState)
       })
 
@@ -632,7 +632,7 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
       let doubleUndoState
       let doubleRedoState
       before('perform a jump action', () => {
-        let doubleIncrementedState = mockUndoableReducer(incrementedState, { type: 'INCREMENT' })
+        const doubleIncrementedState = mockUndoableReducer(incrementedState, { type: 'INCREMENT' })
         jumpToPastState = mockUndoableReducer(doubleIncrementedState, ActionCreators.jump(jumpStepsToPast))
         jumpToFutureState = mockUndoableReducer(mockInitialState, ActionCreators.jump(jumpStepsToFuture))
         doubleUndoState = mockUndoableReducer(doubleIncrementedState, ActionCreators.undo())
@@ -654,7 +654,7 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
       })
 
       it('should do nothing if steps is 0', () => {
-        let jumpToCurrentState = mockUndoableReducer(mockInitialState, ActionCreators.jump(0))
+        const jumpToCurrentState = mockUndoableReducer(mockInitialState, ActionCreators.jump(0))
         expect(jumpToCurrentState).to.deep.equal(mockInitialState)
       })
 
