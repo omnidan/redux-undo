@@ -56,7 +56,7 @@ declare module 'redux-undo' {
     /** Define custom action type for this jumpToFuture action */
     jumpToFutureType?: string;
 
-    /** [beta only] Define custom action type for this clearHistory action */
+    /** Define custom action type for this clearHistory action */
     clearHistoryType?: string;
 
     /** History will be (re)set upon init action type */
