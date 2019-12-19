@@ -1,6 +1,6 @@
 ## Undo-redo batch actions with custom groupBy
 
-This is a document of how to use custom groupBy to resolve [issue #202](https://github.com/omnidan/redux-undo/issues/202): undo-redo a batch of actions at the same time.
+This is an example of how to use custom groupBy to undo-redo a batch of actions at the same time.
 
 This method remains the ability to group by action types but also enables us to group a batch of actions.
 - [x] Group by action types by default
