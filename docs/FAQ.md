@@ -11,6 +11,7 @@
 - [Why am I getting `Cannot find module 'redux-undo'`?](#why-am-i-getting-cannot-find-module-redux-undo)
 - [How do I set an initial state/history?](upgrading-to-1.0.md#initialstate)
 - [How do I upgrade from 0.X to 1.0?](upgrading-to-1.0.md)
+- [How can I Undo or Redo a batch of actions at the same time ?](examples/undo-redo-batch-actions.md)
 
 ## Where can I get help using `redux-undo`?
 
