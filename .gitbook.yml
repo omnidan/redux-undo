@@ -1,9 +1,10 @@
 root: ./docs
 
 structure:
-  readme: ../README.md # repo root directory README
-  summary: ./README.md # /docs/README.md
+  # Paths are relative to root (docs/)
+  readme: ./readme.md
+  summary: ./summary.md
 
 redirects:
-  faq: ./FAQ.md
+  # faq: ./faq.md
   # changelog: ./changelog.md # In the future
