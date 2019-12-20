@@ -1,5 +1,11 @@
-# Table of Contents
+# Table of contents
 
-- [Read Me](/README.md)
-- [FAQ](/docs/FAQ.md)
-- [Upgrading from 0.x to 1.0](/docs/upgrading-to-1.0.md)
+* [Introduction](../README.md)
+* [Read Me](readme.md)
+* [FAQ](faq.md)
+* [Upgrading from 0.x to 1.0](upgrading-from-0.x-to-1.0.md)
+
+## Testing
+
+* [Testing document with header](testing/testing-document-with-header.md)
+
