@@ -1,26 +1,54 @@
 {
   "name": "redux-undo",
-  "version": "1.0.0-beta7",
+  "version": "1.0.0-beta9-9-7",
   "description": "simple undo/redo functionality for redux state containers",
   "main": "lib/index.js",
+  "typings": "typings.d.ts",
+  "jspm": {
+    "main": "src/index.js",
+    "format": "esm"
+  },
+  "nyc": {
+    "extends": "@istanbuljs/nyc-config-babel",
+    "include": [
+      "src/**/*.js"
+    ]
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env"
+    ],
+    "plugins": [
+      "@babel/plugin-proposal-object-rest-spread"
+    ],
+    "env": {
+      "test": {
+        "plugins": [
+          "babel-plugin-istanbul"
+        ]
+      }
+    },
+    "only": [
+      "src/*",
+      "test/*",
+      "webpack.config.babel.js"
+    ]
+  },
   "scripts": {
-    "build": "npm run build:commonjs && npm run build:umd && npm run build:umd:min && npm run build:es",
+    "prebuild": "npm run clean",
+    "build": "npm-run-all --parallel build:*",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
     "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
-    "build:umd": "cross-env BABEL_ENV=commonjs NODE_ENV=development webpack",
-    "build:umd:min": "cross-env BABEL_ENV=commonjs NODE_ENV=production webpack",
-    "clean": "./node_modules/.bin/rimraf lib dist es",
-    "lint": "./node_modules/.bin/eslint webpack.config.babel.js src test",
-    "prepublish": "npm run lint && npm run test && npm run clean && npm run build",
-    "test": "NODE_ENV=test ./node_modules/.bin/mocha --compilers js:babel-core/register",
+    "build:umd": "cross-env BABEL_ENV=commonjs NODE_ENV=development webpack --mode=production",
+    "build:umd:min": "cross-env BABEL_ENV=commonjs NODE_ENV=production webpack --mode=production",
+    "clean": "npx rimraf lib/ dist/ es/",
+    "lint": "npx eslint webpack.config.babel.js src test",
+    "prepublish": "npm-run-all --sequential lint test clean build",
+    "test": "cross-env NODE_ENV=test nyc mocha --require @babel/register",
     "test:bail": "npm run test:watch -- --bail",
-    "test:cov": "./node_modules/.bin/babel-node ./node_modules/.bin/isparta cover ./node_modules/.bin/_mocha",
-    "test:watch": "npm run test -- --watch",
-    "docs:clean": "rimraf _book",
-    "docs:prepare": "gitbook install",
-    "docs:build": "npm run docs:prepare && gitbook build -g omnidan/redux-undo",
-    "docs:watch": "npm run docs:prepare && gitbook serve",
-    "docs:publish": "npm run docs:clean && npm run docs:build && cp CNAME _book && cd _book && git init && git commit --allow-empty -m 'update book' && git checkout -b gh-pages && touch .nojekyll && git add . && git commit -am 'update book' && git push git@github.com:omnidan/redux-undo gh-pages --force"
+    "test:cov": "cross-env NODE_ENV=test nyc --reporter=text --reporter=lcov mocha --require @babel/register",
+    "test:coveralls": "nyc report --reporter=text-lcov | coveralls",
+    "test:watch": "npm run test -- --watch"
   },
   "repository": {
     "type": "git",
@@ -40,26 +68,33 @@
   },
   "homepage": "https://github.com/omnidan/redux-undo",
   "devDependencies": {
-    "babel-cli": "^6.5.1",
-    "babel-core": "^6.5.2",
-    "babel-eslint": "^5.0.0",
-    "babel-loader": "^6.2.4",
-    "babel-plugin-transform-object-rest-spread": "^6.5.0",
-    "babel-preset-es2015": "^6.5.0",
-    "chai": "^3.5.0",
-    "cross-env": "^1.0.7",
-    "eslint": "2.2.0",
-    "eslint-config-standard": "^5.1.0",
-    "eslint-plugin-promise": "^1.0.8",
-    "eslint-plugin-standard": "^1.3.2",
-    "expect": "^1.14.0",
-    "gitbook-cli": "^2.1.3",
-    "isparta": "^4.0.0",
-    "mocha": "^2.4.5",
-    "rimraf": "^2.5.2",
-    "webpack": "^1.12.14"
-  },
-  "dependencies": {
-    "redux": "^3.3.1"
+    "@babel/cli": "^7.7.5",
+    "@babel/core": "^7.7.5",
+    "@babel/node": "^7.7.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.7.4",
+    "@babel/preset-env": "^7.7.6",
+    "@babel/register": "^7.7.4",
+    "@istanbuljs/nyc-config-babel": "^2.1.1",
+    "babel-eslint": "^10.0.3",
+    "babel-loader": "^8.0.6",
+    "babel-plugin-istanbul": "^5.2.0",
+    "chai": "^4.2.0",
+    "coveralls": "^3.0.9",
+    "cross-env": "^6.0.3",
+    "eslint": "^6.7.2",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "expect": "^24.9.0",
+    "mocha": "^6.2.2",
+    "mocha-lcov-reporter": "^1.3.0",
+    "npm-run-all": "^4.1.5",
+    "nyc": "^14.1.1",
+    "redux": "^4.0.4",
+    "rimraf": "^3.0.0",
+    "webpack": "^4.41.3",
+    "webpack-cli": "^3.3.10"
   }
 }

@@ -1,383 +1,411 @@
+
 <!DOCTYPE HTML>
-<html lang="en" >
-    
+<html lang="" >
     <head>
-        
         <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <title>Read Me | redux undo/redo</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <meta name="description" content="NPM version (&gt;=0.4) NPM Downloads Build Status Dependencies js-standard-style https://paypal.me/DanielBugl/10 https://gratipay.com/~omnidan/ https://gitter.im/omnidan/redux-undo">
-        <meta name="generator" content="GitBook 2.4.3">
+        <title>Introduction · GitBook</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
         
         
-        <meta name="HandheldFriendly" content="true"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black">
-        <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
-        <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
         
+    
     <link rel="stylesheet" href="gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
     
         
-        <link rel="stylesheet" href="gitbook/plugins/gitbook-plugin-edit-link/plugin.css">
+    
         
     
         
-        <link rel="stylesheet" href="gitbook/plugins/gitbook-plugin-prism/prism.css">
+    
         
     
+        
+    
+        
     
 
         
     
     
-    <link rel="next" href="./docs/FAQ.html" />
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
+
     
     
 
-        
     </head>
     <body>
         
+<div class="book">
+    <div class="book-summary">
         
-    <div class="book" data-level="0" data-basepath="." data-revision="Thu Apr 21 2016 23:05:58 GMT+0200 (CEST)">
-    
-
-<div class="book-summary">
-    <div class="book-search" role="search">
-        <input type="text" placeholder="Type to search" class="form-control" />
-    </div>
-    <nav role="navigation">
-        <ul class="summary">
             
-            
-            
-            
-
-            
-
-            
-    
-        <li class="chapter active" data-level="0" data-path="index.html">
-            
-                
-                    <a href="./index.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                        Read Me
-                    </a>
-            
-            
-        </li>
-    
-        <li class="chapter " data-level="1" data-path="docs/FAQ.html">
-            
-                
-                    <a href="./docs/FAQ.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                            <b>1.</b>
-                        
-                        FAQ
-                    </a>
-            
-            
-        </li>
-    
-
-
-            
-            <li class="divider"></li>
-            <li>
-                <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
-                    Published with GitBook
-                </a>
-            </li>
-            
-        </ul>
-    </nav>
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
 </div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter active" data-level="1.1" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
 
     <div class="book-body">
-        <div class="body-inner">
-            <div class="book-header" role="navigation">
-    <!-- Actions Left -->
-    <a href="#" class="btn pull-left toggle-summary" aria-label="Table of Contents"><i class="fa fa-align-justify"></i></a>
-    <a href="#" class="btn pull-left toggle-search" aria-label="Search"><i class="fa fa-search"></i></a>
-    
-    <div id="font-settings-wrapper" class="dropdown pull-left">
-        <a href="#" class="btn toggle-dropdown" aria-label="Font Settings"><i class="fa fa-font"></i>
-        </a>
-        <div class="dropdown-menu font-settings">
-    <div class="dropdown-caret">
-        <span class="caret-outer"></span>
-        <span class="caret-inner"></span>
-    </div>
+        
+            <div class="body-inner">
+                
+                    
 
-    <div class="buttons">
-        <button type="button" id="reduce-font-size" class="button size-2">A</button>
-        <button type="button" id="enlarge-font-size" class="button size-2">A</button>
-    </div>
-
-    <div class="buttons font-family-list">
-        <button type="button" data-font="0" class="button">Serif</button>
-        <button type="button" data-font="1" class="button">Sans</button>
-    </div>
-
-    <div class="buttons color-theme-list">
-        <button type="button" id="color-theme-preview-0" class="button size-3" data-theme="0">White</button>
-        <button type="button" id="color-theme-preview-1" class="button size-3" data-theme="1">Sepia</button>
-        <button type="button" id="color-theme-preview-2" class="button size-3" data-theme="2">Night</button>
-    </div>
-</div>
-
-    </div>
-
-    <!-- Actions Right -->
+<div class="book-header" role="navigation">
     
-    <div class="dropdown pull-right">
-        <a href="#" class="btn toggle-dropdown" aria-label="Share"><i class="fa fa-share-alt"></i>
-        </a>
-        <div class="dropdown-menu font-settings dropdown-left">
-            <div class="dropdown-caret">
-                <span class="caret-outer"></span>
-                <span class="caret-inner"></span>
-            </div>
-            <div class="buttons">
-                <button type="button" data-sharing="twitter" class="button">
-                    Share on Twitter
-                </button>
-                <button type="button" data-sharing="google-plus" class="button">
-                    Share on Google
-                </button>
-                <button type="button" data-sharing="facebook" class="button">
-                    Share on Facebook
-                </button>
-                <button type="button" data-sharing="weibo" class="button">
-                    Share on Weibo
-                </button>
-                <button type="button" data-sharing="instapaper" class="button">
-                    Share on Instapaper
-                </button>
-            </div>
-        </div>
-    </div>
-    
-
-    
-    <a href="#" target="_blank" class="btn pull-right google-plus-sharing-link sharing-link" data-sharing="google-plus" aria-label="Google"><i class="fa fa-google-plus"></i></a>
-    
-    
-    <a href="#" target="_blank" class="btn pull-right facebook-sharing-link sharing-link" data-sharing="facebook" aria-label="Facebook"><i class="fa fa-facebook"></i></a>
-    
-    
-    <a href="#" target="_blank" class="btn pull-right twitter-sharing-link sharing-link" data-sharing="twitter" aria-label="Twitter"><i class="fa fa-twitter"></i></a>
-    
-    
-    
-
 
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href="./" >redux undo/redo</a>
+        <a href="." >Introduction</a>
     </h1>
 </div>
 
-            <div class="page-wrapper" tabindex="-1" role="main">
-                <div class="page-inner">
-                
-                
-                    <section class="normal" id="section-">
-                    
-                        <a id="edit-link" href="https://github.com/omnidan/redux-undo/tree/master/README.md" class="btn fa fa-edit pull-left">&nbsp;&nbsp;Edit This Page</a><h1 id="redux-undo-redo">redux undo/redo</h1>
-<p><a href="https://www.npmjs.com/package/redux-undo" target="_blank"><img src="https://img.shields.io/npm/v/redux-undo.svg?style=flat-square" alt="NPM version (&gt;=0.4)"></a> <a href="https://www.npmjs.com/package/redux-undo" target="_blank"><img src="https://img.shields.io/npm/dm/redux-undo.svg?style=flat-square" alt="NPM Downloads"></a> <a href="https://travis-ci.org/omnidan/redux-undo" target="_blank"><img src="https://img.shields.io/travis/omnidan/redux-undo/master.svg?style=flat-square" alt="Build Status"></a> <a href="https://david-dm.org/omnidan/redux-undo" target="_blank"><img src="https://img.shields.io/david/omnidan/redux-undo.svg?style=flat-square" alt="Dependencies"></a> <a href="http://standardjs.com/" target="_blank"><img src="https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square" alt="js-standard-style"></a> <a href="https://paypal.me/DanielBugl/10" target="_blank"><img src="https://img.shields.io/badge/donate-paypal-yellow.svg?style=flat-square" alt="https://paypal.me/DanielBugl/10"></a> <a href="https://gratipay.com/~omnidan/" target="_blank"><img src="https://img.shields.io/badge/donate-gratipay/bitcoin-yellow.svg?style=flat-square" alt="https://gratipay.com/~omnidan/"></a> <a href="https://gitter.im/omnidan/redux-undo" target="_blank"><img src="https://img.shields.io/gitter/room/omnidan/redux-undo.svg?style=flat-square" alt="https://gitter.im/omnidan/redux-undo"></a></p>
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="redux-undoredo">redux undo/redo</h1>
+<p><a href="https://www.npmjs.com/package/redux-undo" target="_blank"><img src="https://img.shields.io/npm/v/redux-undo.svg?style=flat-square" alt="NPM version (&gt;=0.4)"></a> <a href="https://www.npmjs.com/package/redux-undo" target="_blank"><img src="https://img.shields.io/npm/dm/redux-undo.svg?style=flat-square" alt="NPM Downloads"></a> <a href="https://coveralls.io/r/omnidan/redux-undo" target="_blank"><img src="https://img.shields.io/coveralls/omnidan/redux-undo.svg?style=flat-square" alt="Coverage Status"></a> <a href="https://david-dm.org/omnidan/redux-undo" target="_blank"><img src="https://img.shields.io/david/omnidan/redux-undo.svg?style=flat-square" alt="Dependencies"></a> <a href="http://standardjs.com/" target="_blank"><img src="https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square" alt="js-standard-style"></a> <a href="https://raw.githubusercontent.com/omnidan/redux-undo/master/LICENSE.md" target="_blank"><img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="GitHub license"></a></p>
 <p><em>simple undo/redo functionality for redux state containers</em></p>
 <p><a href="https://github.com/omnidan/redux-undo-boilerplate" target="_blank"><img src="https://i.imgur.com/M2KR4uo.gif" alt="https://i.imgur.com/M2KR4uo.gif"></a></p>
 <p><strong>Protip:</strong> Check out the <a href="https://github.com/omnidan/redux-undo/tree/master/examples/todos-with-undo" target="_blank">todos-with-undo example</a> or the <a href="https://github.com/omnidan/redux-undo-boilerplate" target="_blank">redux-undo-boilerplate</a> to quickly get started with <code>redux-undo</code>.</p>
-<p><strong>Switching from 0.x to 1.0 (beta):</strong> Make sure to update your programs to the <a href="#history-api">latest History API</a>.</p>
+<p><strong>Switching from 0.x to 1.0:</strong> Make sure to update your programs to the <a href="#history-api">latest History API</a>.</p>
+<p><strong>Help wanted:</strong> We are looking for volunteers to maintain this project, if you are interested, feel free to contact me at <a href="mailto:me@omnidan.net" target="_blank">me@omnidan.net</a></p>
 <hr>
-<p><strong>This README is about the new 1.0-beta branch of redux-undo, if you are using
+<p><strong>This README is about the new 1.0 branch of redux-undo, if you are using
 or plan on using 0.6, check out <a href="https://github.com/omnidan/redux-undo/tree/0.6" target="_blank">the <code>0.6</code> branch</a></strong></p>
 <hr>
-<h2 id="note-on-1-0-0-beta7">Note on 1.0.0-beta7</h2>
+<h2 id="note-on-imports">Note on Imports</h2>
 <p>If you use Redux Undo in CommonJS environment, <strong>don&#x2019;t forget to add <code>.default</code> to your import</strong>.</p>
-<pre><code class="lang-diff">- var ReduxUndo = require(&apos;redux-undo&apos;)
-+ var ReduxUndo = require(&apos;redux-undo&apos;).default
+<pre><code class="lang-diff"><span class="hljs-deletion">- var ReduxUndo = require(&apos;redux-undo&apos;)</span>
+<span class="hljs-addition">+ var ReduxUndo = require(&apos;redux-undo&apos;).default</span>
 </code></pre>
 <p>If your environment support es modules just go by:</p>
-<pre><code class="lang-js"><span class="token keyword">import</span> ReduxUndo from <span class="token string">&apos;redux-undo&apos;</span><span class="token punctuation">;</span>
+<pre><code class="lang-js"><span class="hljs-keyword">import</span> ReduxUndo <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;redux-undo&apos;</span>;
 </code></pre>
 <p>We are also supporting UMD build:</p>
-<pre><code class="lang-js"><span class="token keyword">var</span> ReduxUndo <span class="token operator">=</span> window<span class="token punctuation">.</span>ReduxUndo<span class="token punctuation">.</span><span class="token keyword">default</span><span class="token punctuation">;</span>
+<pre><code class="lang-js"><span class="hljs-keyword">var</span> ReduxUndo = <span class="hljs-built_in">window</span>.ReduxUndo.default;
 </code></pre>
 <p><strong>once again <code>.default</code> is required.</strong></p>
 <h2 id="installation">Installation</h2>
 <pre><code>npm install --save redux-undo@beta
 </code></pre><h2 id="api">API</h2>
-<pre><code class="lang-js"><span class="token keyword">import</span> undoable from <span class="token string">&apos;redux-undo&apos;</span><span class="token punctuation">;</span>
-<span class="token function">undoable</span><span class="token punctuation">(</span>reducer<span class="token punctuation">)</span>
-<span class="token function">undoable</span><span class="token punctuation">(</span>reducer<span class="token punctuation">,</span> config<span class="token punctuation">)</span>
+<pre><code class="lang-js"><span class="hljs-keyword">import</span> undoable <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;redux-undo&apos;</span>;
+undoable(reducer)
+undoable(reducer, config)
 </code></pre>
 <h2 id="making-your-reducers-undoable">Making your reducers undoable</h2>
-<p><code>redux-undo</code> is a reducer enhancer (higher-order reducer), it provides the <code>undoable</code> function, which
+<p><code>redux-undo</code> is a reducer enhancer (higher-order reducer). It provides the <code>undoable</code> function, which
 takes an existing reducer and a configuration object and enhances your existing
 reducer with undo functionality.</p>
 <p><strong>Note:</strong> If you were accessing <code>state.counter</code> before, you have to access
 <code>state.counter.present</code> after wrapping your reducer with <code>undoable</code>.</p>
 <p>To install, firstly import <code>redux-undo</code>:</p>
-<pre><code class="lang-js"><span class="token comment" spellcheck="true">// Redux utility functions</span>
-<span class="token keyword">import</span> <span class="token punctuation">{</span> combineReducers <span class="token punctuation">}</span> from <span class="token string">&apos;redux&apos;</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true">// redux-undo higher-order reducer</span>
-<span class="token keyword">import</span> undoable from <span class="token string">&apos;redux-undo&apos;</span><span class="token punctuation">;</span>
+<pre><code class="lang-js"><span class="hljs-comment">// Redux utility functions</span>
+<span class="hljs-keyword">import</span> { combineReducers } <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;redux&apos;</span>;
+<span class="hljs-comment">// redux-undo higher-order reducer</span>
+<span class="hljs-keyword">import</span> undoable <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;redux-undo&apos;</span>;
 </code></pre>
 <p>Then, add <code>undoable</code> to your reducer(s) like this:</p>
-<pre><code class="lang-js"><span class="token function">combineReducers</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
-  counter<span class="token punctuation">:</span> <span class="token function">undoable</span><span class="token punctuation">(</span>counter<span class="token punctuation">)</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span>
+<pre><code class="lang-js">combineReducers({
+  counter: undoable(counter)
+})
 </code></pre>
 <p>A <a href="#configuration">configuration</a> can be passed like this:</p>
-<pre><code class="lang-js"><span class="token function">combineReducers</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
-  counter<span class="token punctuation">:</span> <span class="token function">undoable</span><span class="token punctuation">(</span>counter<span class="token punctuation">,</span> <span class="token punctuation">{</span>
-    limit<span class="token punctuation">:</span> <span class="token number">10</span> <span class="token comment" spellcheck="true">// set a limit for the history</span>
-  <span class="token punctuation">}</span><span class="token punctuation">)</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span>
+<pre><code class="lang-js">combineReducers({
+  counter: undoable(counter, {
+    limit: <span class="hljs-number">10</span> <span class="hljs-comment">// set a limit for the size of the history</span>
+  })
+})
 </code></pre>
+<h2 id="apply-redux-undo-magic-to-specific-slice-of-your-state">Apply redux-undo magic to specific slice of your state.</h2>
+<p>When you expose an undo redo history action to your app users, you will not want those action 
+to apply on your whole redux state.
+Lets see this with naive document editor state.</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> rootReducer = combineReducers({
+  ui: uiReducer,
+  <span class="hljs-built_in">document</span>: documentReducer,
+})
+</code></pre>
+<p>wrapping the documentReducer with undoable higher order reducer</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> rootReducer = combineReducers({
+  ui: uiReducer,
+  <span class="hljs-built_in">document</span>: undoable(documentReducer),
+})
+</code></pre>
+<p>will provide only the document mountpoint of your state with an history.</p>
+<p>an even more advanced usage would be to have many different mountpoint of your redux state, managed
+under redux-undo.</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> rootReducer = combineReducers({
+  ui: uiReducer,
+  <span class="hljs-built_in">document</span>: undoable(documentReducer, {
+    undoType: <span class="hljs-string">&apos;DOCUMENT_UNDO&apos;</span>,
+    redoType: <span class="hljs-string">&apos;DOCUMENT_REDO&apos;</span>,
+    <span class="hljs-comment">// here you will want to configure specific redux-undo action type  </span>
+  }),
+  anotherDocument: undoable(documentReducer, {
+    undoType: <span class="hljs-string">&apos;ANOTHERDOCUMENT_UNDO&apos;</span>,
+    redoType: <span class="hljs-string">&apos;ANOTHERDOCUMENT_REDO&apos;</span>,
+    <span class="hljs-comment">// here you will want to configure specific redux-undo action type  </span>
+  }),
+})
+</code></pre>
+<p>Don&apos;t forget to configure specific redux-undo action type for each of your mount point if you don&apos;t
+want to see your different history to undo/redo in sync.</p>
 <h2 id="history-api">History API</h2>
 <p>Wrapping your reducer with <code>undoable</code> makes the state look like this:</p>
-<pre><code class="lang-js"><span class="token punctuation">{</span>
-  past<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>pastStatesHere<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
-  present<span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>currentStateHere<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
-  future<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>futureStatesHere<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">]</span>
-<span class="token punctuation">}</span>
+<pre><code class="lang-js">{
+  past: [...pastStatesHere...],
+  present: {...currentStateHere...},
+  future: [...futureStatesHere...]
+}
 </code></pre>
 <p>Now you can get your current state like this: <code>state.present</code></p>
 <p>And you can access all past states (e.g. to show a history) like this: <code>state.past</code></p>
-<h2 id="undo-redo-actions">Undo/Redo Actions</h2>
+<p><strong>Note:</strong> Your reducer still receives the current state, a.k.a. <code>state.present</code>. Therefore, you would not have to update an existing reducer to add undo functionality.</p>
+<h2 id="undoredo-actions">Undo/Redo Actions</h2>
 <p>Firstly, import the undo/redo action creators:</p>
-<pre><code class="lang-js"><span class="token keyword">import</span> <span class="token punctuation">{</span> ActionCreators <span class="token punctuation">}</span> from <span class="token string">&apos;redux-undo&apos;</span><span class="token punctuation">;</span>
+<pre><code class="lang-js"><span class="hljs-keyword">import</span> { ActionCreators } <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;redux-undo&apos;</span>;
 </code></pre>
 <p>Then, you can use <code>store.dispatch()</code> and the undo/redo action creators to
 perform undo/redo operations on your state:</p>
-<pre><code class="lang-js">store<span class="token punctuation">.</span><span class="token function">dispatch</span><span class="token punctuation">(</span>ActionCreators<span class="token punctuation">.</span><span class="token function">undo</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// undo the last action</span>
-store<span class="token punctuation">.</span><span class="token function">dispatch</span><span class="token punctuation">(</span>ActionCreators<span class="token punctuation">.</span><span class="token function">redo</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// redo the last action</span>
+<pre><code class="lang-js">store.dispatch(ActionCreators.undo()) <span class="hljs-comment">// undo the last action</span>
+store.dispatch(ActionCreators.redo()) <span class="hljs-comment">// redo the last action</span>
 
-store<span class="token punctuation">.</span><span class="token function">dispatch</span><span class="token punctuation">(</span>ActionCreators<span class="token punctuation">.</span><span class="token function">jump</span><span class="token punctuation">(</span><span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// undo 2 steps</span>
-store<span class="token punctuation">.</span><span class="token function">dispatch</span><span class="token punctuation">(</span>ActionCreators<span class="token punctuation">.</span><span class="token function">jump</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// redo 5 steps</span>
+store.dispatch(ActionCreators.jump(<span class="hljs-number">-2</span>)) <span class="hljs-comment">// undo 2 steps</span>
+store.dispatch(ActionCreators.jump(<span class="hljs-number">5</span>)) <span class="hljs-comment">// redo 5 steps</span>
 
-store<span class="token punctuation">.</span><span class="token function">dispatch</span><span class="token punctuation">(</span>ActionCreators<span class="token punctuation">.</span><span class="token function">jumpToPast</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// jump to requested index in the past[] array</span>
-store<span class="token punctuation">.</span><span class="token function">dispatch</span><span class="token punctuation">(</span>ActionCreators<span class="token punctuation">.</span><span class="token function">jumpToFuture</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// jump to requested index in the future[] array</span>
+store.dispatch(ActionCreators.jumpToPast(index)) <span class="hljs-comment">// jump to requested index in the past[] array</span>
+store.dispatch(ActionCreators.jumpToFuture(index)) <span class="hljs-comment">// jump to requested index in the future[] array</span>
 
-store<span class="token punctuation">.</span><span class="token function">dispatch</span><span class="token punctuation">(</span>ActionCreators<span class="token punctuation">.</span><span class="token function">clearHistory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// [beta only] Remove all items from past[] and future[] arrays</span>
+store.dispatch(ActionCreators.clearHistory()) <span class="hljs-comment">// Remove all items from past[] and future[] arrays</span>
 </code></pre>
 <h2 id="configuration">Configuration</h2>
 <p>A configuration object can be passed to <code>undoable()</code> like this (values shown
 are default values):</p>
-<pre><code class="lang-js"><span class="token function">undoable</span><span class="token punctuation">(</span>reducer<span class="token punctuation">,</span> <span class="token punctuation">{</span>
-  limit<span class="token punctuation">:</span> <span class="token keyword">false</span><span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// set to a number to turn on a limit for the history</span>
+<pre><code class="lang-js">undoable(reducer, {
+  limit: <span class="hljs-literal">false</span>, <span class="hljs-comment">// set to a number to turn on a limit for the history</span>
 
-  filter<span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token keyword">true</span><span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// see `Filtering Actions` section</span>
+  filter: () =&gt; <span class="hljs-literal">true</span>, <span class="hljs-comment">// see `Filtering Actions`</span>
+  groupBy: () =&gt; <span class="hljs-literal">null</span>, <span class="hljs-comment">// see `Grouping Actions`</span>
 
-  undoType<span class="token punctuation">:</span> ActionTypes<span class="token punctuation">.</span>UNDO<span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// define a custom action type for this undo action</span>
-  redoType<span class="token punctuation">:</span> ActionTypes<span class="token punctuation">.</span>REDO<span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// define a custom action type for this redo action</span>
+  undoType: ActionTypes.UNDO, <span class="hljs-comment">// define a custom action type for this undo action</span>
+  redoType: ActionTypes.REDO, <span class="hljs-comment">// define a custom action type for this redo action</span>
 
-  jumpType<span class="token punctuation">:</span> ActionTypes<span class="token punctuation">.</span>JUMP<span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// define custom action type for this jump action</span>
+  jumpType: ActionTypes.JUMP, <span class="hljs-comment">// define custom action type for this jump action</span>
 
-  jumpToPastType<span class="token punctuation">:</span> ActionTypes<span class="token punctuation">.</span>JUMP_TO_PAST<span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// define custom action type for this jumpToPast action</span>
-  jumpToFutureType<span class="token punctuation">:</span> ActionTypes<span class="token punctuation">.</span>JUMP_TO_FUTURE<span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// define custom action type for this jumpToFuture action</span>
+  jumpToPastType: ActionTypes.JUMP_TO_PAST, <span class="hljs-comment">// define custom action type for this jumpToPast action</span>
+  jumpToFutureType: ActionTypes.JUMP_TO_FUTURE, <span class="hljs-comment">// define custom action type for this jumpToFuture action</span>
 
-  clearHistoryType<span class="token punctuation">:</span> ActionTypes<span class="token punctuation">.</span>CLEAR_HISTORY<span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// [beta only] define custom action type for this clearHistory action</span>
+  clearHistoryType: ActionTypes.CLEAR_HISTORY, <span class="hljs-comment">// define custom action type for this clearHistory action</span>
+  <span class="hljs-comment">// you can also pass an array of strings to define several action types that would clear the history</span>
+  <span class="hljs-comment">// beware: those actions will not be passed down to the wrapped reducers</span>
 
-  initTypes<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">&apos;@@redux-undo/INIT&apos;</span><span class="token punctuation">]</span> <span class="token comment" spellcheck="true">// history will be (re)set upon init action type</span>
+  initTypes: [<span class="hljs-string">&apos;@@redux-undo/INIT&apos;</span>], <span class="hljs-comment">// history will be (re)set upon init action type</span>
+  <span class="hljs-comment">// beware: those actions will not be passed down to the wrapped reducers</span>
 
-  debug<span class="token punctuation">:</span> <span class="token keyword">false</span><span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// set to `true` to turn on debugging</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span>
+  debug: <span class="hljs-literal">false</span>, <span class="hljs-comment">// set to `true` to turn on debugging</span>
+  ignoreInitialState: <span class="hljs-literal">false</span>, <span class="hljs-comment">// prevent user from undoing to the beginning, ex: client-side hydration</span>
+
+  neverSkipReducer: <span class="hljs-literal">false</span>, <span class="hljs-comment">// prevent undoable from skipping the reducer on undo/redo and clearHistoryType actions</span>
+  syncFilter: <span class="hljs-literal">false</span> <span class="hljs-comment">// set to `true` to synchronize the `_latestUnfiltered` state with `present` when an excluded action is dispatched</span>
+})
 </code></pre>
 <p><strong>Note:</strong> If you want to use just the <code>initTypes</code> functionality, but not import
 the whole redux-undo library, use <a href="https://github.com/omnidan/redux-recycle" target="_blank">redux-recycle</a>!</p>
-<h4 id="initial-state-and-history">Initial State and History</h4>
+<h3 id="initial-state-and-history">Initial State and History</h3>
 <p>You can use your redux store to set an initial history for your undoable reducers:</p>
 <pre><code class="lang-js">
-<span class="token keyword">import</span> <span class="token punctuation">{</span> createStore <span class="token punctuation">}</span> from <span class="token string">&apos;redux&apos;</span><span class="token punctuation">;</span>
+<span class="hljs-keyword">import</span> { createStore } <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;redux&apos;</span>;
 
-<span class="token keyword">const</span> initialHistory <span class="token operator">=</span> <span class="token punctuation">{</span>
-  past<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
-  present<span class="token punctuation">:</span> <span class="token number">4</span><span class="token punctuation">,</span>
-  future<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token number">5</span><span class="token punctuation">,</span> <span class="token number">6</span><span class="token punctuation">,</span> <span class="token number">7</span><span class="token punctuation">]</span>
-<span class="token punctuation">}</span>
+<span class="hljs-keyword">const</span> initialHistory = {
+  past: [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>],
+  present: <span class="hljs-number">4</span>,
+  future: [<span class="hljs-number">5</span>, <span class="hljs-number">6</span>, <span class="hljs-number">7</span>]
+}
 
-<span class="token keyword">const</span> store <span class="token operator">=</span> <span class="token function">createStore</span><span class="token punctuation">(</span><span class="token function">undoable</span><span class="token punctuation">(</span>counter<span class="token punctuation">)</span><span class="token punctuation">,</span> initialHistory<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="hljs-comment">// Alternatively use the helper:</span>
+<span class="hljs-comment">// import { newHistory } from &apos;redux-undo&apos;;</span>
+<span class="hljs-comment">// const initialHistory = newHistory([0, 1, 2, 3], 4, [5, 6, 7]);</span>
+
+<span class="hljs-keyword">const</span> store = createStore(undoable(counter), initialHistory);
 </code></pre>
 <p>Or just set the current state like you&apos;re used to with Redux. Redux-undo will create the history for you:</p>
 <pre><code class="lang-js">
-<span class="token keyword">import</span> <span class="token punctuation">{</span> createStore <span class="token punctuation">}</span> from <span class="token string">&apos;redux&apos;</span><span class="token punctuation">;</span>
+<span class="hljs-keyword">import</span> { createStore } <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;redux&apos;</span>;
 
-<span class="token keyword">const</span> store <span class="token operator">=</span> <span class="token function">createStore</span><span class="token punctuation">(</span><span class="token function">undoable</span><span class="token punctuation">(</span>counter<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>foo<span class="token punctuation">:</span> <span class="token string">&apos;bar&apos;</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="hljs-keyword">const</span> store = createStore(undoable(counter), {foo: <span class="hljs-string">&apos;bar&apos;</span>});
 
-<span class="token comment" spellcheck="true">// will make the state look like this:</span>
-<span class="token punctuation">{</span>
-  past<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
-  present<span class="token punctuation">:</span> <span class="token punctuation">{</span>foo<span class="token punctuation">:</span> <span class="token string">&apos;bar&apos;</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
-  future<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
-<span class="token punctuation">}</span>
+<span class="hljs-comment">// will make the state look like this:</span>
+{
+  past: [],
+  present: {foo: <span class="hljs-string">&apos;bar&apos;</span>},
+  future: []
+}
 </code></pre>
+<h3 id="grouping-actions">Grouping Actions</h3>
+<p>If you want to group your actions together into single undo/redo steps, you
+can add a <code>groupBy</code> function to <code>undoable</code>. <code>redux-undo</code> provides
+<code>groupByActionTypes</code> as a basic <code>groupBy</code> function:</p>
+<pre><code class="lang-js"><span class="hljs-keyword">import</span> undoable, { groupByActionTypes } <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;redux-undo&apos;</span>;
+
+undoable(reducer, { groupBy: groupByActionTypes(SOME_ACTION) })
+<span class="hljs-comment">// or with arrays</span>
+undoable(reducer, { groupBy: groupByActionTypes([SOME_ACTION]) })
+</code></pre>
+<p>In these cases, consecutive <code>SOME_ACTION</code> actions will be considered a single
+step in the undo/redo history.</p>
+<h4 id="custom-groupby-function">Custom <code>groupBy</code> Function</h4>
+<p>If you want to implement custom grouping behaviour, pass in your own function
+with the signature <code>(action, currentState, previousHistory)</code>. If the return
+value is not <code>null</code>, then the new state will be grouped by that return value.
+If the next state is grouped into the same group as the previous state, then
+the two states will be grouped together in one step.</p>
+<p>If the return value is <code>null</code>, then <code>redux-undo</code> will not group the next state
+with the previous state.</p>
+<p>The <code>groupByActionTypes</code> function essentially returns the following:</p>
+<ul>
+<li>If a grouped action type (<code>SOME_ACTION</code>), the action type of the action (<code>SOME_ACTION</code>).</li>
+<li>If not a grouped action type (any other action type), <code>null</code>.</li>
+</ul>
+<p>When <code>groupBy</code> groups a state change, the associated <code>group</code> will be saved
+alongside <code>past</code>, <code>present</code>, and <code>future</code> so that it may be referenced by the
+next state change.</p>
+<p>After an undo/redo/jump occurs, the current group gets reset to <code>null</code> so that
+the undo/redo history is remembered.</p>
 <h3 id="filtering-actions">Filtering Actions</h3>
-<p>If you don&apos;t want to include every action in the undo/redo history, you can
-add a <code>filter</code> function to <code>undoable</code>. <code>redux-undo</code> provides you with the
-<code>includeAction</code> and <code>excludeAction</code> helpers for basic filtering.</p>
-<p>They should be imported like this:</p>
-<pre><code class="lang-js"><span class="token keyword">import</span> undoable<span class="token punctuation">,</span> <span class="token punctuation">{</span> includeAction<span class="token punctuation">,</span> excludeAction <span class="token punctuation">}</span> from <span class="token string">&apos;redux-undo&apos;</span><span class="token punctuation">;</span>
+<p>If you don&apos;t want to include every action in the undo/redo history, you can add
+a <code>filter</code> function to <code>undoable</code>. This is useful for, for example, excluding
+actions that were not triggered by the user.</p>
+<p><code>redux-undo</code> provides you with the <code>includeAction</code> and <code>excludeAction</code> helpers
+for basic filtering. They should be imported like this:</p>
+<pre><code class="lang-js"><span class="hljs-keyword">import</span> undoable, { includeAction, excludeAction } <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;redux-undo&apos;</span>;
 </code></pre>
 <p>Now you can use the helper functions:</p>
-<pre><code class="lang-js"><span class="token function">undoable</span><span class="token punctuation">(</span>reducer<span class="token punctuation">,</span> <span class="token punctuation">{</span> filter<span class="token punctuation">:</span> <span class="token function">includeAction</span><span class="token punctuation">(</span>SOME_ACTION<span class="token punctuation">)</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
-<span class="token function">undoable</span><span class="token punctuation">(</span>reducer<span class="token punctuation">,</span> <span class="token punctuation">{</span> filter<span class="token punctuation">:</span> <span class="token function">excludeAction</span><span class="token punctuation">(</span>SOME_ACTION<span class="token punctuation">)</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<pre><code class="lang-js">undoable(reducer, { filter: includeAction(SOME_ACTION) })
+undoable(reducer, { filter: excludeAction(SOME_ACTION) })
 
-<span class="token comment" spellcheck="true">// they even support Arrays:</span>
+<span class="hljs-comment">// they even support Arrays:</span>
 
-<span class="token function">undoable</span><span class="token punctuation">(</span>reducer<span class="token punctuation">,</span> <span class="token punctuation">{</span> filter<span class="token punctuation">:</span> <span class="token function">includeAction</span><span class="token punctuation">(</span><span class="token punctuation">[</span>SOME_ACTION<span class="token punctuation">,</span> SOME_OTHER_ACTION<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
-<span class="token function">undoable</span><span class="token punctuation">(</span>reducer<span class="token punctuation">,</span> <span class="token punctuation">{</span> filter<span class="token punctuation">:</span> <span class="token function">excludeAction</span><span class="token punctuation">(</span><span class="token punctuation">[</span>SOME_ACTION<span class="token punctuation">,</span> SOME_OTHER_ACTION<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+undoable(reducer, { filter: includeAction([SOME_ACTION, SOME_OTHER_ACTION]) })
+undoable(reducer, { filter: excludeAction([SOME_ACTION, SOME_OTHER_ACTION]) })
 </code></pre>
 <p><strong>Note:</strong> Since <a href="https://github.com/omnidan/redux-undo/releases/tag/beta4" target="_blank"><code>beta4</code></a>,
           only actions resulting in a new state are recorded. This means the
           (now deprecated) <code>distinctState()</code> filter is auto-applied.</p>
-<h4 id="custom-filters">Custom filters</h4>
+<h4 id="custom-filters">Custom Filters</h4>
 <p>If you want to create your own filter, pass in a function with the signature
 <code>(action, currentState, previousHistory)</code>. For example:</p>
-<pre><code class="lang-js"><span class="token function">undoable</span><span class="token punctuation">(</span>reducer<span class="token punctuation">,</span> <span class="token punctuation">{</span>
-  filter<span class="token punctuation">:</span> <span class="token keyword">function</span> <span class="token function">filterActions</span><span class="token punctuation">(</span>action<span class="token punctuation">,</span> currentState<span class="token punctuation">,</span> previousHistory<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">return</span> action<span class="token punctuation">.</span>type <span class="token operator">===</span> SOME_ACTION<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// only add to history if action is SOME_ACTION</span>
-  <span class="token punctuation">}</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span>
+<pre><code class="lang-js">undoable(reducer, {
+  filter: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">filterActions</span>(<span class="hljs-params">action, currentState, previousHistory</span>) </span>{
+    <span class="hljs-keyword">return</span> action.type === SOME_ACTION; <span class="hljs-comment">// only add to history if action is SOME_ACTION</span>
+  }
+})
 
-<span class="token comment" spellcheck="true">// The entire `history` state is available to your filter, so you can make</span>
-<span class="token comment" spellcheck="true">// decisions based on past or future states:</span>
+<span class="hljs-comment">// The entire `history` state is available to your filter, so you can make</span>
+<span class="hljs-comment">// decisions based on past or future states:</span>
 
-<span class="token function">undoable</span><span class="token punctuation">(</span>reducer<span class="token punctuation">,</span> <span class="token punctuation">{</span>
-  filter<span class="token punctuation">:</span> <span class="token keyword">function</span> <span class="token function">filterState</span><span class="token punctuation">(</span>action<span class="token punctuation">,</span> currentState<span class="token punctuation">,</span> previousHistory<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">let</span> <span class="token punctuation">{</span> past<span class="token punctuation">,</span> present<span class="token punctuation">,</span> future <span class="token punctuation">}</span> <span class="token operator">=</span> previousHistory<span class="token punctuation">;</span>
-    <span class="token keyword">return</span> future<span class="token punctuation">.</span>length <span class="token operator">===</span> <span class="token number">0</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// only add to history if future is empty</span>
-  <span class="token punctuation">}</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span>
+undoable(reducer, {
+  filter: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">filterState</span>(<span class="hljs-params">action, currentState, previousHistory</span>) </span>{
+    <span class="hljs-keyword">let</span> { past, present, future } = previousHistory;
+    <span class="hljs-keyword">return</span> future.length === <span class="hljs-number">0</span>; <span class="hljs-comment">// only add to history if future is empty</span>
+  }
+})
 </code></pre>
-<h3 id="combining-filters">Combining Filters</h3>
+<h4 id="combining-filters">Combining Filters</h4>
 <p>You can also use our helper to combine filters.</p>
-<pre><code class="lang-js"><span class="token keyword">import</span> undoable<span class="token punctuation">,</span> <span class="token punctuation">{</span>combineFilters<span class="token punctuation">}</span> from <span class="token string">&apos;redux-undo&apos;</span>
+<pre><code class="lang-js"><span class="hljs-keyword">import</span> undoable, {combineFilters} <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;redux-undo&apos;</span>
 
-<span class="token keyword">function</span> <span class="token function">isActionSelfExcluded</span><span class="token punctuation">(</span>action<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">return</span> action<span class="token punctuation">.</span>wouldLikeToBeInHistory
-<span class="token punctuation">}</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">isActionSelfExcluded</span>(<span class="hljs-params">action</span>) </span>{
+  <span class="hljs-keyword">return</span> action.wouldLikeToBeInHistory
+}
 
-<span class="token keyword">function</span> <span class="token function">areWeRecording</span><span class="token punctuation">(</span>action<span class="token punctuation">,</span> state<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">return</span> state<span class="token punctuation">.</span>recording
-<span class="token punctuation">}</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">areWeRecording</span>(<span class="hljs-params">action, state</span>) </span>{
+  <span class="hljs-keyword">return</span> state.recording
+}
 
-<span class="token function">undoable</span><span class="token punctuation">(</span>reducer<span class="token punctuation">,</span> <span class="token punctuation">{</span>
-  filter<span class="token punctuation">:</span> <span class="token function">combineFilters</span><span class="token punctuation">(</span>isActionSelfExcluded<span class="token punctuation">,</span> areWeRecording<span class="token punctuation">)</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span>
+undoable(reducer, {
+  filter: combineFilters(isActionSelfExcluded, areWeRecording)
+})
 </code></pre>
 <h3 id="ignoring-actions">Ignoring Actions</h3>
 <p>When implementing a filter function, it only prevents the old state from being
@@ -386,65 +414,96 @@ updated.</strong></p>
 <p>If you want to ignore an action completely, as in, not even update the present
 state, you can make use of <a href="https://github.com/omnidan/redux-ignore" target="_blank">redux-ignore</a>.</p>
 <p>It can be used like this:</p>
-<pre><code class="lang-js"><span class="token keyword">import</span> <span class="token punctuation">{</span> ignoreActions <span class="token punctuation">}</span> from <span class="token string">&apos;redux-ignore&apos;</span>
+<pre><code class="lang-js"><span class="hljs-keyword">import</span> { ignoreActions } <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;redux-ignore&apos;</span>
 
-<span class="token function">ignoreActions</span><span class="token punctuation">(</span>
-  <span class="token function">undoable</span><span class="token punctuation">(</span>reducer<span class="token punctuation">)</span><span class="token punctuation">,</span>
-  <span class="token punctuation">[</span>IGNORED_ACTION<span class="token punctuation">,</span> ANOTHER_IGNORED_ACTION<span class="token punctuation">]</span>
-<span class="token punctuation">)</span>
+ignoreActions(
+  undoable(reducer),
+  [IGNORED_ACTION, ANOTHER_IGNORED_ACTION]
+)
 
-<span class="token comment" spellcheck="true">// or define your own function:</span>
+<span class="hljs-comment">// or define your own function:</span>
 
-<span class="token function">ignoreActions</span><span class="token punctuation">(</span>
-  <span class="token function">undoable</span><span class="token punctuation">(</span>reducer<span class="token punctuation">)</span><span class="token punctuation">,</span>
-  <span class="token punctuation">(</span>action<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> action<span class="token punctuation">.</span>type <span class="token operator">===</span> SOME_ACTION <span class="token comment" spellcheck="true">// only add to history if action is SOME_ACTION</span>
-<span class="token punctuation">)</span>
+ignoreActions(
+  undoable(reducer),
+  (action) =&gt; action.type === SOME_ACTION <span class="hljs-comment">// only add to history if action is SOME_ACTION</span>
+)
 </code></pre>
 <h2 id="what-is-this-magic-how-does-it-work">What is this magic? How does it work?</h2>
-<p>Have a read of the <a href="http://redux.js.org/docs/recipes/ImplementingUndoHistory.html" target="_blank">Implementing Undo History recipe</a> in the Redux documents, which explains in detail how redux-undo works.</p>
-<h2 id="gitter-chat-support">Gitter Chat / Support</h2>
+<p>Have a read of the <a href="https://redux.js.org/recipes/implementing-undo-history" target="_blank">Implementing Undo History recipe</a> in the Redux documents, which explains in detail how redux-undo works.</p>
+<h2 id="gitter-chat--support">Gitter Chat / Support</h2>
 <p>If you have a question or just want to discuss something with other redux-undo users/maintainers, <a href="https://gitter.im/omnidan/redux-undo" target="_blank">chat with the community on gitter.im/omnidan/redux-undo</a></p>
+<p>Also, look at the documentation over at <a href="https://redux-undo.js.org/" target="_blank">redux-undo.js.org</a>.</p>
 <h2 id="license">License</h2>
 <p>MIT, see <code>LICENSE.md</code> for more information.</p>
 
-                    
-                    </section>
-                
-                
-                </div>
-            </div>
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
         </div>
-
-        
-        
-        <a href="./docs/FAQ.html" class="navigation navigation-next navigation-unique" aria-label="Next page: FAQ"><i class="fa fa-angle-right"></i></a>
-        
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
     </div>
 </div>
 
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                
+            
         
-<script src="gitbook/app.js"></script>
+    </div>
 
-    
-    <script src="gitbook/plugins/gitbook-plugin-edit-link/plugin.js"></script>
-    
-
-    
-    <script src="gitbook/plugins/gitbook-plugin-github/plugin.js"></script>
-    
-
-    
-    <script src="gitbook/plugins/gitbook-plugin-anker-enable/anker.js"></script>
-    
-
-<script>
-require(["gitbook"], function(gitbook) {
-    var config = {"fontSettings":{"theme":null,"family":"sans","size":2},"edit-link":{"base":"https://github.com/omnidan/redux-undo/tree/master","label":"Edit This Page"},"github":{"url":"https://github.com/omnidan/redux-undo/"}};
-    gitbook.start(config);
-});
-</script>
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Introduction","level":"1.1","depth":1,"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"README.md","mtime":"2019-12-20T16:46:08.420Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-12-20T16:50:02.661Z"},"basePath":".","book":{"language":""}});
+        });
+    </script>
+</div>
 
         
+    <script src="gitbook/gitbook.js"></script>
+    <script src="gitbook/theme.js"></script>
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
     </body>
-    
 </html>
+

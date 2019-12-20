@@ -1,12 +1,12 @@
 import { expect } from 'chai'
-import {combineFilters} from '../src/index'
+import { combineFilters } from '../src/index'
 
 runTestCombineFilters()
 
 function runTestCombineFilters () {
   describe('Combine Filters', () => {
     const sample = {
-      action: {type: 'TEST'},
+      action: { type: 'TEST' },
       currentState: 1,
       previousHistory: [0, -1]
     }
@@ -37,9 +37,9 @@ function runTestCombineFilters () {
 
     it('should pass its arguments while calling a filter', () => {
       expect(combineFilters(checkArguments, checkArguments)(sample.action, sample.currentState, sample.previousHistory))
-      .to.equal(true)
+        .to.equal(true)
       expect(combineFilters(checkArgumentsNot, checkArguments)(sample.action, sample.currentState, sample.previousHistory))
-      .to.equal(false)
+        .to.equal(false)
     })
 
     it('should return false if any filter does', () => {
@@ -52,7 +52,7 @@ function runTestCombineFilters () {
     })
 
     it('should not call remaining filters if one already returned false', () => {
-      let act = {hasBeenCalled: false}
+      const act = { hasBeenCalled: false }
       const combined = combineFilters(checkStateNot1, checkStateNot2, checkIfCalled)
 
       combined(act, 2)
