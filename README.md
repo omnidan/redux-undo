@@ -45,7 +45,7 @@ var ReduxUndo = window.ReduxUndo.default;
 ## Installation
 
 ```
-npm install --save redux-undo@beta
+npm install --save redux-undo
 ```
 
 
