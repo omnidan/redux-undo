@@ -1,8 +1,15 @@
+# Dependencies and error logs
 node_modules
 *.log
+
+# System dependent
 .DS_Store
+
+# Generating published
 lib
-coverage
 dist
 es
-_book
+
+# Generated test output
+coverage
+.nyc_output
