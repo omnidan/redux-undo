@@ -1,10 +1,10 @@
-# Upgrading redux-undo from 0.x to 1.0
+# Upgrading to 1.0
 
 ## Imports
 
 CommonJS and UMD bundles now need a `.default` added to your imports.
 
-```js
+```javascript
 // CJS
 var undoable = require("redux-undo").default;
 
@@ -14,19 +14,19 @@ var undoable = window.ReduxUndo.default;
 
 ES6 imports should work as expected.
 
-```js
+```javascript
 import undoable from "redux-undo";
 ```
 
 ## `distinctState()` filter applied by default
 
-In 1.0 and greater, state is only added to history if it is different than the previous state (checked by object reference equality `===`). The `distinctState()` filter is now deprecated and removed as there is no need for it.
+In 1.0 and greater, state is only added to history if it is different than the previous state \(checked by object reference equality `===`\). The `distinctState()` filter is now deprecated and removed as there is no need for it.
 
 ## History API change in versions `< 0.4`
 
 In versions 0.3 and earlier, the history state was stored in the form.
 
-```js
+```javascript
 {
   currentState: {...currentStateHere...},
   history: {
@@ -39,7 +39,7 @@ In versions 0.3 and earlier, the history state was stored in the form.
 
 In versions `0.4` and greater, the full history is exposed directly.
 
-```js
+```javascript
 {
   past: [...pastStatesHere...],
   present: {...currentStateHere...},
@@ -51,7 +51,7 @@ In versions `0.4` and greater, the full history is exposed directly.
 
 Before `1.0`, you would pass an `initialState` or `initialHistory` as a config option.
 
-```js
+```javascript
 undoable(myReducer, {
   initialState: {
     myState: "initial",
@@ -63,7 +63,7 @@ undoable(myReducer, {
 
 Now, these options are removed in favor of Redux's `preloadedState` parameter.
 
-```js
+```javascript
 const rootReducer = combineReducers({
   myReducer: undoable(myReducer)
 });
@@ -76,11 +76,11 @@ const store = createStore(rootReducer, {
 });
 ```
 
-When providing initial state, redux-undo will automatically detect whether or not it is a complete history (with `past`, `present`, `future`) or not. If it is not, it will automatically convert it to one.
+When providing initial state, redux-undo will automatically detect whether or not it is a complete history \(with `past`, `present`, `future`\) or not. If it is not, it will automatically convert it to one.
 
 If you wish to provide an initial history, e.g. you want to prefill `past` to recover a previous session, you **must** provide the three fields for redux-undo to recognize it as a history object.
 
-```js
+```javascript
 const store = createStore(rootReducer, {
   myReducer: {
     past: ["from", "previous", "session"],
@@ -92,3 +92,4 @@ const store = createStore(rootReducer, {
   }
 });
 ```
+
