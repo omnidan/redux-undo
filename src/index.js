@@ -1,7 +1,7 @@
 export { ActionTypes, ActionCreators } from './actions'
 export {
   parseActions, isHistory,
-  distinctState, includeAction, excludeAction,
+  includeAction, excludeAction,
   combineFilters, groupByActionTypes, newHistory
 } from './helpers'
 
