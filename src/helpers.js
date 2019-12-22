@@ -18,17 +18,6 @@ export function isHistory (history) {
     Array.isArray(history.past)
 }
 
-// distinctState helper: deprecated, does nothing in latest beta
-/* istanbul ignore next */
-export function distinctState () {
-  console.warn('distinctState is deprecated in beta4 and newer. ' +
-               'The distinctState behavior is now default, which means only ' +
-               'actions resulting in a new state are recorded. ' +
-               'See https://github.com/omnidan/redux-undo#filtering-actions ' +
-               'for more details.')
-  return () => true
-}
-
 // includeAction helper: whitelist actions to be added to the history
 export function includeAction (rawActions) {
   const actions = parseActions(rawActions)
