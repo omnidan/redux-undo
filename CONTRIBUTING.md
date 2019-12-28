@@ -16,7 +16,7 @@ As explained in the README, this library adds undo/redo functionality. However, 
 
 There are many ways to contribute: improving the documentation, submitting bug reports and feature requests, or writing code which can be incorporated into Redux Undo itself.
 
-If you have never contributed before, check out some of the issues labeled `"first timers only"`. For more experienced developers, `"help wanted"` will pull up issues that are more involved.
+If you have never contributed before, check out some of the issues labeled `"good first issue"`. For more experienced developers, `"help wanted"` will pull up issues that are more involved.
 
 For simple typos in the docs or similar problems, you can fork the project in the top right, make your changes on your copy, and create a pull request when you are done. Make sure to describe your PR as a doc change.
 
@@ -33,7 +33,7 @@ Once you have a good understanding of git and GitHub, do the following.
 - Fork the project and create a new branch of `master` with the name `pr/FEATURE` with "FEATURE" being a descriptive name of the changes you are making.
 - Run `$ npm install` This will install dependencies and also run the linter, test suite, and build the project to make sure everything works okay.
 - Assuming there are no problems, start making changes! Feel free to ask questions in the issue you created if you do not know how to approach a tricky nuance.
-- Your commit messages should be descriptive of the changes made and reference any relavent issues: `"Fix minor Typescript errors, closes #200"`.
+- Your commit messages should be descriptive of the changes made and reference any relevent issues: `"Fix minor Typescript errors, closes #200"`.
 - Make sure to add tests for any substantial additions and that all the code follows the code styles (`$ npm run lint`).
 - Once all the changes are in place, run `git fetch` and [rebase](https://git-scm.com/book/en/v2/Git-Branching-Rebasing) onto `master` to maintain a simple history for everyone. `$ git rebase upstream/master pr/FEATURE`
   - **Note**: You are not rebasing on `origin/master` since that is just the master of _your_ fork, which will also be outdated. You might need to add the original project as a [remote](https://git-scm.com/docs/git-remote#Documentation/git-remote.txt-emaddem).
