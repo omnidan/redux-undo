@@ -14,22 +14,19 @@ function createHistory (state, ignoreInitialState) {
   return history
 }
 
-// lengthWithoutFuture: get length of history
-function lengthWithoutFuture (history) {
-  return history.past.length + 1
-}
-
 // insert: insert `state` into history, which means adding the current state
 //         into `past`, setting the new `state` as `present` and erasing
 //         the `future`.
 function insert (history, state, limit, group) {
+  const lengthWithoutFuture = history.past.length + 1
+
   debug.log('inserting', state)
-  debug.log('new free: ', limit - lengthWithoutFuture(history))
+  debug.log('new free: ', limit - lengthWithoutFuture)
 
   const { past, _latestUnfiltered } = history
-  const historyOverflow = limit && lengthWithoutFuture(history) >= limit
+  const isHistoryOverflow = limit && limit <= lengthWithoutFuture
 
-  const pastSliced = past.slice(historyOverflow ? 1 : 0)
+  const pastSliced = past.slice(isHistoryOverflow ? 1 : 0)
   const newPast = _latestUnfiltered != null
     ? [
       ...pastSliced,
