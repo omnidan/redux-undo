@@ -103,6 +103,14 @@ export default function undoable (reducer, rawConfig = {}) {
     )
   }
 
+  // Allows the user to call the reducer with redux-undo specific actions
+  const skipReducer = config.neverSkipReducer
+    ? (res, action, ...slices) => ({
+      ...res,
+      present: reducer(res.present, action, ...slices)
+    })
+    : (res) => res
+
   let initialState
   return (state = initialState, action = {}, ...slices) => {
     debug.start(action, state)
@@ -146,12 +154,6 @@ export default function undoable (reducer, rawConfig = {}) {
       }
     }
 
-    const skipReducer = (res) => config.neverSkipReducer
-      ? {
-        ...res,
-        present: reducer(res.present, action, ...slices)
-      } : res
-
     let res
     switch (action.type) {
       case undefined:
@@ -161,37 +163,37 @@ export default function undoable (reducer, rawConfig = {}) {
         res = jump(history, -1)
         debug.log('perform undo')
         debug.end(res)
-        return skipReducer(res)
+        return skipReducer(res, action, ...slices)
 
       case config.redoType:
         res = jump(history, 1)
         debug.log('perform redo')
         debug.end(res)
-        return skipReducer(res)
+        return skipReducer(res, action, ...slices)
 
       case config.jumpToPastType:
         res = jumpToPast(history, action.index)
         debug.log(`perform jumpToPast to ${action.index}`)
         debug.end(res)
-        return skipReducer(res)
+        return skipReducer(res, action, ...slices)
 
       case config.jumpToFutureType:
         res = jumpToFuture(history, action.index)
         debug.log(`perform jumpToFuture to ${action.index}`)
         debug.end(res)
-        return skipReducer(res)
+        return skipReducer(res, action, ...slices)
 
       case config.jumpType:
         res = jump(history, action.index)
         debug.log(`perform jump to ${action.index}`)
         debug.end(res)
-        return skipReducer(res)
+        return skipReducer(res, action, ...slices)
 
       case actionTypeAmongClearHistoryType(action.type, config.clearHistoryType):
         res = createHistory(history.present, config.ignoreInitialState)
         debug.log('perform clearHistory')
         debug.end(res)
-        return skipReducer(res)
+        return skipReducer(res, action, ...slices)
 
       default:
         res = reducer(
