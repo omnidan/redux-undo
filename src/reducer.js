@@ -82,25 +82,28 @@ export default function undoable (reducer, rawConfig = {}) {
   debug.set(rawConfig.debug)
 
   const config = {
+    limit: undefined,
+    filter: () => true,
+    groupBy: () => null,
+    undoType: ActionTypes.UNDO,
+    redoType: ActionTypes.REDO,
+    jumpToPastType: ActionTypes.JUMP_TO_PAST,
+    jumpToFutureType: ActionTypes.JUMP_TO_FUTURE,
+    jumpType: ActionTypes.JUMP,
+    neverSkipReducer: false,
+    ignoreInitialState: false,
+    syncFilter: false,
+
+    ...rawConfig,
+
     initTypes: parseActions(rawConfig.initTypes, ['@@redux-undo/INIT']),
-    limit: rawConfig.limit,
-    filter: rawConfig.filter || (() => true),
-    groupBy: rawConfig.groupBy || (() => null),
-    undoType: rawConfig.undoType || ActionTypes.UNDO,
-    redoType: rawConfig.redoType || ActionTypes.REDO,
-    jumpToPastType: rawConfig.jumpToPastType || ActionTypes.JUMP_TO_PAST,
-    jumpToFutureType: rawConfig.jumpToFutureType || ActionTypes.JUMP_TO_FUTURE,
-    jumpType: rawConfig.jumpType || ActionTypes.JUMP,
-    clearHistoryType:
-      Array.isArray(rawConfig.clearHistoryType)
-        ? rawConfig.clearHistoryType
-        : [rawConfig.clearHistoryType || ActionTypes.CLEAR_HISTORY],
-    neverSkipReducer: rawConfig.neverSkipReducer || false,
-    ignoreInitialState: rawConfig.ignoreInitialState || false,
-    syncFilter: rawConfig.syncFilter || false
+    clearHistoryType: parseActions(
+      rawConfig.clearHistoryType,
+      [ActionTypes.CLEAR_HISTORY]
+    )
   }
 
-  let initialState = config.history
+  let initialState
   return (state = initialState, action = {}, ...slices) => {
     debug.start(action, state)
 
