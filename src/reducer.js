@@ -19,21 +19,23 @@ function lengthWithoutFuture (history) {
   return history.past.length + 1
 }
 
-// insert: insert `state` into history, which means adding the current state
-//         into `past`, setting the new `state` as `present` and erasing
-//         the `future`.
-function insert (history, state, limit, group) {
-  debug.log('inserting', state)
-  debug.log('new free: ', limit - lengthWithoutFuture(history))
-
+// insert: filter `state` before insert it into history and then add
+//         the current state into `past`, setting the new `state`
+//         as `present` and erasing the `future`.
+function insert (history, state, limit, group, filterStateProps) {
   const { past, _latestUnfiltered } = history
   const historyOverflow = limit && lengthWithoutFuture(history) >= limit
+
+  const _latestFiltered = filterStateProps(_latestUnfiltered)
+
+  debug.log('inserting', _latestFiltered)
+  debug.log('new free: ', limit - lengthWithoutFuture(history))
 
   const pastSliced = past.slice(historyOverflow ? 1 : 0)
   const newPast = _latestUnfiltered != null
     ? [
       ...pastSliced,
-      _latestUnfiltered
+      _latestFiltered
     ] : pastSliced
 
   return newHistory(newPast, state, [], group)
@@ -84,6 +86,8 @@ export default function undoable (reducer, rawConfig = {}) {
   const config = {
     initTypes: parseActions(rawConfig.initTypes, ['@@redux-undo/INIT']),
     limit: rawConfig.limit,
+    // if `filterStateProps` has not set as function return a tautology function.
+    filterStateProps: typeof rawConfig.filterStateProps !== 'function' ? (_) => (_) : rawConfig.filterStateProps,
     filter: rawConfig.filter || (() => true),
     groupBy: rawConfig.groupBy || (() => null),
     undoType: rawConfig.undoType || ActionTypes.UNDO,
@@ -248,7 +252,7 @@ export default function undoable (reducer, rawConfig = {}) {
         }
 
         // If the action wasn't filtered or grouped, insert normally
-        history = insert(history, res, config.limit, group)
+        history = insert(history, res, config.limit, group, config.filterStateProps)
 
         debug.log('inserted new state into history')
         debug.end(history)
