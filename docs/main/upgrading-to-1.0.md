@@ -65,11 +65,11 @@ Now, these options are removed in favor of Redux's `preloadedState` parameter.
 
 ```javascript
 const rootReducer = combineReducers({
-  myReducer: undoable(myReducer)
+  root: undoable(myReducer)
 });
 
 const store = createStore(rootReducer, {
-  myReducer: {
+  root: {
     myState: "initial",
     otherField: true
   }
@@ -78,11 +78,11 @@ const store = createStore(rootReducer, {
 
 When providing initial state, redux-undo will automatically detect whether or not it is a complete history \(with `past`, `present`, `future`\) or not. If it is not, it will automatically convert it to one.
 
-If you wish to provide an initial history, e.g. you want to prefill `past` to recover a previous session, you **must** provide the three fields for redux-undo to recognize it as a history object.
+If you wish to provide an initial history, e.g. you want to prefill `past` to recover a previous session, you **must** provide all three fields for redux-undo to recognize it as a history object.
 
 ```javascript
 const store = createStore(rootReducer, {
-  myReducer: {
+  root: {
     past: ["from", "previous", "session"],
     present: "now"
     // `future` not provided!! Redux-undo will not recognize this as a history
@@ -92,4 +92,6 @@ const store = createStore(rootReducer, {
   }
 });
 ```
+
+For information about `initialState` with typescript, [look here](./working-with-ts.md#typing-initial-state).
 
