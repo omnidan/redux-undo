@@ -1,110 +1,136 @@
-declare module 'redux-undo' {
-  import { Reducer, Action, AnyAction } from 'redux';
+import { Reducer, Action, AnyAction } from 'redux'
 
+declare namespace ReduxUndo {
   export interface StateWithHistory<State> {
-    past: State[];
-    present: State;
-    future: State[];
-    _latestUnfiltered?: State;
-    group?: any;
-    index?: number;
-    limit?: number;
+    past: State[]
+    present: State
+    future: State[]
+    _latestUnfiltered: State
+    group: any
+    index: number
+    limit: number
   }
 
-  export type FilterFunction = <State>(action: Action, currentState: State, previousHistory: StateWithHistory<State>) => boolean;
-  export type GroupByFunction = <State>(action: Action, currentState: State, previousHistory: StateWithHistory<State>) => any;
-  export type CombineFilters = (...filters: FilterFunction[]) => FilterFunction;
+  export type FilterFunction<State> = (
+    action: Action,
+    currentState: State,
+    previousHistory: StateWithHistory<State>
+  ) => boolean
 
-  export class ActionCreators {
-    static undo: () => Action;
-    static redo: () => Action;
-    static jump: (point: number) => Action;
-    static jumpToPast: (index: number) => Action;
-    static jumpToFuture: (index: number) => Action;
-    static clearHistory: () => Action;
+  export type GroupByFunction<State> = (
+    action: Action,
+    currentState: State,
+    previousHistory: StateWithHistory<State>
+  ) => any
+
+  export const ActionCreators: {
+    undo: () => Action,
+    redo: () => Action,
+    jump: (point: number) => Action,
+    jumpToPast: (index: number) => Action,
+    jumpToFuture: (index: number) => Action,
+    clearHistory: () => Action
   }
 
-  export class ActionTypes {
-    static UNDO: string;
-    static REDO: string;
-    static JUMP: string;
-    static JUMP_TO_PAST: string;
-    static JUMP_TO_FUTURE: string;
-    static CLEAR_HISTORY: string;
+  export const ActionTypes: {
+    UNDO: string,
+    REDO: string,
+    JUMP: string,
+    JUMP_TO_PAST: string,
+    JUMP_TO_FUTURE: string,
+    CLEAR_HISTORY: string
   }
 
-  export interface UndoableOptions {
-    /* Set a limit for the history */
-    limit?: number;
+  export interface UndoableOptions<State> {
+    /** Set a limit for the history length */
+    limit?: number
 
     /** If you don't want to include every action in the undo/redo history, you can add a filter function to undoable */
-    filter?: FilterFunction;
+    filter?: FilterFunction<State>
 
     /** Groups actions together into one undo step */
-    groupBy?: GroupByFunction;
+    groupBy?: GroupByFunction<State>
 
     /** Define a custom action type for this undo action */
-    undoType?: string;
+    undoType?: string
+
     /** Define a custom action type for this redo action */
-    redoType?: string;
+    redoType?: string
 
     /** Define custom action type for this jump action */
-    jumpType?: string;
+    jumpType?: string
 
     /** Define custom action type for this jumpToPast action */
-    jumpToPastType?: string;
-    /** Define custom action type for this jumpToFuture action */
-    jumpToFutureType?: string;
+    jumpToPastType?: string
 
-    /** Define custom action type for this clearHistory action */
-    clearHistoryType?: string | string[];
+    /** Define custom action type for this jumpToFuture action */
+    jumpToFutureType?: string
+
+    /** Define custom action type(s) for this clearHistory action */
+    clearHistoryType?: string | string[]
 
     /** History will be (re)set upon init action type */
-    initTypes?: string[];
+    initTypes?: string | string[]
 
     /** Set to `true` to turn on debugging */
-    debug?: boolean;
+    debug?: boolean
 
     /** Set to `true` to prevent undoable from skipping the reducer on undo/redo **/
-    neverSkipReducer?: boolean;
+    neverSkipReducer?: boolean
 
     /** Set to `true` to prevent the user from undoing to the initial state  **/
-    ignoreInitialState?: boolean;
+    ignoreInitialState?: boolean
 
-    /** Set to `true` to synchronize the _latestUnfiltered state with present wen a excluded action is dispatched **/
-    syncFilter?: boolean;
+    /** Set to `true` to synchronize the _latestUnfiltered state with present when an excluded action is dispatched **/
+    syncFilter?: boolean
   }
-
-  interface Undoable {
-    <State, A extends Action = AnyAction>(reducer: Reducer<State, A>, options?: UndoableOptions): Reducer<StateWithHistory<State>>;
-  }
-
-
-  type IncludeAction = (actions: string | string[]) => FilterFunction;
-  type ExcludeAction = IncludeAction;
-  type GroupByActionTypes = (actions: string | string[]) => GroupByFunction;
-  type NewHistory = <State>(past: State[], present: State, future: State[], group?: any) => StateWithHistory<State>;
-
-  const undoable: Undoable;
-
-  export default undoable;
 
   /**
    * If you don't want to include every action in the undo/redo history, you can add a filter function to undoable.
    * redux-undo provides you with the includeAction and excludeAction helpers for basic filtering.
    */
-  export const includeAction: IncludeAction;
+  export const includeAction: <State>(actions: string | string[]) => FilterFunction<State>
 
   /**
    * If you don't want to include every action in the undo/redo history, you can add a filter function to undoable.
    * redux-undo provides you with the includeAction and excludeAction helpers for basic filtering.
    */
-  export const excludeAction: ExcludeAction;
+  export const excludeAction: <State>(actions: string | string[]) => FilterFunction<State>
 
-  export const combineFilters: CombineFilters;
+  /**
+   * Combine multiple filters into one function. If one filter returns false, then combineFilters() returns
+   * false excluding that action from history.
+   */
+  export const combineFilters: <State>(...filters: FilterFunction<State>[]) => FilterFunction<State>
 
-  export const groupByActionTypes: GroupByActionTypes;
+  /**
+   * A basic convenience function for grouping the same action into a single undo/redo step. Useful for
+   * similar, rapidly dispatched actions, e.g. "UPDATE_MOUSE_POSITION".
+   */
+  export const groupByActionTypes: <State>(actions: string | string[]) => GroupByFunction<State>
 
-  export const newHistory: NewHistory;
+  /**
+   * Create a new redux-undo history for an initial state. Alternatively, you can pass an initial
+   * state normally and allow redux-undo to handle setup for you.
+   */
+  export const newHistory: <State>(
+    past: State[],
+    present: State,
+    future: State[],
+    group?: any
+  ) => StateWithHistory<State>
 
+  /**
+   * Wrapping the state with undoable() allows you to dispatch actions that
+   * can change your state to a previous version and back again.
+   */
+  export default function undoable<State, A extends Action = AnyAction> (
+    reducer: Reducer<State, A>,
+    options?: UndoableOptions<State>
+  ): Reducer<StateWithHistory<State>>
 }
+
+export = ReduxUndo
+
+// For UMD builds
+export as namespace ReduxUndo
