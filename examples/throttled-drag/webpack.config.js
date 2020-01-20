@@ -2,11 +2,14 @@ var path = require('path')
 var webpack = require('webpack')
 
 module.exports = {
+  mode: 'development',
   devtool: 'cheap-module-eval-source-map',
-  entry: [
-    'webpack-hot-middleware/client',
-    './index'
-  ],
+  entry: './index',
+  devServer: {
+    contentBase: __dirname,
+    compress: true,
+    port: 3000
+  },
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'bundle.js',
