@@ -1,13 +1,13 @@
 # FAQ
 
-### Table of Contents
+## Table of Contents
 
-* [Where can I get help using `redux-undo`?](faq.md#where-can-I-get-help-using-redux-undo)
+* [Where can I get help using `redux-undo`?](faq.md#where-can-i-get-help-using-redux-undo)
 * [Where can I find examples of how to use `redux-undo`?](faq.md#where-can-i-find-examples-of-how-to-use-redux-undo)
-* [How do I prevent cluttering up history with rapidly changing state?](faq.md#how-do-I-prevent-cluttering-up-history-with-rapidly-changing-state)
+* [How do I prevent cluttering up history with rapidly changing state?](faq.md#how-do-i-prevent-cluttering-up-history-with-rapidly-changing-state)
 * [Can I have multiple, separate undoable functions?](faq.md#can-i-have-multiple-separate-undoable-functions)
 * [Why are my actions not being filtered?](faq.md#why-are-my-actions-not-being-filtered)
-* [What is `_latestUnfiltered`? Can I remove it?](faq.md#what-is-_latestUnfiltered-can-i-remove-it)
+* [What is `_latestUnfiltered`? Can I remove it?](faq.md#what-is-_latestunfiltered-can-i-remove-it)
 * [Why am I getting `Cannot find module 'redux-undo'`?](faq.md#why-am-i-getting-cannot-find-module-redux-undo)
 * [How do I set an initial state/history?](upgrading-to-1.0.md#initialstate)
 * [How do I upgrade from 0.X to 1.0?](upgrading-to-1.0.md)
@@ -20,6 +20,8 @@ To get an understanding of the basics, read through the [README](https://github.
 To get help with a specific use case, see if there is already an example in these docs or the examples. If not, ask for help in the [gitter chat](https://gitter.im/omnidan/redux-undo)!
 
 If it seems you have found a bug or you are itching for a new feature, go ahead and submit it as an issue following the template provided. Please reserve Github issues for bugs and features **only**. Ask any other questions on the gitter chat and someone will probably be able to help you with your problem.
+
+_[back to top](#table-of-contents)_
 
 ## Where can I find examples of how to use `redux-undo`?
 
@@ -34,6 +36,8 @@ $ npm start
 
 Just open [http://localhost:3000](http://localhost:3000) and you are good to go!
 
+_[back to top](#table-of-contents)_
+
 ## How do I prevent cluttering up history with rapidly changing state?
 
 The `throttled-drag/` project found the `examples/` directory gives a good demonstration of how to debounce undos \(the filter is in `util/undoFilter.js`\).
@@ -41,6 +45,8 @@ The `throttled-drag/` project found the `examples/` directory gives a good demon
 This general question has different solutions depending on your exact problem. Let's say you have one or more rapidly dispatched actions, for example `MOVE_CURSOR` and `UPDATE_OBJECT_POS`, that ends with a lone action `PLACE_OBJECT`, and you only want to record the end state after `PLACE_OBJECT`. Then you can simply use a filter `excludeAction(['MOVE_CURSOR', 'UPDATE_OBJECT_POS'])`
 
 For more complex requirements, consider writing your own [custom filter](https://github.com/omnidan/redux-undo#custom-filters).
+
+_[back to top](#table-of-contents)_
 
 ## Can I have multiple, separate undoable functions?
 
@@ -77,6 +83,8 @@ const rootReducer = undoable(
 
 You probably need to use [custom filters](https://github.com/omnidan/redux-undo#custom-filters) and/or [`groupBy`](https://github.com/omnidan/redux-undo#grouping-actions) to undo/redo in reasonable chunks.
 
+_[back to top](#table-of-contents)_
+
 ## Why are my actions not being filtered?
 
 If you are trying to prevent actions from changing state, **that is not what `filter` is for**. The `filter` option only prevents state changes from becoming part of the history, i.e. the new state being pushed into `state.past`. If you need this functionality, check out [redux-ignore](https://github.com/omnidan/redux-ignore).
@@ -104,6 +112,8 @@ function onlyEveryThird(action, newState, history) {
 }
 ```
 
+_[back to top](#table-of-contents)_
+
 ## What is `_latestUnfiltered`? Can I remove it?
 
 ### What is it?
@@ -125,6 +135,8 @@ Short answer, no. It is an integral part of filtering actions from history and c
 
 While there is a tad more overhead handling actions in the reducer, it is necessary with the current setup. In the future, there might be optimization that makes this field less burdensome for users that do not use the filtering functionality.
 
+_[back to top](#table-of-contents)_
+
 ## Why am I getting `Cannot find module 'redux-undo'`?
 
 If you are using redux-undo in a CommonJS or UMD environment, you need to add `.default` to your imports.
@@ -145,3 +157,4 @@ import undoable from "redux-undo";
 
 If this fixed your issue, you might also want to checkout how to [upgrade from 0.6 to 1.0](upgrading-to-1.0.md).
 
+_[back to top](#table-of-contents)_
