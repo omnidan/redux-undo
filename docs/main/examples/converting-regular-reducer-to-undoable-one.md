@@ -1,6 +1,6 @@
 # Converting a regular reducer to undoable reducer
 
-This example shows how to convert a regular reducer to undoable reducer. 
+This example shows how to convert a regular reducer to undoable reducer.
 
 We will create an application that implements github labels(the ones we add to the github issues).
 
@@ -31,7 +31,7 @@ function reducer(state = initialState, action) {
                 ...state,
                 labels: state.labels.filter(label => label.id !== action.id)
             }
-        default: 
+        default:
             return state;
     }
 }
@@ -80,10 +80,10 @@ const store = createStore(reducer);
  *  future: []
  * }
 */
-console.log(store.getState()); 
+console.log(store.getState());
 
 // So to get the present state we access the present attribute of the state
-console.log(store.getState().present); 
+console.log(store.getState().present);
 
 // Everytime the state changes, Log it.
 store.subscribe(() => console.log(store.getState().present));
