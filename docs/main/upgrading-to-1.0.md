@@ -93,3 +93,33 @@ const store = createStore(rootReducer, {
 });
 ```
 
+## 0.X behaviour for pushing filtered state into history, and the syncFilter option
+
+When dealing with filtered state, the old behaviour was to keep track of the "trailing" state (state 4 in this example).
+
+```
+initial action: Initial state
+included action: state 1 - add initial state to history
+included action: state 2 - add state 1 to history
+filtered action: state 3 - do nothing
+filtered action: state 4 - do nothing
+included action: state 5 - add state 4 to history
+```
+
+However, states 3 and 4 were the result of filtered actions and should probably not be added to history. Instead, state 2 should be the last state pushed into history. Using [`_latestUnfiltered`](faq.md#what-is-_latestunfiltered-can-i-remove-it), this is now the default in 1.X
+
+```
+initial action: Initial state
+included action: state 1 - add initial state to history
+included action: state 2 - add state 1 to history
+filtered action: state 3 - store state 2 in _latestUnfiltered
+filtered action: state 4 - do nothing
+included action: state 5 - add _latestUnfiltered (state 2) to history
+```
+
+If you still need to old behaviour, use the syncFilter option.
+
+```javascript
+undoable(myReducer, { syncFilter: true })
+```
+
