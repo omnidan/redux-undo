@@ -1,8 +1,18 @@
 export { ActionTypes, ActionCreators } from './actions'
 export {
-  parseActions, isHistory,
-  includeAction, excludeAction,
-  combineFilters, groupByActionTypes, newHistory
+  parseActions,
+  groupByActionTypes,
+  includeAction,
+  excludeAction,
+  combineFilters,
+  combineExtensions,
+  isHistory,
+  newHistory
 } from './helpers'
+
+export {
+  actionField,
+  flattenState
+} from './fieldExtensions'
 
 export { default } from './reducer'

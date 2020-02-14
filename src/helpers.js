@@ -39,6 +39,19 @@ export function combineFilters (...filters) {
   , () => true)
 }
 
+// combineExtensions helper: include multiple field extensions at once
+export function combineExtensions (...extensions) {
+  return (config) => {
+    const instantiated = extensions.map((ext) => ext(config))
+    return (state, action) => {
+      for (const extension of instantiated) {
+        state = extension(state, action)
+      }
+      return state
+    }
+  }
+}
+
 export function groupByActionTypes (rawActions) {
   const actions = parseActions(rawActions)
   return (action) => actions.indexOf(action.type) >= 0 ? action.type : null

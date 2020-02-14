@@ -90,6 +90,8 @@ export default function undoable (reducer, rawConfig = {}) {
     neverSkipReducer: false,
     ignoreInitialState: false,
     syncFilter: false,
+    extension: (state) => state,
+    disableWarnings: false,
 
     ...rawConfig,
 
@@ -100,13 +102,18 @@ export default function undoable (reducer, rawConfig = {}) {
     )
   }
 
-  // Allows the user to call the reducer with redux-undo specific actions
-  const skipReducer = config.neverSkipReducer
-    ? (res, action, ...slices) => ({
-      ...res,
-      present: reducer(res.present, action, ...slices)
-    })
-    : (res) => res
+  const withExtensions = config.extension
+
+  // By default, the user's reducer is skipped on redux-undo actions
+  let skipReducer
+  if (config.neverSkipReducer) {
+    skipReducer = (history, action, ...slices) => {
+      const present = reducer(history.present, action, ...slices)
+      return withExtensions({ ...history, present }, action)
+    }
+  } else {
+    skipReducer = (history, action) => withExtensions(history, action)
+  }
 
   let initialState
   return (state = initialState, action = {}, ...slices) => {
@@ -208,6 +215,7 @@ export default function undoable (reducer, rawConfig = {}) {
         if (history._latestUnfiltered === res) {
           // Don't handle this action. Do not call debug.end here,
           // because this action should not produce side effects to the console
+          // Do not wrap with withExtensions()
           return history
         }
 
@@ -231,7 +239,7 @@ export default function undoable (reducer, rawConfig = {}) {
           }
           debug.log('filter ignored action, not storing it in past')
           debug.end(filteredState)
-          return filteredState
+          return withExtensions(filteredState, action)
         }
 
         /* eslint-disable-next-line no-case-declarations */
@@ -246,7 +254,7 @@ export default function undoable (reducer, rawConfig = {}) {
           )
           debug.log('groupBy grouped the action with the previous action')
           debug.end(groupedState)
-          return groupedState
+          return withExtensions(groupedState, action)
         }
 
         // If the action wasn't filtered or grouped, insert normally
@@ -254,7 +262,7 @@ export default function undoable (reducer, rawConfig = {}) {
 
         debug.log('inserted new state into history')
         debug.end(history)
-        return history
+        return withExtensions(history, action)
     }
   }
 }
