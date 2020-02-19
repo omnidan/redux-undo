@@ -8,11 +8,13 @@
 
 export const flattenState = () => {
   return (undoableConfig) => {
+    console.log(undoableConfig)
     if (!undoableConfig.disableWarnings) {
       console.warn(
         'Warning: the flattenState() extension prioritizes redux-undo fields when flattening state.',
         'If your state has the fields `limit` and `present`, you must access them',
         'with `state.present.limit` and `state.present.present` respectively.\n',
+        'Only works with objects as state. Do not use flattenState() with primitives or arrays.\n',
         'Disable this warning by passing `disableWarnings: true` into the undoable config'
       )
     }
@@ -44,14 +46,14 @@ export const flattenState = () => {
  * @param {actionFieldIncludeAction} config.includeAction - A filter function that decides if
  * the action is inserted into history.
  */
-export const actionField = ({ insertMethod, includeAction }) => {
+export const actionField = ({ insertMethod, includeAction } = {}) => {
+  if (insertMethod === 'inline') {
+    return inlineActionField({ includeAction })
+  }
+
   let extend
   if (insertMethod === 'action') {
     extend = (state, action) => ({ ...state, action })
-  } else if (insertMethod === 'inline') {
-    // Here, action must be inserted into present first so that
-    // it is overidden when the action is an undo or redo
-    extend = (state, action) => ({ ...state, present: { action, ...state.present } })
   } else if (!insertMethod || insertMethod === 'actionType') {
     extend = (state, action) => ({ ...state, actionType: action.type })
   } else {
@@ -62,23 +64,62 @@ export const actionField = ({ insertMethod, includeAction }) => {
   }
 
   return (undoableConfig) => {
-    const ignored = includeAction || (() => true)
+    const included = includeAction || (() => true)
 
     if (!undoableConfig.disableWarnings) {
       console.warn(
         'Warning: the actionField() extension might override other state fields',
-        'such as "action", "inline", or "actionType".\n',
+        'such as "action", "present.action", or "actionType".\n',
         'Disable this warning by passing `disableWarnings: true` into the undoable config'
       )
     }
 
-    // actionField must have its own version of latestUnfiltered because when syncFilter = true
-    let lastPresent
+    let lastAction = {}
 
     return (state, action) => {
-      if (lastPresent !== state.present && !ignored(action)) {
-        lastPresent = state.present
+      if (included(action)) {
+        lastAction = action
         return extend(state, action)
+      }
+
+      return extend(state, lastAction)
+    }
+  }
+}
+
+/**
+ * @private
+ */
+const inlineActionField = ({ includeAction } = {}) => {
+  return (undoableConfig) => {
+    if (!undoableConfig.disableWarnings) {
+      console.warn(
+        'Warning: the actionField() extension might override other state fields',
+        'such as "action", "present.action", or "actionType".\n',
+        'Disable this warning by passing `disableWarnings: true` into the undoable config'
+      )
+    }
+
+    const ignoredActions = [
+      undoableConfig.undoType,
+      undoableConfig.redoType,
+      undoableConfig.jumpType,
+      undoableConfig.jumpToPastType,
+      undoableConfig.jumpToFutureType,
+      ...undoableConfig.clearHistoryType,
+      ...undoableConfig.initTypes
+    ]
+
+    const included = includeAction || (() => true)
+
+    return (state, action) => {
+      if (included(action) && ignoredActions.indexOf(action.type) === -1) {
+        const newState = { ...state, present: { ...state.present, action } }
+
+        if (state.present === state._latestUnfiltered) {
+          newState._latestUnfiltered = newState.present
+        }
+        return newState
       }
 
       return state
@@ -86,7 +127,7 @@ export const actionField = ({ insertMethod, includeAction }) => {
   }
 }
 
-// This will be put on hold for now...
+// istanbul ignore next: This will be put on hold for now...
 // eslint-disable-next-line no-unused-vars
 const nullifyFields = (fields = [], nullValue = null) => {
   const removeFields = (state) => {
@@ -114,7 +155,7 @@ const nullifyFields = (fields = [], nullValue = null) => {
   }
 }
 
-// This will be put on hold for now...
+// istanbul ignore next: This will be put on hold for now...
 // eslint-disable-next-line no-unused-vars
 const sideEffects = (onUndo = {}, onRedo = {}) => {
   return (undoableConfig) => {

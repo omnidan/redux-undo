@@ -90,7 +90,7 @@ export default function undoable (reducer, rawConfig = {}) {
     neverSkipReducer: false,
     ignoreInitialState: false,
     syncFilter: false,
-    extension: (state) => state,
+    extension: () => (state) => state,
     disableWarnings: false,
 
     ...rawConfig,
@@ -102,7 +102,7 @@ export default function undoable (reducer, rawConfig = {}) {
     )
   }
 
-  const withExtensions = config.extension
+  const withExtensions = config.extension(config)
 
   // By default, the user's reducer is skipped on redux-undo actions
   let skipReducer

@@ -12,17 +12,19 @@ const plugins = [
 
 const filename = `redux-undo${NODE_ENV === 'production' ? '.min' : ''}.js`
 
-NODE_ENV === 'production' && plugins.push(
-  new webpack.optimize.UglifyJsPlugin({
-    compressor: {
-      pure_getters: true,
-      unsafe: true,
-      unsafe_comps: true,
-      screw_ie8: true,
-      warnings: false
-    }
-  })
-)
+if (NODE_ENV === 'production') {
+  plugins.push(
+    new webpack.optimize.UglifyJsPlugin({
+      compressor: {
+        pure_getters: true,
+        unsafe: true,
+        unsafe_comps: true,
+        screw_ie8: true,
+        warnings: false
+      }
+    })
+  )
+}
 
 export default {
   module: {

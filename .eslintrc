@@ -1,5 +1,5 @@
 {
-  "extends": "standard",
+  "extends": ["standard", "plugin:chai-friendly/recommended"],
   "parser": "babel-eslint",
   "env": {
     "browser": true,
