@@ -79,9 +79,9 @@ declare module 'redux-undo' {
     <S, A extends Action>(reducer: Reducer<S, A>, options?: UndoableOptions<S, A>): Reducer<StateWithHistory<S>>;
   }
 
-  type IncludeAction = <S, A extends Action = AnyAction>(actions: Pick<A, 'type'>['type'] | Pick<A, 'type'>['type'][]) => FilterFunction<S, A>;
+  type IncludeAction = <S, A extends Action = AnyAction>(actions: A['type'] | A['type'][]) => FilterFunction<S, A>;
   type ExcludeAction = IncludeAction;
-  type GroupByActionTypes = <S, A extends Action = AnyAction>(actions: Pick<A, 'type'>['type'] | Pick<A, 'type'>['type'][]) => GroupByFunction<S, A>;
+  type GroupByActionTypes = <S, A extends Action = AnyAction>(actions: A['type'] | A['type'][]) => GroupByFunction<S, A>;
   type NewHistory = <State>(past: State[], present: State, future: State[], group?: any) => StateWithHistory<State>;
 
   const undoable: Undoable;
