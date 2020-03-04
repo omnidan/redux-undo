@@ -76,7 +76,7 @@ declare module 'redux-undo' {
   }
 
   interface Undoable {
-    <S = any, A extends Action = AnyAction>(reducer: Reducer<S, A>, options?: UndoableOptions<S, A>): Reducer<StateWithHistory<S>>;
+    <State, A extends Action = AnyAction>(reducer: Reducer<State, A>, options?: UndoableOptions<State, A>): Reducer<StateWithHistory<State>>;
   }
 
   type IncludeAction = <S = any, A extends Action = AnyAction>(actions: A['type'] | A['type'][]) => FilterFunction<S, A>;
