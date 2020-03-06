@@ -13,7 +13,7 @@ declare module 'redux-undo' {
 
   export type FilterFunction<S = any, A extends Action = AnyAction> = (action: A, currentState: S, previousHistory: StateWithHistory<S>) => boolean;
   export type GroupByFunction<S = any, A extends Action = AnyAction> = (action: A, currentState: S, previousHistory: StateWithHistory<S>) => any;
-  export type CombineFilters<S = any, A extends Action = AnyAction> = (...filters: FilterFunction<S, A>[]) => FilterFunction<S, A>;
+  export type CombineFilters = <S = any, A extends Action = AnyAction>(...filters: FilterFunction<S, A>[]) => FilterFunction<S, A>;
 
   export class ActionCreators {
     static undo: () => Action;
@@ -81,7 +81,6 @@ declare module 'redux-undo' {
 
   type IncludeAction = <S = any, A extends Action = AnyAction>(actions: A['type'] | A['type'][]) => FilterFunction<S, A>;
   type ExcludeAction = IncludeAction;
-  type CombineFilterFunctions = <S = any, A extends Action = AnyAction>(...filters: FilterFunction<S, A>[]) => FilterFunction<S, A>;
   type GroupByActionTypes = <S = any, A extends Action = AnyAction>(actions: A['type'] | A['type'][]) => GroupByFunction<S, A>;
   type NewHistory = <State>(past: State[], present: State, future: State[], group?: any) => StateWithHistory<State>;
 
@@ -101,7 +100,7 @@ declare module 'redux-undo' {
    */
   export const excludeAction: ExcludeAction;
 
-  export const combineFilters: CombineFilterFunctions;
+  export const combineFilters: CombineFilters;
 
   export const groupByActionTypes: GroupByActionTypes;
 
