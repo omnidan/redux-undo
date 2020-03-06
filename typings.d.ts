@@ -11,9 +11,9 @@ declare module 'redux-undo' {
     limit?: number;
   }
 
-  export type FilterFunction = <State>(action: Action, currentState: State, previousHistory: StateWithHistory<State>) => boolean;
-  export type GroupByFunction = <State>(action: Action, currentState: State, previousHistory: StateWithHistory<State>) => any;
-  export type CombineFilters = (...filters: FilterFunction[]) => FilterFunction;
+  export type FilterFunction<S = any, A extends Action = AnyAction> = (action: A, currentState: S, previousHistory: StateWithHistory<S>) => boolean;
+  export type GroupByFunction<S = any, A extends Action = AnyAction> = (action: A, currentState: S, previousHistory: StateWithHistory<S>) => any;
+  export type CombineFilters = <S = any, A extends Action = AnyAction>(...filters: FilterFunction<S, A>[]) => FilterFunction<S, A>;
 
   export class ActionCreators {
     static undo: () => Action;
@@ -33,15 +33,15 @@ declare module 'redux-undo' {
     static CLEAR_HISTORY: string;
   }
 
-  export interface UndoableOptions {
+  export interface UndoableOptions<S = any, A extends Action = AnyAction> {
     /* Set a limit for the history */
     limit?: number;
 
     /** If you don't want to include every action in the undo/redo history, you can add a filter function to undoable */
-    filter?: FilterFunction;
+    filter?: FilterFunction<S, A>;
 
     /** Groups actions together into one undo step */
-    groupBy?: GroupByFunction;
+    groupBy?: GroupByFunction<S, A>;
 
     /** Define a custom action type for this undo action */
     undoType?: string;
@@ -76,13 +76,12 @@ declare module 'redux-undo' {
   }
 
   interface Undoable {
-    <State, A extends Action = AnyAction>(reducer: Reducer<State, A>, options?: UndoableOptions): Reducer<StateWithHistory<State>>;
+    <State, A extends Action = AnyAction>(reducer: Reducer<State, A>, options?: UndoableOptions<State, A>): Reducer<StateWithHistory<State>>;
   }
 
-
-  type IncludeAction = (actions: string | string[]) => FilterFunction;
+  type IncludeAction = <S = any, A extends Action = AnyAction>(actions: A['type'] | A['type'][]) => FilterFunction<S, A>;
   type ExcludeAction = IncludeAction;
-  type GroupByActionTypes = (actions: string | string[]) => GroupByFunction;
+  type GroupByActionTypes = <S = any, A extends Action = AnyAction>(actions: A['type'] | A['type'][]) => GroupByFunction<S, A>;
   type NewHistory = <State>(past: State[], present: State, future: State[], group?: any) => StateWithHistory<State>;
 
   const undoable: Undoable;
