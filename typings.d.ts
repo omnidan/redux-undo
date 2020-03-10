@@ -34,7 +34,7 @@ declare module 'redux-undo' {
     static CLEAR_HISTORY: string;
   }
 
-  export interface UndoableOptions<S = any, A extends Action = AnyAction> {
+  export interface UndoableOptions<S = any, A extends Action = AnyAction, E = any> {
     /* Set a limit for the history */
     limit?: number;
 
@@ -76,14 +76,15 @@ declare module 'redux-undo' {
     syncFilter?: boolean;
 
     /** Use extensions like flattenState or actionField to add extra fields to the state */
-    extension?: ExtensionFunction<unknown, S, A>;
+    extension?: ExtensionFunction<E, S, A>;
 
     /** Set to `true` to disable extension warnings */
     disableWarnings?: boolean;
   }
 
   interface Undoable {
-    <S, A extends Action = AnyAction>(reducer: Reducer<S, A>, options?: UndoableOptions<S, A>): Reducer<StateWithHistory<S>>;
+    <S = any, A extends Action = AnyAction, E = any>(reducer: Reducer<S, A>, options?: UndoableOptions<S, A, E>): Reducer<StateWithHistory<S> & E, A>;
+    <S = any, A extends Action = AnyAction>(reducer: Reducer<S, A>, options?: UndoableOptions<S, A>): Reducer<StateWithHistory<S>, A>;
   }
 
   const undoable: Undoable;
@@ -107,6 +108,11 @@ declare module 'redux-undo' {
    * false excluding that action from history.
    */
   export const combineFilters: <S = any, A extends Action = AnyAction>(...filters: FilterFunction<S, A>[]) => FilterFunction<S, A>;
+
+  /**
+   * @deprecated use `typeof conbineFilters`
+   */
+  export type CombineFilters = typeof combineFilters;
 
   /**
    * A basic convenience function for grouping the same action into a single undo/redo step. Useful for
