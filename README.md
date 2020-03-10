@@ -212,6 +212,9 @@ undoable(reducer, {
 
   neverSkipReducer: false, // prevent undoable from skipping the reducer on undo/redo and clearHistoryType actions
   syncFilter: false // set to `true` to synchronize the `_latestUnfiltered` state with `present` when an excluded action is dispatched
+
+  extension: () => (state) => state, // Add extensions like `actionField` and `flattenState`.
+  disableWarnings: false, // set to `true` to disable warnings from using extensions
 })
 ```
 
@@ -395,6 +398,39 @@ ignoreActions(
 )
 ```
 
+### Extensions
+
+There are a few extensions you can add to your undoable state that include extra fields and/or extra functionality. Similar to filter, you can use the `combineExtensions` helper to use mutiple extensions at once.
+
+**`actionField`** adds the previous action that changed state as a field. There are multiple insert methods:
+
+- `"actionType"` - Simply added the previous `.actionType` as a field alongside `.past`, `.present`, etc. Will include any redux-undo actions.
+- `"action"` - Adds the entire action including the payload: `myState.action === { type: 'LAST_ACTION', ...actionPayload }`.
+- `"inline"` - Inserts the action into the present state alongside the user fields. This allows you to get the action that produced the new state or any state in your history `state.present.action`, `state.past[0].action`. This action will *not* be overridden by redux-undo actions
+
+**`flattenState`** copies the current state down a level allowing you to add history to your state without changing (much) of your component logic. For example, say you have the state:
+
+```javascript
+myState: {
+  present: 'White elephant gift',
+  quantity: 1,
+  given: '2020-12-25'
+}
+```
+
+When you wrap the reducer with undoable, `myState` changes according to the [History API](#history-api). Using the `flattenState` extension still uses the history api, but also copies the present state back down a level. This allows redux-undo to have undoable history, while you do not have to change your component logic.
+
+```javascript
+myState: {
+  quantity: 1,
+  given: '2020-12-25',
+  past: [ ... ],
+  present: { quantity: 1, ... },
+  future: [ ... ]
+}
+```
+
+Note: if a field conflicts with one of redux-undo's (like `.present` in the example) it will not be copied and you will have to access it with `myState.present.present === 'White elephant gift'`
 
 ## What is this magic? How does it work?
 
