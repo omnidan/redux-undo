@@ -13,7 +13,8 @@ declare module 'redux-undo' {
 
   export type FilterFunction<S = any, A extends Action = AnyAction> = (action: A, currentState: S, previousHistory: StateWithHistory<S>) => boolean;
   export type GroupByFunction<S = any, A extends Action = AnyAction> = (action: A, currentState: S, previousHistory: StateWithHistory<S>) => any;
-  export type CombineFilters = <S = any, A extends Action = AnyAction>(...filters: FilterFunction<S, A>[]) => FilterFunction<S, A>;
+  export type ExtensionFunction<E = any, S = any, A extends Action = AnyAction> = (config: UndoableOptions<S, A>) =>
+    (state: StateWithHistory<S>, action: A) => StateWithHistory<S> & E;
 
   export class ActionCreators {
     static undo: () => Action;
@@ -73,16 +74,17 @@ declare module 'redux-undo' {
 
     /** Set to `true` to synchronize the _latestUnfiltered state with present wen a excluded action is dispatched **/
     syncFilter?: boolean;
+
+    /** Use extensions like flattenState or actionField to add extra fields to the state */
+    extension?: ExtensionFunction<unknown, S, A>;
+
+    /** Set to `true` to disable extension warnings */
+    disableWarnings?: boolean;
   }
 
   interface Undoable {
-    <State, A extends Action = AnyAction>(reducer: Reducer<State, A>, options?: UndoableOptions<State, A>): Reducer<StateWithHistory<State>>;
+    <S, A extends Action = AnyAction>(reducer: Reducer<S, A>, options?: UndoableOptions<S, A>): Reducer<StateWithHistory<S>>;
   }
-
-  type IncludeAction = <S = any, A extends Action = AnyAction>(actions: A['type'] | A['type'][]) => FilterFunction<S, A>;
-  type ExcludeAction = IncludeAction;
-  type GroupByActionTypes = <S = any, A extends Action = AnyAction>(actions: A['type'] | A['type'][]) => GroupByFunction<S, A>;
-  type NewHistory = <State>(past: State[], present: State, future: State[], group?: any) => StateWithHistory<State>;
 
   const undoable: Undoable;
 
@@ -92,18 +94,62 @@ declare module 'redux-undo' {
    * If you don't want to include every action in the undo/redo history, you can add a filter function to undoable.
    * redux-undo provides you with the includeAction and excludeAction helpers for basic filtering.
    */
-  export const includeAction: IncludeAction;
+  export const includeAction: <S = any, A extends Action = AnyAction>(actions: A['type'] | A['type'][]) => FilterFunction<S, A>;
 
   /**
    * If you don't want to include every action in the undo/redo history, you can add a filter function to undoable.
    * redux-undo provides you with the includeAction and excludeAction helpers for basic filtering.
    */
-  export const excludeAction: ExcludeAction;
+  export const excludeAction: <S = any, A extends Action = AnyAction>(actions: A['type'] | A['type'][]) => FilterFunction<S, A>;
 
-  export const combineFilters: CombineFilters;
+  /**
+   * Combine multiple filters into one function. If one filter returns false, then combineFilters() returns
+   * false excluding that action from history.
+   */
+  export const combineFilters: <S = any, A extends Action = AnyAction>(...filters: FilterFunction<S, A>[]) => FilterFunction<S, A>;
 
-  export const groupByActionTypes: GroupByActionTypes;
+  /**
+   * A basic convenience function for grouping the same action into a single undo/redo step. Useful for
+   * similar, rapidly dispatched actions, e.g. "UPDATE_MOUSE_POSITION".
+   */
+  export const groupByActionTypes: <S = any, A extends Action = AnyAction>(actions: A['type'] | A['type'][]) => GroupByFunction<S, A>;
 
-  export const newHistory: NewHistory;
+  /**
+   * Create a new redux-undo history for an initial state. Alternatively, you can pass an initial
+   * state normally and allow redux-undo to handle setup for you.
+   */
+  export const newHistory: <S>(past: S[], present: S, future: S[], group?: any) => StateWithHistory<S>;
+
+  /**
+   * Combine multiple filters into one function. If one filter returns false, then combineFilters() returns
+   * false excluding that action from history.
+   */
+  export const combineExtensions: <S = any, A extends Action = AnyAction, E = any>(...extensions: ExtensionFunction<Partial<E>, S, A>[]) =>
+    ExtensionFunction<E, S, A>;
+
+  /**
+   * The flattenState() field extension allows the user to access fields normally like
+   * `state.field` instead of `state.present.field`.
+   */
+  export const flattenState: <S = any, A extends Action = AnyAction>() => ExtensionFunction<S, StateWithHistory<S>, A>;
+
+  interface ActionFieldOptions<IM extends 'inline' | 'actionType' | 'action'> {
+    insertMethod: IM,
+    includeAction: (action: Action) => boolean
+  }
+
+  /**
+   * The actionField() field extension allows users to insert the last occuring action
+   * into their state.
+   */
+  interface ActionField {
+    <S = any, A extends Action = AnyAction>(config: ActionFieldOptions<'actionType'>):
+      ExtensionFunction<{ actionType: string }, S, A>;
+    <S = any, A extends Action = AnyAction>(config: ActionFieldOptions<'action'>):
+      ExtensionFunction<{ action: Action }, S, A>;
+    <S = any, A extends Action = AnyAction>(config: ActionFieldOptions<'inline'>):
+      ExtensionFunction<{ present: S & { action: Action } }, S, A>;
+  }
+  export const actionField: ActionField;
 
 }
