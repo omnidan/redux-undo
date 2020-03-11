@@ -13,7 +13,7 @@ declare module 'redux-undo' {
 
   export type FilterFunction<S = any, A extends Action = AnyAction> = (action: A, currentState: S, previousHistory: StateWithHistory<S>) => boolean;
   export type GroupByFunction<S = any, A extends Action = AnyAction> = (action: A, currentState: S, previousHistory: StateWithHistory<S>) => any;
-  export type ExtensionFunction<E = any, S = any, A extends Action = AnyAction> = (config: UndoableOptions<S, A>) =>
+  export type ExtensionFunction<E = {}, S = any, A extends Action = AnyAction> = (config: UndoableOptions<S, A, E>) =>
     (state: StateWithHistory<S>, action: A) => StateWithHistory<S> & E;
 
   export class ActionCreators {
@@ -34,7 +34,7 @@ declare module 'redux-undo' {
     static CLEAR_HISTORY: string;
   }
 
-  export interface UndoableOptions<S = any, A extends Action = AnyAction, E = any> {
+  export interface UndoableOptions<S = any, A extends Action = AnyAction, E = {}> {
     /* Set a limit for the history */
     limit?: number;
 
@@ -82,12 +82,7 @@ declare module 'redux-undo' {
     disableWarnings?: boolean;
   }
 
-  interface Undoable {
-    <S = any, A extends Action = AnyAction, E = any>(reducer: Reducer<S, A>, options?: UndoableOptions<S, A, E>): Reducer<StateWithHistory<S> & E, A>;
-    <S = any, A extends Action = AnyAction>(reducer: Reducer<S, A>, options?: UndoableOptions<S, A>): Reducer<StateWithHistory<S>, A>;
-  }
-
-  const undoable: Undoable;
+  const undoable: <S = any, A extends Action = AnyAction, E = {}>(reducer: Reducer<S, A>, options?: UndoableOptions<S, A, E>) => Reducer<StateWithHistory<S> & E, A>;
 
   export default undoable;
 
@@ -130,32 +125,51 @@ declare module 'redux-undo' {
    * Combine multiple filters into one function. If one filter returns false, then combineFilters() returns
    * false excluding that action from history.
    */
-  export const combineExtensions: <S = any, A extends Action = AnyAction, E = any>(...extensions: ExtensionFunction<Partial<E>, S, A>[]) =>
-    ExtensionFunction<E, S, A>;
+  export const combineExtensions: {
+    // Atm, this is the only other way to do this without ugly conditional recursion
+    <S = any, A extends Action = AnyAction, E1 = {}, E2 = {}>(
+      extension1: ExtensionFunction<E1, S, A>,
+      extension2?: ExtensionFunction<E2, S, A>
+    ): ExtensionFunction<E1 & E2, S, A>;
+
+    <S = any, A extends Action = AnyAction, E1 = {}, E2 = {}, E3 = {}>(
+      extension1: ExtensionFunction<E1, S, A>,
+      extension2: ExtensionFunction<E2, S, A>,
+      extension3: ExtensionFunction<E3, S, A>
+    ): ExtensionFunction<E1 & E2 & E3, S, A>;
+
+    <S = any, A extends Action = AnyAction, E1 = {}, E2 = {}, E3 = {}, E4 = {}>(
+      extension1: ExtensionFunction<E1, S, A>,
+      extension2: ExtensionFunction<E2, S, A>,
+      extension3: ExtensionFunction<E3, S, A>,
+      extension4: ExtensionFunction<E4, S, A>
+    ): ExtensionFunction<E1 & E2 & E3 & E4, S, A>;
+  }
 
   /**
    * The flattenState() field extension allows the user to access fields normally like
    * `state.field` instead of `state.present.field`.
    */
-  export const flattenState: <S = any, A extends Action = AnyAction>() => ExtensionFunction<S, StateWithHistory<S>, A>;
+  export const flattenState: <S = {}, A extends Action = AnyAction>() => ExtensionFunction<S, S, A>;
 
-  interface ActionFieldOptions<IM extends 'inline' | 'actionType' | 'action'> {
-    insertMethod: IM,
-    includeAction: (action: Action) => boolean
+  interface ActionFieldOptions<IM extends 'inline' | 'actionType' | 'action', A> {
+    insertMethod?: IM,
+    includeAction?: (action: A) => boolean
+  }
+
+  interface ActionField {
+    <S = any, A extends Action = AnyAction>(config: ActionFieldOptions<'actionType', A>):
+      ExtensionFunction<{ actionType: A['type'] }, S, A>;
+    <S = any, A extends Action = AnyAction>(config: ActionFieldOptions<'action', A>):
+      ExtensionFunction<{ action: A }, S, A>;
+    <S = any, A extends Action = AnyAction>(config: ActionFieldOptions<'inline', A>):
+      ExtensionFunction<{ present: S & { action: A } }, S, A>;
   }
 
   /**
-   * The actionField() field extension allows users to insert the last occuring action
-   * into their state.
+   * The actionField() field extension allows users to insert the last occuring
+   * action into your state.
    */
-  interface ActionField {
-    <S = any, A extends Action = AnyAction>(config: ActionFieldOptions<'actionType'>):
-      ExtensionFunction<{ actionType: string }, S, A>;
-    <S = any, A extends Action = AnyAction>(config: ActionFieldOptions<'action'>):
-      ExtensionFunction<{ action: Action }, S, A>;
-    <S = any, A extends Action = AnyAction>(config: ActionFieldOptions<'inline'>):
-      ExtensionFunction<{ present: S & { action: Action } }, S, A>;
-  }
   export const actionField: ActionField;
 
 }
