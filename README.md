@@ -65,7 +65,7 @@ takes an existing reducer and a configuration object and enhances your existing
 reducer with undo functionality.
 
 **Note:** If you were accessing `state.counter` before, you have to access
-`state.counter.present` after wrapping your reducer with `undoable`.
+`state.present.counter` after wrapping your reducer with `undoable`.
 
 To install, firstly import `redux-undo`:
 
