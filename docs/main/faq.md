@@ -96,7 +96,7 @@ undoable(myReducer, {
   filter: combineFilters(
     // includeAction/excludeAction helpers take an array of action type strings
     includeAction(["MY_ACTION", "ANOTHER_ACTION"]),
-    costumeFilter
+    customFilter
   )
 });
 ```
