@@ -401,11 +401,15 @@ ignoreActions(
 Have a read of the [Implementing Undo History recipe](https://redux.js.org/recipes/implementing-undo-history) in the Redux documents, which explains in detail how redux-undo works.
 
 
-## Gitter Chat / Support
+## Chat / Support
 
-If you have a question or just want to discuss something with other redux-undo users/maintainers, [chat with the community on gitter.im/omnidan/redux-undo](https://gitter.im/omnidan/redux-undo)
+If you have a question or just want to discuss something with other redux-undo users/maintainers, [chat with the community on discord (discord.gg/GbHZTmd33n)](https://discord.gg/GbHZTmd33n)!
 
 Also, look at the documentation over at [redux-undo.js.org](https://redux-undo.js.org/).
+
+## Sponsors
+
+- Thanks to [@tomaAlex](https://github.com/tomaAlex) ([https://woggo.ro/](https://woggo.ro/)) for sponsoring my projects!
 
 ## License
 
