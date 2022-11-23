@@ -69,6 +69,11 @@ function jump (history, n) {
   return history
 }
 
+// clearFutureHistory: clear the content of the future array
+function clearFutureHistory (history) {
+  return newHistory(history.past, history.present, [])
+}
+
 // helper to dynamically match in the reducer's switch-case
 function actionTypeAmongClearHistoryType (actionType, clearHistoryType) {
   return clearHistoryType.indexOf(actionType) > -1 ? actionType : !actionType
@@ -87,6 +92,7 @@ export default function undoable (reducer, rawConfig = {}) {
     jumpToPastType: ActionTypes.JUMP_TO_PAST,
     jumpToFutureType: ActionTypes.JUMP_TO_FUTURE,
     jumpType: ActionTypes.JUMP,
+    clearFutureType: ActionTypes.CLEAR_FUTURE_HISTORY,
     neverSkipReducer: false,
     ignoreInitialState: false,
     syncFilter: false,
@@ -189,6 +195,12 @@ export default function undoable (reducer, rawConfig = {}) {
       case actionTypeAmongClearHistoryType(action.type, config.clearHistoryType):
         res = createHistory(history.present, config.ignoreInitialState)
         debug.log('perform clearHistory')
+        debug.end(res)
+        return skipReducer(res, action, ...slices)
+        
+      case config.clearFutureType:
+        res = clearFutureHistory(history)
+        debug.log('perform clearFutureHistory')
         debug.end(res)
         return skipReducer(res, action, ...slices)
 

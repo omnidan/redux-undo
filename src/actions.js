@@ -4,26 +4,30 @@ export const ActionTypes = {
   JUMP_TO_FUTURE: '@@redux-undo/JUMP_TO_FUTURE',
   JUMP_TO_PAST: '@@redux-undo/JUMP_TO_PAST',
   JUMP: '@@redux-undo/JUMP',
-  CLEAR_HISTORY: '@@redux-undo/CLEAR_HISTORY'
-}
+  CLEAR_HISTORY: '@@redux-undo/CLEAR_HISTORY',
+  CLEAR_FUTURE_HISTORY: '@@redux-undo/CLEAR_FUTURE_HISTORY',
+};
 
 export const ActionCreators = {
-  undo () {
-    return { type: ActionTypes.UNDO }
+  undo() {
+      return { type: ActionTypes.UNDO };
   },
-  redo () {
-    return { type: ActionTypes.REDO }
+  redo() {
+      return { type: ActionTypes.REDO };
   },
-  jumpToFuture (index) {
-    return { type: ActionTypes.JUMP_TO_FUTURE, index }
+  jumpToFuture(index) {
+      return { type: ActionTypes.JUMP_TO_FUTURE, index };
   },
-  jumpToPast (index) {
-    return { type: ActionTypes.JUMP_TO_PAST, index }
+  jumpToPast(index) {
+      return { type: ActionTypes.JUMP_TO_PAST, index };
   },
-  jump (index) {
-    return { type: ActionTypes.JUMP, index }
+  jump(index) {
+      return { type: ActionTypes.JUMP, index };
   },
-  clearHistory () {
-    return { type: ActionTypes.CLEAR_HISTORY }
-  }
-}
+  clearHistory() {
+      return { type: ActionTypes.CLEAR_HISTORY };
+  },
+  clearFutureHistory() {
+      return { type: ActionTypes.CLEAR_FUTURE_HISTORY };
+  },
+};
