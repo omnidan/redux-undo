@@ -177,6 +177,8 @@ store.dispatch(ActionCreators.jumpToPast(index)) // jump to requested index in t
 store.dispatch(ActionCreators.jumpToFuture(index)) // jump to requested index in the future[] array
 
 store.dispatch(ActionCreators.clearHistory()) // Remove all items from past[] and future[] arrays
+
+store.dispatch(ActionCreators.clearFutureType()) // Remove all items future[] arrays
 ```
 
 
@@ -199,6 +201,8 @@ undoable(reducer, {
 
   jumpToPastType: ActionTypes.JUMP_TO_PAST, // define custom action type for this jumpToPast action
   jumpToFutureType: ActionTypes.JUMP_TO_FUTURE, // define custom action type for this jumpToFuture action
+  
+  clearFutureType: ActionTypes.CLEAR_FUTURE_HISTORY, // define custom action type for this clearFutureHistory action
 
   clearHistoryType: ActionTypes.CLEAR_HISTORY, // define custom action type for this clearHistory action
   // you can also pass an array of strings to define several action types that would clear the history
