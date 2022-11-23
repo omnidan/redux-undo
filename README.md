@@ -178,7 +178,7 @@ store.dispatch(ActionCreators.jumpToFuture(index)) // jump to requested index in
 
 store.dispatch(ActionCreators.clearHistory()) // Remove all items from past[] and future[] arrays
 
-store.dispatch(ActionCreators.clearFutureHistory()) // Remove all items future[] arrays
+store.dispatch(ActionCreators.clearFutureHistory()) // Remove all items from future[] arrays
 ```
 
 
