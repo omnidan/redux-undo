@@ -666,6 +666,22 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
       })
     })
 
+    describe('Clear Future History', () => {
+      let clearedFutureState
+
+      before('perform a clearFutureHistory action', () => {
+        clearedFutureState = mockUndoableReducer(incrementedState, ActionCreators.clearFutureHistory())
+      })
+
+      it('should clear future', () => {
+        expect(clearedFutureState.future.length).to.equal(0)
+      })
+
+      it('should preserve the present value', () => {
+        expect(clearedFutureState.present).to.equal(incrementedState.present)
+      })
+    })
+
     describe('Clear History', () => {
       let clearedState
 
