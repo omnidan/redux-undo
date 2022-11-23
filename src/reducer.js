@@ -197,7 +197,7 @@ export default function undoable (reducer, rawConfig = {}) {
         debug.log('perform clearHistory')
         debug.end(res)
         return skipReducer(res, action, ...slices)
-        
+
       case config.clearFutureType:
         res = clearFutureHistory(history)
         debug.log('perform clearFutureHistory')
