@@ -1,4 +1,4 @@
-import { expect } from 'chai'
+import { describe, expect, it, beforeAll } from 'vitest'
 import { createStore } from 'redux'
 import undoable, { ActionCreators, ActionTypes, excludeAction, includeAction, isHistory } from '../src/index'
 
@@ -134,7 +134,7 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
     let incrementedState
     let store
 
-    before('setup mock reducers and states', () => {
+    beforeAll(() => {
       // undoableConfig.debug = true
       mockUndoableReducer = undoable(countReducer, undoableConfig)
       store = createStore(mockUndoableReducer, initialStoreState)
@@ -417,7 +417,7 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
 
     describe('Undo', () => {
       let undoState
-      before('perform an undo action', () => {
+      beforeAll(() => {
         wasCalled = false
         undoState = mockUndoableReducer(incrementedState, ActionCreators.undo())
       })
@@ -484,7 +484,7 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
     describe('Redo', () => {
       let undoState
       let redoState
-      before('perform an undo action then a redo action', () => {
+      beforeAll(() => {
         wasCalled = false
         undoState = mockUndoableReducer(incrementedState, ActionCreators.undo())
         redoState = mockUndoableReducer(undoState, ActionCreators.redo())
@@ -551,7 +551,7 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
     describe('JumpToPast', () => {
       const jumpToPastIndex = 0
       let jumpToPastState
-      before('perform a jumpToPast action', () => {
+      beforeAll(() => {
         jumpToPastState = mockUndoableReducer(incrementedState, ActionCreators.jumpToPast(jumpToPastIndex))
       })
 
@@ -587,7 +587,7 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
     describe('JumpToFuture', () => {
       const jumpToFutureIndex = 2
       let jumpToFutureState
-      before('perform a jumpToFuture action', () => {
+      beforeAll(() => {
         jumpToFutureState = mockUndoableReducer(mockInitialState, ActionCreators.jumpToFuture(jumpToFutureIndex))
       })
 
@@ -631,7 +631,7 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
       let jumpToFutureState
       let doubleUndoState
       let doubleRedoState
-      before('perform a jump action', () => {
+      beforeAll(() => {
         const doubleIncrementedState = mockUndoableReducer(incrementedState, { type: 'INCREMENT' })
         jumpToPastState = mockUndoableReducer(doubleIncrementedState, ActionCreators.jump(jumpStepsToPast))
         jumpToFutureState = mockUndoableReducer(mockInitialState, ActionCreators.jump(jumpStepsToFuture))
@@ -669,7 +669,7 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
     describe('Clear History', () => {
       let clearedState
 
-      before('perform a clearHistory action', () => {
+      beforeAll(() => {
         const clearHistoryType = undoableConfig && undoableConfig.clearHistoryType
         const actionType = clearHistoryType && Array.isArray(clearHistoryType) && clearHistoryType.length ? { type: clearHistoryType[0] } : ActionCreators.clearHistory()
         clearedState = mockUndoableReducer(incrementedState, actionType)
@@ -684,8 +684,10 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
         expect(clearedState.present).to.equal(incrementedState.present)
       })
     })
+    
+    if (testConfig && testConfig.checkSlices) {
+
     describe('running getSlices', () => {
-      if (testConfig && testConfig.checkSlices) {
         const initialState = {
           normalState: 0,
           slice1: 100
@@ -713,7 +715,7 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
         let fifthState
         let sixthState
         let seventhState
-        before('run reducer a few times', () => {
+        beforeAll(() => {
           secondState = fullReducer(initialState, { type: 'BOGUS' })
           thirdState = fullReducer(secondState, { type: 'INCREMENT' })
           fourthState = fullReducer(thirdState, { type: ActionTypes.UNDO })
@@ -745,7 +747,7 @@ function runTests (label, { undoableConfig = {}, initialStoreState, testConfig }
           expect(seventhState.normalState.present).to.equal(sixthState.normalState.present - 1)
           expect(seventhState.slice1).to.equal(initialState.slice1)
         })
-      }
-    })
+      })
+    }
   })
 }
