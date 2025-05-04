@@ -407,9 +407,6 @@ If you have a question or just want to discuss something with other redux-undo u
 
 Also, look at the documentation over at [redux-undo.js.org](https://redux-undo.js.org/).
 
-## Sponsors
-
-- Thanks to [@tomaAlex](https://github.com/tomaAlex) ([https://woggo.ro/](https://woggo.ro/)) for sponsoring my projects!
 
 ## License
 
