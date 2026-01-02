@@ -1,10 +1,12 @@
 # redux undo/redo
 
+> ⚠️ **Project Status: Not Actively Maintained**
+> 
+> This project is currently not being actively maintained. If you are interested in taking over its development and maintenance, please contact me.
+
 [![NPM version (>=1.0)](https://img.shields.io/npm/v/redux-undo.svg?style=flat-square)](https://www.npmjs.com/package/redux-undo) [![NPM Downloads](https://img.shields.io/npm/dm/redux-undo.svg?style=flat-square)](https://www.npmjs.com/package/redux-undo) [![Coverage Status](https://img.shields.io/coveralls/omnidan/redux-undo.svg?style=flat-square)](https://coveralls.io/r/omnidan/redux-undo) [![Dependencies](https://img.shields.io/david/omnidan/redux-undo.svg?style=flat-square)](https://david-dm.org/omnidan/redux-undo) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](http://standardjs.com/) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/omnidan/redux-undo/master/LICENSE.md)
 
 _simple undo/redo functionality for redux state containers_
-
-[![https://i.imgur.com/M2KR4uo.gif](https://i.imgur.com/M2KR4uo.gif)](https://github.com/omnidan/redux-undo-boilerplate)
 
 **Protip:** Check out the [todos-with-undo example](https://github.com/omnidan/redux-undo/tree/master/examples/todos-with-undo) or the [redux-undo-boilerplate](https://github.com/omnidan/redux-undo-boilerplate) to quickly get started with `redux-undo`.
 
